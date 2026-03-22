@@ -11,27 +11,31 @@ const config: Config = {
     extend: {
       colors: {
         dark: {
-          bg: "#0a0a0f",
-          surface: "#151520",
-          accent: "#ffab40",
+          bg: "#0f0f1a",
+          surface: "#1a1a2e",
+          accent: "#a29bfe",
         },
         light: {
-          bg: "#f5f5f7",
+          bg: "#f8f9fa",
           surface: "#ffffff",
-          accent: "#e65100",
+          accent: "#6c5ce7",
         },
         wine: {
-          DEFAULT: "#e57373",
+          DEFAULT: "#d63031",
+          light: "#ff7675",
         },
         sage: {
-          DEFAULT: "#81c784",
+          DEFAULT: "#00b894",
+          light: "#55efc4",
         },
         gold: {
-          DEFAULT: "#ffd54f",
+          DEFAULT: "#fdcb6e",
+          light: "#ffeaa7",
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Albert Sans", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
     },
   },
