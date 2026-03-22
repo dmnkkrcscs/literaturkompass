@@ -1,0 +1,53 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        dark: {
+          bg: "#0a0a0f",
+          surface: "#151520",
+        },
+        light: {
+          bg: "#f5f5f7",
+          surface: "#ffffff",
+        },
+        accent: {
+          dark: "#ffab40",
+          light: "#e65100",
+        },
+        wine: {
+          DEFAULT: "#e57373",
+        },
+        sage: {
+          DEFAULT: "#81c784",
+        },
+        gold: {
+          DEFAULT: "#ffd54f",
+        },
+      },
+      backgroundColor: {
+        "dark-bg": "#0a0a0f",
+        "dark-surface": "#151520",
+        "light-bg": "#f5f5f7",
+        "light-surface": "#ffffff",
+      },
+      textColor: {
+        "dark-accent": "#ffab40",
+        "light-accent": "#e65100",
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)"],
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;

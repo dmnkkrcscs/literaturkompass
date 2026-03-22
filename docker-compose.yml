@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: literaturkompass-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://litkompass:${DB_PASSWORD}@db:5432/literaturkompass
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - REDIS_URL=redis://redis:6379
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    restart: unless-stopped
+    networks:
+      - literaturkompass-network
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: literaturkompass-worker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - WORKER_MODE=true
+      - DATABASE_URL=postgresql://litkompass:${DB_PASSWORD}@db:5432/literaturkompass
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - REDIS_URL=redis://redis:6379
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    command: node server.js
+    restart: unless-stopped
+    networks:
+      - literaturkompass-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: literaturkompass-db
+    environment:
+      POSTGRES_DB: literaturkompass
+      POSTGRES_USER: litkompass
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litkompass -d literaturkompass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - literaturkompass-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: literaturkompass-redis
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - literaturkompass-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: literaturkompass-minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    volumes:
+      - miniodata:/data
+    command: server /data --console-address ':9001'
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    restart: unless-stopped
+    networks:
+      - literaturkompass-network
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
+
+networks:
+  literaturkompass-network:
+    driver: bridge
