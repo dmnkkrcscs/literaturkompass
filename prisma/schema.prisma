@@ -188,6 +188,7 @@ model CrawlLog {
   source              Source            @relation(fields: [sourceId], references: [id], onDelete: Cascade)
 
   competitionId       String?           // Optional reference to extracted competition
+  competition         Competition?      @relation(fields: [competitionId], references: [id])
 
   url                 String
   status              CrawlStatus

@@ -17,11 +17,7 @@ COPY . .
 # Dummy DATABASE_URL needed so prisma generate can validate the schema datasource
 ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
-# Test CDN connectivity and show node/prisma versions, then try generate
-RUN node --version && \
-    wget -q --spider "https://binaries.prisma.sh" 2>&1 && echo "CDN reachable" || echo "CDN NOT reachable" && \
-    npx prisma --version 2>&1 | head -5 && \
-    (npx prisma generate > /tmp/pg.txt 2>&1 && echo "PRISMA OK" && cat /tmp/pg.txt) || (echo "=== PRISMA GEN FAILED ==="; cat /tmp/pg.txt; exit 1)
+RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
