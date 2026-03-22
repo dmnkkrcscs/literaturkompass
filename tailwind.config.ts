@@ -20,26 +20,41 @@ const config: Config = {
           surface: "#ffffff",
           accent: "#6c5ce7",
         },
-        wine: {
-          DEFAULT: "#d63031",
-          light: "#ff7675",
+        accent: {
+          light: "#6c5ce7",
+          dark: "#a29bfe",
         },
-        sage: {
-          DEFAULT: "#00b894",
-          light: "#55efc4",
-        },
-        gold: {
-          DEFAULT: "#fdcb6e",
-          light: "#ffeaa7",
-        },
+        wine: { DEFAULT: "#d63031", light: "#ff7675" },
+        sage: { DEFAULT: "#00b894", light: "#55efc4" },
+        gold: { DEFAULT: "#fdcb6e", light: "#ffeaa7" },
       },
       fontFamily: {
         sans: ["Albert Sans", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
+      borderColor: {
+        wine: "#d63031",
+        sage: "#00b894",
+        gold: "#fdcb6e",
+      },
     },
   },
   plugins: [],
+  safelist: [
+    "border-l-wine",
+    "border-l-sage",
+    "border-l-gold",
+    "bg-wine",
+    "bg-sage",
+    "bg-gold",
+    "text-wine",
+    "text-sage",
+    "text-gold",
+    "bg-accent-light",
+    "bg-accent-dark",
+    "text-accent-light",
+    "text-accent-dark",
+  ],
 };
 
 export default config;
