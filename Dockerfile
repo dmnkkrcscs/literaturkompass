@@ -1,12 +1,12 @@
-# Stage 1: Install dependencies + generate Prisma client
+# Stage 1: Install dependencies
 FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package.json package-lock.json* ./
-COPY prisma ./prisma
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PRISMA_SKIP_POSTINSTALL_GENERATE=1
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 # Stage 2: Build
 FROM node:20-alpine AS builder
@@ -14,6 +14,10 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Dummy DATABASE_URL needed so prisma generate can validate the schema datasource
+ENV DATABASE_URL=postgresql://build:build@localhost:5432/build
+ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
+RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
