@@ -198,7 +198,6 @@ export default function EinstellungenPage() {
                       className="hidden"
                     />
                     <Button
-                      as="span"
                       variant="secondary"
                       loading={importLoading}
                       className="cursor-pointer"
