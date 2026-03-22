@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 # Stage 2: Build
 FROM node:20-alpine AS builder
