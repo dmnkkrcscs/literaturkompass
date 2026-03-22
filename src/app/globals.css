@@ -3,18 +3,27 @@
 @tailwind utilities;
 
 :root {
-  /* Dark mode colors */
-  --color-dark-bg: #0a0a0f;
-  --color-dark-surface: #151520;
-  --color-dark-accent: #ffab40;
-  --color-wine: #e57373;
-  --color-sage: #81c784;
-  --color-gold: #ffd54f;
+  --accent: #6c5ce7;
+  --accent-hover: #5f3dc4;
+  --wine: #d63031;
+  --sage: #00b894;
+  --gold: #fdcb6e;
+  --border: #dfe6e9;
+  --shadow: rgba(0, 0, 0, 0.06);
+  --shadow-strong: rgba(0, 0, 0, 0.14);
+  --radius: 12px;
+  --transition: all 0.25s ease;
+}
 
-  /* Light mode colors */
-  --color-light-bg: #f5f5f7;
-  --color-light-surface: #ffffff;
-  --color-light-accent: #e65100;
+.dark {
+  --accent: #a29bfe;
+  --accent-hover: #b8b0ff;
+  --wine: #ff7675;
+  --sage: #55efc4;
+  --gold: #ffeaa7;
+  --border: #2d2d44;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-strong: rgba(0, 0, 0, 0.5);
 }
 
 html {
@@ -23,23 +32,157 @@ html {
 
 body {
   @apply bg-light-bg text-gray-900 dark:bg-dark-bg dark:text-gray-100;
+  font-family: 'Albert Sans', system-ui, sans-serif;
+  line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* ==========================================
+   CARDS
+   ========================================== */
 @layer components {
   .card {
-    @apply rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-dark-surface;
+    @apply rounded-xl border border-gray-200 bg-white p-5 shadow-sm
+           dark:border-gray-700/50 dark:bg-dark-surface;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
   }
 
+  .card:hover {
+    @apply shadow-md;
+    transform: translateY(-3px);
+  }
+
+  /* Left-border color coding by competition type */
+  .card-wine  { @apply border-l-4 border-l-wine; }
+  .card-sage  { @apply border-l-4 border-l-sage; }
+  .card-gold  { @apply border-l-4 border-l-gold; }
+  .card-accent { border-left: 4px solid var(--accent); }
+
+  /* Stat cards */
+  .stat-card {
+    @apply rounded-xl border border-gray-200 bg-white p-6 shadow-sm
+           dark:border-gray-700/50 dark:bg-dark-surface;
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+
+  .stat-card:hover {
+    @apply shadow-md;
+    transform: translateY(-2px);
+  }
+
+  /* ==========================================
+     BUTTONS
+     ========================================== */
   .btn-primary {
-    @apply rounded-md bg-light-accent px-4 py-2 font-medium text-white transition-colors hover:bg-orange-600 dark:bg-dark-accent dark:hover:bg-amber-300;
+    @apply rounded-lg px-4 py-2 font-semibold text-white transition-all;
+    background: var(--accent);
+  }
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
   }
 
   .btn-secondary {
-    @apply rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-900 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-dark-surface dark:text-gray-100 dark:hover:bg-gray-700;
+    @apply rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium
+           text-gray-800 transition-all hover:bg-gray-50
+           dark:border-gray-600 dark:bg-dark-surface dark:text-gray-100
+           dark:hover:bg-gray-700/50;
   }
 
+  /* ==========================================
+     INPUTS
+     ========================================== */
   .input {
-    @apply w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 transition-colors focus:border-light-accent focus:outline-none focus:ring-2 focus:ring-light-accent focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-dark-accent dark:focus:ring-dark-accent;
+    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2
+           text-gray-900 placeholder-gray-400 transition-colors
+           focus:outline-none focus:ring-2
+           dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100
+           dark:placeholder-gray-500;
+    focus-ring-color: var(--accent);
+  }
+
+  /* ==========================================
+     DEADLINE BADGES (JetBrains Mono)
+     ========================================== */
+  .badge-deadline {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    @apply inline-block rounded px-2 py-0.5 text-xs font-semibold;
+  }
+
+  .badge-urgent {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
+  }
+
+  .badge-soon {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
+  }
+
+  .badge-ok {
+    @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400;
+  }
+
+  .badge-open {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
+  }
+
+  /* ==========================================
+     TYPE BADGES
+     ========================================== */
+  .badge-type {
+    @apply inline-block rounded-md px-2 py-0.5 text-xs font-semibold;
+  }
+
+  .badge-wettbewerb {
+    background: rgba(211, 47, 47, 0.12);
+    color: #c62828;
+  }
+  .dark .badge-wettbewerb {
+    background: rgba(255, 118, 117, 0.15);
+    color: #ff7675;
+  }
+
+  .badge-anthologie {
+    background: rgba(0, 184, 148, 0.12);
+    color: #00695c;
+  }
+  .dark .badge-anthologie {
+    background: rgba(85, 239, 196, 0.15);
+    color: #55efc4;
+  }
+
+  .badge-zeitschrift {
+    background: rgba(253, 203, 110, 0.2);
+    color: #e65100;
+  }
+  .dark .badge-zeitschrift {
+    background: rgba(255, 234, 167, 0.15);
+    color: #ffeaa7;
+  }
+
+  /* ==========================================
+     NAVIGATION
+     ========================================== */
+  .nav-link {
+    @apply flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium
+           text-gray-700 transition-all hover:bg-gray-100
+           dark:text-gray-300 dark:hover:bg-white/5;
+  }
+
+  .nav-link.active {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  /* ==========================================
+     TYPOGRAPHY
+     ========================================== */
+  .font-mono-dates {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  /* Section headers */
+  h1, h2, h3 {
+    font-family: 'Albert Sans', system-ui, sans-serif;
+    @apply tracking-tight;
   }
 }
