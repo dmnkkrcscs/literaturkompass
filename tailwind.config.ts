@@ -43,7 +43,7 @@ const config: Config = {
         "light-accent": "#e65100",
       },
       fontFamily: {
-        sans: ["var(--font-inter)"],
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
     },
   },
