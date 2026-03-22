@@ -1,21 +1,20 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
-import Link from 'next/link'
-import { Search, Filter } from 'lucide-react'
+import { Search, Filter, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
+import { CompetitionCard } from '@/components/competition/CompetitionCard'
 
 interface Competition {
   id: string
   name: string
   organizer?: string | null
   deadline: Date | null
-  type: string
+  type: 'WETTBEWERB' | 'ANTHOLOGIE' | 'ZEITSCHRIFT'
   theme?: string | null
   prize?: string | null
+  maxLength?: string | null
+  url: string
   genres: string[]
 }
 
@@ -25,10 +24,25 @@ interface FilterState {
   hasDeadline: boolean
 }
 
+const typeLabels: Record<string, string> = {
+  ALL: 'Alle',
+  WETTBEWERB: 'Wettbewerb',
+  ANTHOLOGIE: 'Anthologie',
+  ZEITSCHRIFT: 'Zeitschrift',
+}
+
+const typeColors: Record<string, string> = {
+  ALL: '',
+  WETTBEWERB: 'wine',
+  ANTHOLOGIE: 'sage',
+  ZEITSCHRIFT: 'gold',
+}
+
 export default function EntdeckenPage() {
   const [competitions, setCompetitions] = useState<Competition[]>([])
   const [loading, setLoading] = useState(true)
   const [hasMore, setHasMore] = useState(true)
+  const [total, setTotal] = useState(0)
   const [skip, setSkip] = useState(0)
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -36,30 +50,17 @@ export default function EntdeckenPage() {
     hasDeadline: false,
   })
 
-  const typeLabels: Record<string, string> = {
-    ALL: 'Alle',
-    WETTBEWERB: 'Wettbewerb',
-    ANTHOLOGIE: 'Anthologie',
-    ZEITSCHRIFT: 'Zeitschrift',
-  }
-
   const loadCompetitions = useCallback(
     async (skipCount: number = 0) => {
       setLoading(true)
       try {
         const params = new URLSearchParams()
         params.append('skip', skipCount.toString())
-        params.append('take', '10')
+        params.append('take', '12')
 
-        if (filters.search) {
-          params.append('search', filters.search)
-        }
-        if (filters.type !== 'ALL') {
-          params.append('type', filters.type)
-        }
-        if (filters.hasDeadline) {
-          params.append('hasDeadline', 'true')
-        }
+        if (filters.search) params.append('search', filters.search)
+        if (filters.type !== 'ALL') params.append('type', filters.type)
+        if (filters.hasDeadline) params.append('hasDeadline', 'true')
 
         const response = await fetch(`/api/competitions?${params.toString()}`)
         const data = await response.json()
@@ -71,6 +72,7 @@ export default function EntdeckenPage() {
         }
 
         setHasMore(data.hasMore || false)
+        setTotal(data.total || 0)
       } catch (error) {
         console.error('Failed to load competitions:', error)
       } finally {
@@ -86,29 +88,46 @@ export default function EntdeckenPage() {
   }, [filters])
 
   const handleLoadMore = () => {
-    const newSkip = skip + 10
+    const newSkip = skip + 12
     setSkip(newSkip)
     loadCompetitions(newSkip)
   }
 
-  const handleSearchChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, search: value }))
+  const handleStar = async (id: string, starred: boolean) => {
+    try {
+      await fetch(`/api/competitions/${id}/star`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ starred }),
+      })
+    } catch (error) {
+      console.error('Failed to star competition:', error)
+    }
   }
 
-  const handleTypeChange = (type: FilterState['type']) => {
-    setFilters((prev) => ({ ...prev, type }))
+  const handleDismiss = async (id: string) => {
+    setCompetitions((prev) => prev.filter((c) => c.id !== id))
+    try {
+      await fetch(`/api/competitions/${id}/dismiss`, { method: 'POST' })
+    } catch (error) {
+      console.error('Failed to dismiss competition:', error)
+    }
   }
 
   return (
     <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black dark:text-white">
-            Entdecken
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Durchsuchen Sie alle verfügbaren Schreibwettbewerbe und Publikationsmöglichkeiten
+          <div className="flex items-center gap-3 mb-2">
+            <BookOpen className="h-8 w-8 text-accent-light dark:text-accent-dark" />
+            <h1 className="text-3xl font-bold text-black dark:text-white tracking-tight">
+              Entdecken
+            </h1>
+          </div>
+          <p className="mt-1 text-gray-600 dark:text-gray-400 ml-11">
+            {total > 0 ? `${total} Ausschreibungen gefunden` : 'Alle verfügbaren Schreibwettbewerbe und Publikationsmöglichkeiten'}
           </p>
         </div>
 
@@ -116,120 +135,92 @@ export default function EntdeckenPage() {
         <div className="mb-8 space-y-4">
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Nach Wettbewerben suchen..."
+              placeholder="Nach Wettbewerben, Themen oder Veranstaltern suchen..."
               value={filters.search}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-black placeholder-gray-500 dark:border-gray-600 dark:bg-dark-surface dark:text-white dark:placeholder-gray-400"
+              onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
+              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-black placeholder-gray-400 shadow-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-accent-light dark:border-gray-700 dark:bg-dark-surface dark:text-white dark:placeholder-gray-500 dark:focus:ring-accent-dark"
             />
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex flex-wrap gap-2">
-            <Filter className="h-5 w-5 self-center text-gray-600 dark:text-gray-400" />
-            {(Object.keys(typeLabels) as Array<FilterState['type']>).map(
-              (type) => (
-                <button
-                  key={type}
-                  onClick={() => handleTypeChange(type)}
-                  className={`rounded-lg px-4 py-2 font-medium transition-colors ${
-                    filters.type === type
-                      ? 'bg-accent-light text-white dark:bg-accent-dark'
-                      : 'bg-light-surface text-black dark:bg-dark-surface dark:text-white'
-                  }`}
-                >
-                  {typeLabels[type]}
-                </button>
-              )
-            )}
+          <div className="flex flex-wrap items-center gap-2">
+            <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400 shrink-0" />
+            {(Object.keys(typeLabels) as Array<FilterState['type']>).map((type) => (
+              <button
+                key={type}
+                onClick={() => setFilters((prev) => ({ ...prev, type }))}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-all ${
+                  filters.type === type
+                    ? 'bg-accent-light text-white shadow-sm dark:bg-accent-dark dark:text-dark-bg'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-dark-surface dark:text-gray-300 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                }`}
+              >
+                {typeLabels[type]}
+              </button>
+            ))}
+            <button
+              onClick={() => setFilters((prev) => ({ ...prev, hasDeadline: !prev.hasDeadline }))}
+              className={`ml-auto rounded-lg px-4 py-1.5 text-sm font-medium transition-all ${
+                filters.hasDeadline
+                  ? 'bg-accent-light text-white dark:bg-accent-dark dark:text-dark-bg'
+                  : 'bg-white text-gray-700 dark:bg-dark-surface dark:text-gray-300 border border-gray-200 dark:border-gray-700'
+              }`}
+            >
+              Nur mit Deadline
+            </button>
           </div>
         </div>
 
         {/* Results */}
         {loading && competitions.length === 0 ? (
-          <div className="flex justify-center py-12">
-            <div className="text-gray-600 dark:text-gray-400">
-              Laden...
-            </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-48 rounded-xl bg-light-surface dark:bg-dark-surface animate-pulse" />
+            ))}
           </div>
         ) : competitions.length === 0 ? (
-          <div className="rounded-lg bg-light-surface p-8 text-center dark:bg-dark-surface">
-            <p className="text-gray-600 dark:text-gray-400">
-              Keine Wettbewerbe gefunden
+          <div className="rounded-xl bg-light-surface p-12 text-center dark:bg-dark-surface border border-gray-200 dark:border-gray-700">
+            <BookOpen className="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600 mb-4" />
+            <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
+              Keine Ausschreibungen gefunden
+            </p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
+              Versuche andere Suchbegriffe oder Filter
             </p>
           </div>
         ) : (
           <>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               {competitions.map((comp) => (
-                <Link
+                <CompetitionCard
                   key={comp.id}
-                  href={`/geplant/${comp.id}`}
-                  className="block rounded-lg border border-gray-200 bg-light-surface p-4 transition-all hover:shadow-md dark:border-gray-700 dark:bg-dark-surface"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-black dark:text-white">
-                        {comp.name}
-                      </h3>
-                      {comp.organizer && (
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                          {comp.organizer}
-                        </p>
-                      )}
-                      {comp.theme && (
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                          Thema: {comp.theme}
-                        </p>
-                      )}
-                      {comp.prize && (
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                          Preis: {comp.prize}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="ml-4 text-right">
-                      {comp.deadline && (
-                        <p className="text-sm font-medium text-accent-light dark:text-accent-dark">
-                          {format(new Date(comp.deadline), 'dd. MMM yyyy', {
-                            locale: de,
-                          })}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Badges */}
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Badge variant="default">
-                      {comp.type === 'WETTBEWERB'
-                        ? 'Wettbewerb'
-                        : comp.type === 'ANTHOLOGIE'
-                          ? 'Anthologie'
-                          : 'Zeitschrift'}
-                    </Badge>
-                    {comp.genres && comp.genres.length > 0 && (
-                      <Badge variant="sage">
-                        {comp.genres.slice(0, 2).join(', ')}
-                        {comp.genres.length > 2 &&
-                          ` +${comp.genres.length - 2}`}
-                      </Badge>
-                    )}
-                  </div>
-                </Link>
+                  id={comp.id}
+                  type={comp.type}
+                  name={comp.name}
+                  organizer={comp.organizer}
+                  deadline={comp.deadline ? new Date(comp.deadline) : null}
+                  theme={comp.theme}
+                  genres={comp.genres}
+                  prize={comp.prize}
+                  maxLength={comp.maxLength}
+                  url={comp.url}
+                  onStar={handleStar}
+                  onDismiss={handleDismiss}
+                />
               ))}
             </div>
 
-            {/* Load More Button */}
+            {/* Load More */}
             {hasMore && (
-              <div className="mt-8 flex justify-center">
+              <div className="mt-10 flex justify-center">
                 <Button
                   onClick={handleLoadMore}
                   loading={loading}
                   variant="secondary"
+                  className="px-8"
                 >
                   Mehr laden
                 </Button>
