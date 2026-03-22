@@ -44,6 +44,8 @@ export async function GET(request: NextRequest) {
           type: true,
           theme: true,
           prize: true,
+          maxLength: true,
+          url: true,
           genres: true,
         },
         orderBy: { deadline: 'asc' },
