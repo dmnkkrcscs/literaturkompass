@@ -13,14 +13,12 @@ const config: Config = {
         dark: {
           bg: "#0a0a0f",
           surface: "#151520",
+          accent: "#ffab40",
         },
         light: {
           bg: "#f5f5f7",
           surface: "#ffffff",
-        },
-        accent: {
-          dark: "#ffab40",
-          light: "#e65100",
+          accent: "#e65100",
         },
         wine: {
           DEFAULT: "#e57373",
@@ -31,16 +29,6 @@ const config: Config = {
         gold: {
           DEFAULT: "#ffd54f",
         },
-      },
-      backgroundColor: {
-        "dark-bg": "#0a0a0f",
-        "dark-surface": "#151520",
-        "light-bg": "#f5f5f7",
-        "light-surface": "#ffffff",
-      },
-      textColor: {
-        "dark-accent": "#ffab40",
-        "light-accent": "#e65100",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
