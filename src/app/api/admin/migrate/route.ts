@@ -6,6 +6,20 @@ import type { CompType } from '@prisma/client'
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET || 'LitKompass2026!update'
 
+const AGGREGATOR_SOURCES = [
+  { name: 'Kreativ Schreiben Lernen', url: 'kreativ-schreiben-lernen.de' },
+  { name: 'epubli', url: 'epubli.com' },
+  { name: 'Treffpunkt Schreiben', url: 'treffpunktschreiben.at' },
+  { name: 'Autorenwelt', url: 'autorenwelt.de' },
+  { name: 'Wir erschaffen Welten', url: 'wir-erschaffen-welten.net' },
+  { name: 'Literaturcafe', url: 'literaturcafe.de' },
+  { name: 'Papierfresserchen', url: 'papierfresserchen.eu' },
+  { name: 'Literaturport', url: 'literaturport.de' },
+  { name: 'zugetextet', url: 'zugetextet.com' },
+  { name: 'Federwelt', url: 'federwelt.de' },
+  { name: 'Schreiblust Verlag', url: 'schreiblust-verlag.de' },
+]
+
 interface V1Competition {
   id: string
   type: string
@@ -48,6 +62,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const action = request.nextUrl.searchParams.get('action')
+
+  // Seed standard aggregator sources
+  if (action === 'seed-sources') {
+    let created = 0, skipped = 0
+    for (const s of AGGREGATOR_SOURCES) {
+      const existing = await db.source.findUnique({ where: { url: s.url } })
+      if (!existing) {
+        await db.source.create({ data: { name: s.name, url: s.url, type: 'AGGREGATOR', isActive: true } })
+        created++
+      } else {
+        // Make sure it's active
+        if (!existing.isActive) {
+          await db.source.update({ where: { id: existing.id }, data: { isActive: true, name: s.name } })
+        }
+        skipped++
+      }
+    }
+    const total = await db.source.count()
+    return NextResponse.json({ success: true, created, skipped, totalSources: total })
+  }
+
+  // Default: migrate v1 data.json
   try {
     const dataPath = path.join(process.cwd(), 'data', 'data.json')
     if (!fs.existsSync(dataPath)) {
