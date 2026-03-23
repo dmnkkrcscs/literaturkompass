@@ -1,8 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Download, Upload, Moon, Sun, Send, CheckCircle, XCircle, RotateCw } from 'lucide-react'
+import { Download, Upload, Moon, Sun, Send, CheckCircle, XCircle, RotateCw, Sparkles } from 'lucide-react'
 import { useTheme } from 'next-themes'
+
+interface Preferences {
+  bio: string
+  favoriteGenres: string[]
+  favoriteThemes: string[]
+  dislikedTopics: string[]
+  location: string
+}
 
 export default function EinstellungenPage() {
   const { theme, setTheme } = useTheme()
@@ -12,12 +20,59 @@ export default function EinstellungenPage() {
   const [telegramTest, setTelegramTest] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle')
   const [telegramError, setTelegramError] = useState('')
 
+  // KI-Profil
+  const [prefs, setPrefs] = useState<Preferences>({
+    bio: '',
+    favoriteGenres: [],
+    favoriteThemes: [],
+    dislikedTopics: [],
+    location: '',
+  })
+  const [prefsRaw, setPrefsRaw] = useState({ genres: '', themes: '', disliked: '' })
+  const [prefsSave, setPrefsSave] = useState<'idle' | 'saving' | 'ok' | 'error'>('idle')
+
   useEffect(() => {
     fetch('/api/telegram')
       .then((r) => r.json())
       .then((d) => setTelegramConfigured(d.configured ?? false))
       .catch(() => setTelegramConfigured(false))
+
+    fetch('/api/preferences')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.preferences) {
+          setPrefs(d.preferences)
+          setPrefsRaw({
+            genres: (d.preferences.favoriteGenres || []).join(', '),
+            themes: (d.preferences.favoriteThemes || []).join(', '),
+            disliked: (d.preferences.dislikedTopics || []).join(', '),
+          })
+        }
+      })
+      .catch(() => {})
   }, [])
+
+  const handleSavePrefs = async () => {
+    setPrefsSave('saving')
+    try {
+      const body = {
+        ...prefs,
+        favoriteGenres: prefsRaw.genres.split(',').map((s) => s.trim()).filter(Boolean),
+        favoriteThemes: prefsRaw.themes.split(',').map((s) => s.trim()).filter(Boolean),
+        dislikedTopics: prefsRaw.disliked.split(',').map((s) => s.trim()).filter(Boolean),
+      }
+      const res = await fetch('/api/preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      setPrefsSave(res.ok ? 'ok' : 'error')
+      setTimeout(() => setPrefsSave('idle'), 2500)
+    } catch {
+      setPrefsSave('error')
+      setTimeout(() => setPrefsSave('idle'), 2500)
+    }
+  }
 
   const handleExportData = async () => {
     setExportLoading(true)
@@ -123,6 +178,86 @@ export default function EinstellungenPage() {
                   <Moon className="h-4 w-4" />
                   Dunkel
                 </button>
+              </div>
+            </div>
+          </section>
+
+          {/* ── KI-Profil ── */}
+          <section className="rounded-2xl bg-white dark:bg-dark-surface shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-accent" />
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">KI-Empfehlungsprofil</h2>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Je mehr die KI über dein Schreiben weiß, desto besser trifft sie Empfehlungen. Zusätzlich lernt sie automatisch aus deinen Einreichungen und markierten Ausschreibungen.
+              </p>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Über mich & meinen Schreibstil</label>
+                <textarea
+                  value={prefs.bio}
+                  onChange={(e) => setPrefs((p) => ({ ...p, bio: e.target.value }))}
+                  placeholder="z.B. Ich schreibe hauptsächlich literarische Kurzprosa und Lyrik mit einem Fokus auf Stille, Verlust und Naturbeobachtung. Bisher veröffentlicht in manuskripte und bella triste."
+                  rows={3}
+                  className="w-full rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-muted px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Bevorzugte Genres</label>
+                  <input
+                    type="text"
+                    value={prefsRaw.genres}
+                    onChange={(e) => setPrefsRaw((r) => ({ ...r, genres: e.target.value }))}
+                    placeholder="Kurzprosa, Lyrik, Essay"
+                    className="w-full rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-muted px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Kommagetrennt</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Bevorzugte Themen</label>
+                  <input
+                    type="text"
+                    value={prefsRaw.themes}
+                    onChange={(e) => setPrefsRaw((r) => ({ ...r, themes: e.target.value }))}
+                    placeholder="Natur, Verlust, Erinnerung, Stille"
+                    className="w-full rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-muted px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Kommagetrennt</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Nicht interessant</label>
+                  <input
+                    type="text"
+                    value={prefsRaw.disliked}
+                    onChange={(e) => setPrefsRaw((r) => ({ ...r, disliked: e.target.value }))}
+                    placeholder="Krimi, Fantasy, Jugendliteratur"
+                    className="w-full rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-muted px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Kommagetrennt</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">Wohnort (für regionale Wettbewerbe)</label>
+                  <input
+                    type="text"
+                    value={prefs.location}
+                    onChange={(e) => setPrefs((p) => ({ ...p, location: e.target.value }))}
+                    placeholder="z.B. Wien, Österreich"
+                    className="w-full rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-muted px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-3 pt-1">
+                <button
+                  onClick={handleSavePrefs}
+                  disabled={prefsSave === 'saving'}
+                  className="flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent/90 disabled:opacity-50 transition-all"
+                >
+                  {prefsSave === 'saving' ? <RotateCw className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                  Profil speichern
+                </button>
+                {prefsSave === 'ok' && <span className="text-xs text-sage flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5" /> Gespeichert!</span>}
+                {prefsSave === 'error' && <span className="text-xs text-red-500">Fehler beim Speichern</span>}
               </div>
             </div>
           </section>

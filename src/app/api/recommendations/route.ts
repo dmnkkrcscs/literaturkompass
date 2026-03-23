@@ -1,7 +1,8 @@
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
-// Parse notes like "Titel: X | Thema: Y | Publikation: Z"
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
 function parseNotes(notes: string | null): { titel?: string; thema?: string; publikation?: string } {
   if (!notes) return {}
   const result: Record<string, string> = {}
@@ -17,53 +18,86 @@ function parseNotes(notes: string | null): { titel?: string; thema?: string; pub
   return result
 }
 
+async function loadPreferences() {
+  try {
+    const { redis } = await import('@/lib/redis')
+    const raw = await redis.get('user:preferences')
+    if (raw) return JSON.parse(raw)
+  } catch { /* Redis not available */ }
+  return null
+}
+
+// ─── Route ───────────────────────────────────────────────────────────────────
+
 export async function GET() {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json({ recommendations: [], reason: 'no_api_key' })
     }
 
-    // Build user profile from submission history
-    const submissions = await db.submission.findMany({
-      include: {
-        competition: {
-          select: { theme: true, genres: true, type: true, name: true },
+    // Load submissions + starred/dismissed competitions + explicit preferences in parallel
+    const [submissions, starredComps, prefs] = await Promise.all([
+      db.submission.findMany({
+        include: {
+          competition: { select: { theme: true, genres: true, type: true, name: true } },
         },
-      },
-    })
+      }),
+      db.competition.findMany({
+        where: { starred: true },
+        select: { theme: true, genres: true, name: true },
+      }),
+      loadPreferences(),
+    ])
 
-    if (submissions.length === 0) {
-      return NextResponse.json({ recommendations: [], reason: 'no_submissions' })
-    }
-
-    // Collect genres from competitions + parse themes from notes
-    const allGenres = submissions.flatMap((s) => s.competition.genres)
+    // Build genre profile from submissions + starred + explicit preferences
+    const allGenres = [
+      ...submissions.flatMap((s) => s.competition.genres),
+      ...starredComps.flatMap((c) => c.genres),
+      ...(prefs?.favoriteGenres ?? []),
+    ]
     const genreCounts = allGenres.reduce(
-      (acc, g) => { acc[g] = (acc[g] || 0) + 1; return acc },
-      {} as Record<string, number>
+      (acc: Record<string, number>, g: string) => { acc[g] = (acc[g] || 0) + 1; return acc },
+      {}
     )
     const topGenres = Object.entries(genreCounts)
       .sort((a, b) => Number(b[1]) - Number(a[1]))
-      .slice(0, 5)
+      .slice(0, 6)
       .map(([g]) => g)
 
-    const themes = submissions
-      .map((s) => parseNotes(s.notes).thema || s.competition.theme)
-      .filter(Boolean) as string[]
+    // Build theme profile
+    const themes = [
+      ...submissions.map((s) => parseNotes(s.notes).thema || s.competition.theme).filter(Boolean),
+      ...starredComps.map((c) => c.theme).filter(Boolean),
+      ...(prefs?.favoriteThemes ?? []),
+    ] as string[]
 
     const accepted = submissions.filter((s) => s.status === 'ACCEPTED').length
 
+    // Successful patterns: names of accepted competitions + genres from starred
+    const successfulPatterns = [
+      ...submissions.filter((s) => s.status === 'ACCEPTED').map((s) => s.competition.name),
+      ...starredComps.slice(0, 3).map((c) => c.name),
+    ]
+
+    // Bio from explicit preferences enriches the profile
+    const bioAddition = prefs?.bio ? `\nPersönliche Interessen: ${prefs.bio}` : ''
+    const locationAddition = prefs?.location ? `\nWohnort: ${prefs.location}` : ''
+    const dislikedAddition = prefs?.dislikedTopics?.length
+      ? `\nNicht interessant: ${prefs.dislikedTopics.join(', ')}`
+      : ''
+
     const userProfile = {
-      topGenres: topGenres.length ? topGenres : ['Kurzgeschichte', 'Prosa'],
-      preferredThemes: [...new Set(themes)].slice(0, 6),
+      topGenres: topGenres.length ? topGenres : (prefs?.favoriteGenres?.length ? prefs.favoriteGenres : ['Kurzgeschichte', 'Prosa']),
+      preferredThemes: [...new Set(themes)].slice(0, 8),
       avgTextLength: 8000,
-      successfulPatterns:
-        accepted > 0 ? submissions.filter((s) => s.status === 'ACCEPTED').map((s) => s.competition.name) : [],
+      successfulPatterns: successfulPatterns.slice(0, 5),
       submissionCount: submissions.length,
       successRate: submissions.length > 0 ? Number(accepted) / Number(submissions.length) : 0,
+      // Extra context injected as a note (picked up by the prompt template)
+      note: `${bioAddition}${locationAddition}${dislikedAddition}`.trim(),
     }
 
-    // Get competitions not yet in the user's plan
+    // Get competitions not yet in the user's plan, exclude dismissed
     const plannedIds = submissions.map((s) => s.competitionId)
     const competitions = await db.competition.findMany({
       where: {
@@ -71,15 +105,18 @@ export async function GET() {
         status: 'ACTIVE',
         dismissed: false,
       },
-      take: 20,
-      orderBy: [{ deadline: 'asc' }],
+      take: 25,
+      orderBy: [{ deadline: 'asc' }, { starredAt: 'desc' }],
     })
 
     if (competitions.length === 0) {
       return NextResponse.json({ recommendations: [], reason: 'no_competitions' })
     }
 
-    // Lazy-import to avoid loading Anthropic SDK at cold start if key is missing
+    if (submissions.length === 0 && !prefs?.bio) {
+      return NextResponse.json({ recommendations: [], reason: 'no_profile' })
+    }
+
     const { getRecommendations } = await import('@/server/ai/recommend')
 
     const recs = await getRecommendations(
@@ -94,7 +131,6 @@ export async function GET() {
       userProfile
     )
 
-    // Enrich with full competition data
     const enriched = recs
       .slice(0, 3)
       .map((rec) => {
