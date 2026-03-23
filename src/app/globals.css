@@ -8,11 +8,10 @@
   --wine: #d63031;
   --sage: #00b894;
   --gold: #fdcb6e;
-  --border: #dfe6e9;
-  --shadow: rgba(0, 0, 0, 0.06);
-  --shadow-strong: rgba(0, 0, 0, 0.14);
+  --border: #e8ecf0;
+  --shadow: rgba(0, 0, 0, 0.05);
+  --shadow-strong: rgba(0, 0, 0, 0.12);
   --radius: 12px;
-  --transition: all 0.25s ease;
 }
 
 .dark {
@@ -28,6 +27,8 @@
 
 html {
   @apply scroll-smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -37,152 +38,124 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ==========================================
-   CARDS
-   ========================================== */
+/* ── Scrollbar ──────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+.dark ::-webkit-scrollbar-thumb { background: #374151; }
+
+/* ── Text selection ─────────────────────────── */
+::selection { background: rgba(108, 92, 231, 0.2); color: inherit; }
+
+/* ── Typography ─────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: 'Albert Sans', system-ui, sans-serif;
+  @apply tracking-tight;
+}
+
+/* Monospace for dates, numbers, counters */
+.font-mono, .mono, [class*="font-mono"] {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Cards ──────────────────────────────────── */
 @layer components {
   .card {
-    @apply rounded-xl border border-gray-200 bg-white p-5 shadow-sm
-           dark:border-gray-700/50 dark:bg-dark-surface;
-    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    @apply rounded-xl bg-white dark:bg-dark-surface shadow-sm;
+    border-left: 3px solid transparent;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
-
   .card:hover {
-    @apply shadow-md;
-    transform: translateY(-3px);
-  }
-
-  /* Left-border color coding by competition type */
-  .card-wine  { @apply border-l-4 border-l-wine; }
-  .card-sage  { @apply border-l-4 border-l-sage; }
-  .card-gold  { @apply border-l-4 border-l-gold; }
-  .card-accent { border-left: 4px solid var(--accent); }
-
-  /* Stat cards */
-  .stat-card {
-    @apply rounded-xl border border-gray-200 bg-white p-6 shadow-sm
-           dark:border-gray-700/50 dark:bg-dark-surface;
-    transition: box-shadow 0.25s ease, transform 0.25s ease;
-  }
-
-  .stat-card:hover {
     @apply shadow-md;
     transform: translateY(-2px);
   }
+  .card-wine  { border-left-color: var(--wine); }
+  .card-sage  { border-left-color: var(--sage); }
+  .card-gold  { border-left-color: var(--gold); }
+  .card-accent { border-left-color: var(--accent); }
 
-  /* ==========================================
-     BUTTONS
-     ========================================== */
+  /* ── Buttons ────────────────────────────────── */
   .btn-primary {
-    @apply rounded-lg px-4 py-2 font-semibold text-white transition-all;
+    @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all;
     background: var(--accent);
   }
   .btn-primary:hover {
     background: var(--accent-hover);
     transform: translateY(-1px);
   }
-
   .btn-secondary {
-    @apply rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium
-           text-gray-800 transition-all hover:bg-gray-50
-           dark:border-gray-600 dark:bg-dark-surface dark:text-gray-100
-           dark:hover:bg-gray-700/50;
+    @apply inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium
+           text-gray-700 transition-all hover:bg-gray-50 hover:border-gray-300
+           dark:border-gray-700 dark:bg-dark-surface dark:text-gray-300
+           dark:hover:bg-gray-800 dark:hover:border-gray-600;
   }
 
-  /* ==========================================
-     INPUTS
-     ========================================== */
-  .input {
-    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2
-           text-gray-900 placeholder-gray-400 transition-colors
-           focus:outline-none focus:ring-2
-           dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100
-           dark:placeholder-gray-500;
-    focus-ring-color: var(--accent);
-  }
-
-  /* ==========================================
-     DEADLINE BADGES (JetBrains Mono)
-     ========================================== */
-  .badge-deadline {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    @apply inline-block rounded px-2 py-0.5 text-xs font-semibold;
-  }
-
-  .badge-urgent {
-    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
-  }
-
-  .badge-soon {
-    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
-  }
-
-  .badge-ok {
-    @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400;
-  }
-
-  .badge-open {
-    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
-  }
-
-  /* ==========================================
-     TYPE BADGES
-     ========================================== */
-  .badge-type {
-    @apply inline-block rounded-md px-2 py-0.5 text-xs font-semibold;
-  }
-
+  /* ── Type badges ────────────────────────────── */
   .badge-wettbewerb {
-    background: rgba(211, 47, 47, 0.12);
-    color: #c62828;
+    @apply inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold;
+    background: rgba(214, 48, 49, 0.1);
+    color: #b91c1c;
   }
-  .dark .badge-wettbewerb {
-    background: rgba(255, 118, 117, 0.15);
-    color: #ff7675;
-  }
+  .dark .badge-wettbewerb { background: rgba(255, 118, 117, 0.15); color: #ff7675; }
 
   .badge-anthologie {
-    background: rgba(0, 184, 148, 0.12);
-    color: #00695c;
+    @apply inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold;
+    background: rgba(0, 184, 148, 0.1);
+    color: #047857;
   }
-  .dark .badge-anthologie {
-    background: rgba(85, 239, 196, 0.15);
-    color: #55efc4;
-  }
+  .dark .badge-anthologie { background: rgba(85, 239, 196, 0.15); color: #55efc4; }
 
   .badge-zeitschrift {
+    @apply inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold;
     background: rgba(253, 203, 110, 0.2);
-    color: #e65100;
+    color: #b45309;
   }
-  .dark .badge-zeitschrift {
-    background: rgba(255, 234, 167, 0.15);
-    color: #ffeaa7;
-  }
+  .dark .badge-zeitschrift { background: rgba(255, 234, 167, 0.15); color: #fcd34d; }
 
-  /* ==========================================
-     NAVIGATION
-     ========================================== */
-  .nav-link {
-    @apply flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium
-           text-gray-700 transition-all hover:bg-gray-100
-           dark:text-gray-300 dark:hover:bg-white/5;
-  }
-
-  .nav-link.active {
-    color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 10%, transparent);
-  }
-
-  /* ==========================================
-     TYPOGRAPHY
-     ========================================== */
-  .font-mono-dates {
+  /* ── Deadline chips ─────────────────────────── */
+  .deadline-chip {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
+    @apply inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold;
   }
 
-  /* Section headers */
-  h1, h2, h3 {
-    font-family: 'Albert Sans', system-ui, sans-serif;
-    @apply tracking-tight;
+  /* ── Section dividers ───────────────────────── */
+  .section-header {
+    @apply flex items-center gap-3 mb-5;
   }
+  .section-header h2 {
+    @apply text-sm font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500;
+  }
+  .section-header::after {
+    content: '';
+    @apply flex-1 h-px bg-gray-100 dark:bg-gray-800;
+  }
+
+  /* ── Focus ring ─────────────────────────────── */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-1;
+    --tw-ring-color: var(--accent);
+  }
+
+  /* ── Line clamp util ────────────────────────── */
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+}
+
+/* ── Animations ─────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fadeIn 0.3s ease both; }
+
+/* ── Gradient text util ─────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--wine), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

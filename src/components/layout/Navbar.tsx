@@ -4,16 +4,14 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Menu, X, Sun, Moon, Home, Search, Star, Trophy, Globe, BarChart3 } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { Menu, X, Sun, Moon } from 'lucide-react'
 
 const navLinks = [
-  { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/entdecken', label: 'Entdecken', icon: Search },
-  { href: '/geplant', label: 'Geplant', icon: Globe },
-  { href: '/hall-of-fame', label: 'Hall of Fame', icon: Trophy },
-  { href: '/quellen', label: 'Quellen', icon: Globe },
-  { href: '/statistiken', label: 'Statistiken', icon: BarChart3 },
+  { href: '/', label: 'Dashboard' },
+  { href: '/entdecken', label: 'Entdecken' },
+  { href: '/geplant', label: 'Geplant' },
+  { href: '/hall-of-fame', label: 'Hall of Fame' },
+  { href: '/statistiken', label: 'Statistiken' },
 ]
 
 export function Navbar() {
@@ -21,100 +19,104 @@ export function Navbar() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
-  }
-
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/'
-    return pathname.startsWith(href)
-  }
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href)
 
   return (
-    <nav className="sticky top-0 z-40 bg-light-surface dark:bg-dark-surface border-b border-gray-200 dark:border-gray-700 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-bold text-xl text-accent-light dark:text-accent-dark hover:opacity-80 transition-opacity"
-          >
-            <span>📚</span>
-            <span className="hidden sm:inline">Literaturkompass</span>
-          </Link>
+    <>
+      {/* Thin rainbow accent bar */}
+      <div
+        className="h-[3px] w-full"
+        style={{ background: 'linear-gradient(90deg, #d63031 0%, #6c5ce7 50%, #00b894 100%)' }}
+      />
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive(href)
-                    ? 'text-accent-light dark:text-accent-dark bg-gray-100 dark:bg-gray-800'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-accent-light dark:hover:text-accent-dark hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
+      <nav className="sticky top-0 z-40 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14">
+
+            {/* Logo */}
+            <Link
+              href="/"
+              className="flex items-center gap-2 group"
+            >
+              <span
+                className="text-lg font-bold tracking-tight"
+                style={{
+                  background: 'linear-gradient(135deg, #d63031, #6c5ce7)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
               >
-                <Icon className="h-4 w-4" />
-                <span>{label}</span>
-              </Link>
-            ))}
-          </div>
+                Literaturkompass
+              </span>
+            </Link>
 
-          {/* Theme Toggle & Mobile Menu */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-              className="p-2"
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center">
+              {navLinks.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`relative px-4 py-4 text-sm font-medium transition-colors ${
+                    isActive(href)
+                      ? 'text-accent-light dark:text-accent-dark'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                  }`}
+                >
+                  {label}
+                  {isActive(href) && (
+                    <span className="absolute bottom-0 left-4 right-4 h-[2px] rounded-full bg-accent-light dark:bg-accent-dark" />
+                  )}
+                </Link>
+              ))}
+            </div>
 
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2"
-              aria-label="Toggle mobile menu"
-            >
-              {isOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </Button>
+            {/* Right side */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label="Toggle theme"
+                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                {theme === 'dark'
+                  ? <Sun className="h-4 w-4" />
+                  : <Moon className="h-4 w-4" />
+                }
+              </button>
+
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="md:hidden p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile menu */}
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-1 border-t border-gray-200 dark:border-gray-700">
-            {navLinks.map(({ href, label, icon: Icon }) => (
+          <div className="md:hidden border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-dark-surface">
+            {navLinks.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors block w-full ${
+                className={`flex items-center px-4 py-3 text-sm font-medium border-l-2 transition-colors ${
                   isActive(href)
-                    ? 'text-accent-light dark:text-accent-dark bg-gray-100 dark:bg-gray-800'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-accent-light dark:hover:text-accent-dark hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? 'border-l-accent-light dark:border-l-accent-dark text-accent-light dark:text-accent-dark bg-gray-50 dark:bg-gray-800/50'
+                    : 'border-l-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800/30'
                 }`}
               >
-                <Icon className="h-4 w-4" />
-                <span>{label}</span>
+                {label}
               </Link>
             ))}
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </>
   )
 }
