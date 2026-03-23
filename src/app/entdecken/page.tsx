@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from 'react'
 import { Search, Filter, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { CompetitionCard } from '@/components/competition/CompetitionCard'
+import { format } from 'date-fns'
+import { de } from 'date-fns/locale'
 
 interface Competition {
   id: string
   name: string
   organizer?: string | null
-  deadline: Date | null
+  deadline: string | null
   type: 'WETTBEWERB' | 'ANTHOLOGIE' | 'ZEITSCHRIFT'
   theme?: string | null
   prize?: string | null
@@ -31,11 +33,33 @@ const typeLabels: Record<string, string> = {
   ZEITSCHRIFT: 'Zeitschrift',
 }
 
-const typeColors: Record<string, string> = {
-  ALL: '',
-  WETTBEWERB: 'wine',
-  ANTHOLOGIE: 'sage',
-  ZEITSCHRIFT: 'gold',
+function groupByMonth(competitions: Competition[]): Array<{ label: string; items: Competition[] }> {
+  const monthMap = new Map<string, Competition[]>()
+  const rolling: Competition[] = []
+
+  for (const comp of competitions) {
+    if (!comp.deadline || comp.type === 'ZEITSCHRIFT') {
+      rolling.push(comp)
+    } else {
+      const d = new Date(comp.deadline)
+      const key = format(d, 'yyyy-MM')
+      if (!monthMap.has(key)) monthMap.set(key, [])
+      monthMap.get(key)!.push(comp)
+    }
+  }
+
+  const groups: Array<{ label: string; items: Competition[] }> = []
+  for (const [key, items] of monthMap) {
+    const [year, month] = key.split('-')
+    const d = new Date(parseInt(year), parseInt(month) - 1, 1)
+    groups.push({ label: format(d, 'MMMM yyyy', { locale: de }), items })
+  }
+
+  if (rolling.length > 0) {
+    groups.push({ label: 'Laufende Einreichungen', items: rolling })
+  }
+
+  return groups
 }
 
 export default function EntdeckenPage() {
@@ -56,8 +80,7 @@ export default function EntdeckenPage() {
       try {
         const params = new URLSearchParams()
         params.append('skip', skipCount.toString())
-        params.append('take', '12')
-
+        params.append('take', '24')
         if (filters.search) params.append('search', filters.search)
         if (filters.type !== 'ALL') params.append('type', filters.type)
         if (filters.hasDeadline) params.append('hasDeadline', 'true')
@@ -88,31 +111,16 @@ export default function EntdeckenPage() {
   }, [filters])
 
   const handleLoadMore = () => {
-    const newSkip = skip + 12
+    const newSkip = skip + 24
     setSkip(newSkip)
     loadCompetitions(newSkip)
   }
 
-  const handleStar = async (id: string, starred: boolean) => {
-    try {
-      await fetch(`/api/competitions/${id}/star`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ starred }),
-      })
-    } catch (error) {
-      console.error('Failed to star competition:', error)
-    }
+  const handleDismiss = (id: string) => {
+    setCompetitions((prev) => prev.filter((c) => c.id !== id))
   }
 
-  const handleDismiss = async (id: string) => {
-    setCompetitions((prev) => prev.filter((c) => c.id !== id))
-    try {
-      await fetch(`/api/competitions/${id}/dismiss`, { method: 'POST' })
-    } catch (error) {
-      console.error('Failed to dismiss competition:', error)
-    }
-  }
+  const grouped = groupByMonth(competitions)
 
   return (
     <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
@@ -120,32 +128,32 @@ export default function EntdeckenPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-1">
             <BookOpen className="h-8 w-8 text-accent-light dark:text-accent-dark" />
             <h1 className="text-3xl font-bold text-black dark:text-white tracking-tight">
               Entdecken
             </h1>
           </div>
           <p className="mt-1 text-gray-600 dark:text-gray-400 ml-11">
-            {total > 0 ? `${total} Ausschreibungen gefunden` : 'Alle verfügbaren Schreibwettbewerbe und Publikationsmöglichkeiten'}
+            {total > 0
+              ? `${total} Ausschreibungen gefunden`
+              : 'Alle verfügbaren Schreibwettbewerbe und Publikationsmöglichkeiten'}
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
-          {/* Search Bar */}
+        <div className="mb-8 space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Nach Wettbewerben, Themen oder Veranstaltern suchen..."
+              placeholder="Nach Wettbewerben, Themen oder Veranstaltern suchen…"
               value={filters.search}
               onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
               className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-black placeholder-gray-400 shadow-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-accent-light dark:border-gray-700 dark:bg-dark-surface dark:text-white dark:placeholder-gray-500 dark:focus:ring-accent-dark"
             />
           </div>
 
-          {/* Filter Tabs */}
           <div className="flex flex-wrap items-center gap-2">
             <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400 shrink-0" />
             {(Object.keys(typeLabels) as Array<FilterState['type']>).map((type) => (
@@ -176,9 +184,16 @@ export default function EntdeckenPage() {
 
         {/* Results */}
         {loading && competitions.length === 0 ? (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-48 rounded-xl bg-light-surface dark:bg-dark-surface animate-pulse" />
+          <div className="space-y-8">
+            {[...Array(2)].map((_, gi) => (
+              <div key={gi}>
+                <div className="h-6 w-32 rounded bg-gray-200 dark:bg-gray-700 animate-pulse mb-4" />
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-48 rounded-xl bg-light-surface dark:bg-dark-surface animate-pulse" />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         ) : competitions.length === 0 ? (
@@ -193,23 +208,40 @@ export default function EntdeckenPage() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {competitions.map((comp) => (
-                <CompetitionCard
-                  key={comp.id}
-                  id={comp.id}
-                  type={comp.type}
-                  name={comp.name}
-                  organizer={comp.organizer}
-                  deadline={comp.deadline ? new Date(comp.deadline) : null}
-                  theme={comp.theme}
-                  genres={comp.genres}
-                  prize={comp.prize}
-                  maxLength={comp.maxLength}
-                  url={comp.url}
-                  onStar={handleStar}
-                  onDismiss={handleDismiss}
-                />
+            {/* Month-grouped sections */}
+            <div className="space-y-10">
+              {grouped.map((group) => (
+                <section key={group.label}>
+                  {/* Month header */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-base font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      {group.label}
+                    </h2>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    <span className="text-sm text-gray-400 dark:text-gray-500">
+                      {group.items.length}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                    {group.items.map((comp) => (
+                      <CompetitionCard
+                        key={comp.id}
+                        id={comp.id}
+                        type={comp.type}
+                        name={comp.name}
+                        organizer={comp.organizer}
+                        deadline={comp.deadline ? new Date(comp.deadline) : null}
+                        theme={comp.theme}
+                        genres={comp.genres}
+                        prize={comp.prize}
+                        maxLength={comp.maxLength}
+                        url={comp.url}
+                        onDismiss={handleDismiss}
+                      />
+                    ))}
+                  </div>
+                </section>
               ))}
             </div>
 
