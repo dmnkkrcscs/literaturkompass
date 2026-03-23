@@ -114,7 +114,7 @@ function SubmitDialog({ submission, onClose, onSave }: SubmitDialogProps) {
               value={titel}
               onChange={(e) => setTitel(e.target.value)}
               placeholder="z. B. Wenn die Stille spricht"
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent"
               autoFocus
             />
           </div>
@@ -127,7 +127,7 @@ function SubmitDialog({ submission, onClose, onSave }: SubmitDialogProps) {
               value={publikation}
               onChange={(e) => setPublikation(e.target.value)}
               placeholder="z. B. DUM – Das ultimative Magazin"
-              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark"
+              className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent"
             />
           </div>
         </div>
@@ -175,7 +175,7 @@ function SubmittedCard({ sub, onZusage, onAbsage, onEdit, onDelete }: SubmittedC
         ) : (
           <h3 className="text-base font-semibold text-gray-400 dark:text-gray-500 mb-1 italic">
             Kein Titel erfasst —{' '}
-            <button onClick={() => onEdit(sub)} className="underline text-accent-light dark:text-accent-dark">
+            <button onClick={() => onEdit(sub)} className="underline text-accent-light dark:text-accent-light">
               hinzufügen
             </button>
           </h3>
@@ -355,7 +355,7 @@ function PlannedCard({ sub, onMarkSubmitted, onDelete }: PlannedCardProps) {
       className={`rounded-xl bg-white dark:bg-gray-900 border-l-4 ${typeColors[comp.type] || 'border-l-gray-300'} shadow-sm overflow-hidden`}
     >
       <div className="p-4 flex items-center gap-3">
-        <Bookmark className="h-5 w-5 text-accent-light dark:text-accent-dark shrink-0" />
+        <Bookmark className="h-5 w-5 text-accent-light dark:text-accent-light shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="font-medium text-sm text-black dark:text-white truncate">{comp.name}</p>
           {comp.organizer && (
@@ -385,7 +385,7 @@ function PlannedCard({ sub, onMarkSubmitted, onDelete }: PlannedCardProps) {
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => onMarkSubmitted(sub)}
-            className="text-xs font-medium text-accent-light dark:text-accent-dark hover:underline"
+            className="text-xs font-medium text-accent-light dark:text-accent-light hover:underline"
           >
             Eingereicht
           </button>
@@ -418,7 +418,7 @@ function SectionHeader({
     wine: 'text-wine',
     gold: 'text-gold',
     sage: 'text-sage',
-    accent: 'text-accent-light dark:text-accent-dark',
+    accent: 'text-accent-light dark:text-accent-light',
     gray: 'text-gray-500 dark:text-gray-400',
   }
 
@@ -501,11 +501,11 @@ export default function GeplantPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
+      <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
         <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="space-y-3">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-24 rounded-xl bg-light-surface dark:bg-dark-surface animate-pulse" />
+              <div key={i} className="h-24 rounded-xl bg-lit-surface dark:bg-dark-surface animate-pulse" />
             ))}
           </div>
         </div>
@@ -516,7 +516,7 @@ export default function GeplantPage() {
   const isEmpty = submissions.length === 0
 
   return (
-    <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
+    <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -537,7 +537,7 @@ export default function GeplantPage() {
             </p>
             <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
               Klicke auf „Merken" bei einer Ausschreibung in{' '}
-              <Link href="/entdecken" className="text-accent-light dark:text-accent-dark hover:underline font-medium">
+              <Link href="/entdecken" className="text-accent-light dark:text-accent-light hover:underline font-medium">
                 Entdecken
               </Link>
             </p>
@@ -595,7 +595,7 @@ export default function GeplantPage() {
                     />
                   ))}
                 </div>
-                <Link href="/entdecken" className="mt-4 flex items-center gap-1.5 text-sm text-accent-light dark:text-accent-dark hover:underline">
+                <Link href="/entdecken" className="mt-4 flex items-center gap-1.5 text-sm text-accent-light dark:text-accent-light hover:underline">
                   <Plus className="h-4 w-4" />
                   Weitere Ausschreibungen entdecken
                 </Link>
@@ -621,7 +621,7 @@ export default function GeplantPage() {
           <div className="mt-8">
             <Link
               href="/entdecken"
-              className="flex items-center gap-1.5 text-sm text-accent-light dark:text-accent-dark hover:underline"
+              className="flex items-center gap-1.5 text-sm text-accent-light dark:text-accent-light hover:underline"
             >
               <Plus className="h-4 w-4" />
               Neue Ausschreibung vormerken

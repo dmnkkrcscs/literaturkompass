@@ -30,7 +30,7 @@ export function StatsBar({
   ]
 
   return (
-    <div className="bg-light-surface dark:bg-dark-surface border-b border-gray-200 dark:border-gray-700">
+    <div className="bg-lit-surface dark:bg-dark-surface border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex flex-wrap gap-3">
           {stats.map((stat) => (

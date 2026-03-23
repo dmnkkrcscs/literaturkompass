@@ -100,12 +100,12 @@ export default function CompetitionDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
+    <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link
           href="/geplant"
-          className="mb-6 inline-flex items-center text-accent-light dark:text-accent-dark hover:opacity-80"
+          className="mb-6 inline-flex items-center text-accent-light dark:text-accent-light hover:opacity-80"
         >
           <ChevronLeft className="h-5 w-5" />
           <span>Zurück</span>
@@ -114,7 +114,7 @@ export default function CompetitionDetailPage() {
         {/* Content Sections */}
         <div className="space-y-8">
           {/* Text Upload Zone */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <section className="rounded-lg bg-lit-surface p-6 dark:bg-dark-surface">
             <h2 className="text-xl font-semibold text-black dark:text-white">
               Text Upload
             </h2>
@@ -145,27 +145,27 @@ export default function CompetitionDetailPage() {
 
                 {textAnalysis && (
                   <div className="mt-4 grid grid-cols-3 gap-4">
-                    <div className="rounded-lg bg-light-bg p-4 dark:bg-dark-bg">
+                    <div className="rounded-lg bg-lit-bg p-4 dark:bg-dark-bg">
                       <p className="text-xs text-gray-600 dark:text-gray-400">
                         Zeichen
                       </p>
-                      <p className="mt-1 text-2xl font-bold text-accent-light dark:text-accent-dark">
+                      <p className="mt-1 text-2xl font-bold text-accent-light dark:text-accent-light">
                         {textAnalysis.charCount.toLocaleString('de-DE')}
                       </p>
                     </div>
-                    <div className="rounded-lg bg-light-bg p-4 dark:bg-dark-bg">
+                    <div className="rounded-lg bg-lit-bg p-4 dark:bg-dark-bg">
                       <p className="text-xs text-gray-600 dark:text-gray-400">
                         Wörter
                       </p>
-                      <p className="mt-1 text-2xl font-bold text-accent-light dark:text-accent-dark">
+                      <p className="mt-1 text-2xl font-bold text-accent-light dark:text-accent-light">
                         {textAnalysis.wordCount.toLocaleString('de-DE')}
                       </p>
                     </div>
-                    <div className="rounded-lg bg-light-bg p-4 dark:bg-dark-bg">
+                    <div className="rounded-lg bg-lit-bg p-4 dark:bg-dark-bg">
                       <p className="text-xs text-gray-600 dark:text-gray-400">
                         Normseiten
                       </p>
-                      <p className="mt-1 text-2xl font-bold text-accent-light dark:text-accent-dark">
+                      <p className="mt-1 text-2xl font-bold text-accent-light dark:text-accent-light">
                         {textAnalysis.normseiten}
                       </p>
                     </div>
@@ -187,7 +187,7 @@ export default function CompetitionDetailPage() {
           </section>
 
           {/* Notes */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <section className="rounded-lg bg-lit-surface p-6 dark:bg-dark-surface">
             <h2 className="text-xl font-semibold text-black dark:text-white">
               Notizen
             </h2>

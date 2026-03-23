@@ -13,7 +13,7 @@ export interface CompetitionListProps {
 
 function SkeletonCard() {
   return (
-    <div className="rounded-lg bg-light-surface dark:bg-dark-surface border border-gray-200 dark:border-gray-700 border-l-4 border-l-gray-400 dark:border-l-gray-500 p-4 animate-pulse">
+    <div className="rounded-lg bg-lit-surface dark:bg-dark-surface border border-gray-200 dark:border-gray-700 border-l-4 border-l-gray-400 dark:border-l-gray-500 p-4 animate-pulse">
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -54,7 +54,7 @@ export function CompetitionList({
 
   if (!competitions || competitions.length === 0) {
     return (
-      <div className="rounded-lg bg-light-surface dark:bg-dark-surface border border-gray-200 dark:border-gray-700 p-8 text-center">
+      <div className="rounded-lg bg-lit-surface dark:bg-dark-surface border border-gray-200 dark:border-gray-700 p-8 text-center">
         <p className="text-gray-600 dark:text-gray-400">{emptyMessage}</p>
       </div>
     )

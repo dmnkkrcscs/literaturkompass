@@ -30,9 +30,9 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-light-bg dark:bg-dark-bg">
+    <main className="flex min-h-screen items-center justify-center bg-lit-bg dark:bg-dark-bg">
       <div className="w-full max-w-sm">
-        <div className="rounded-xl bg-light-surface p-8 shadow-lg dark:bg-dark-surface">
+        <div className="rounded-xl bg-lit-surface p-8 shadow-lg dark:bg-dark-surface">
           <div className="mb-8 text-center">
             <span className="text-5xl">📚</span>
             <h1 className="mt-4 text-2xl font-bold text-black dark:text-white">
@@ -60,7 +60,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || !password}
-              className="w-full rounded-lg bg-accent-light px-4 py-3 font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 dark:bg-accent-dark"
+              className="w-full rounded-lg bg-accent-light px-4 py-3 font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50 dark:bg-accent"
             >
               {loading ? 'Wird geprüft...' : 'Eintreten'}
             </button>

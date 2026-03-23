@@ -39,7 +39,7 @@ export default async function HallOfFamePage() {
   const acceptedSubmissions = await getAcceptedSubmissions()
 
   return (
-    <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
+    <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12 text-center">
@@ -67,7 +67,7 @@ export default async function HallOfFamePage() {
             {acceptedSubmissions.map((submission) => (
               <div
                 key={submission.id}
-                className="rounded-lg border-2 border-gold bg-light-surface p-6 dark:bg-dark-surface"
+                className="rounded-lg border-2 border-gold bg-lit-surface p-6 dark:bg-dark-surface"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

@@ -93,7 +93,7 @@ export default async function StatistikenPage() {
   )
 
   return (
-    <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
+    <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -107,25 +107,25 @@ export default async function StatistikenPage() {
 
         {/* Summary Stats */}
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-4">
-          <div className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <div className="rounded-lg bg-lit-surface p-6 dark:bg-dark-surface">
             <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Wettbewerbe
             </div>
-            <div className="mt-2 text-3xl font-bold text-accent-light dark:text-accent-dark">
+            <div className="mt-2 text-3xl font-bold text-accent-light dark:text-accent-light">
               {stats.totalCompetitions}
             </div>
           </div>
 
-          <div className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <div className="rounded-lg bg-lit-surface p-6 dark:bg-dark-surface">
             <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Einreichungen
             </div>
-            <div className="mt-2 text-3xl font-bold text-accent-light dark:text-accent-dark">
+            <div className="mt-2 text-3xl font-bold text-accent-light dark:text-accent-light">
               {stats.totalSubmissions}
             </div>
           </div>
 
-          <div className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <div className="rounded-lg bg-lit-surface p-6 dark:bg-dark-surface">
             <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Angenommen
             </div>
@@ -134,7 +134,7 @@ export default async function StatistikenPage() {
             </div>
           </div>
 
-          <div className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <div className="rounded-lg bg-lit-surface p-6 dark:bg-dark-surface">
             <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Erfolgsrate
             </div>
@@ -147,7 +147,7 @@ export default async function StatistikenPage() {
         {/* Charts */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Wettbewerbe nach Typ */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <section className="rounded-lg bg-lit-surface p-6 dark:bg-dark-surface">
             <h2 className="text-lg font-semibold text-black dark:text-white">
               Wettbewerbe nach Typ
             </h2>
@@ -165,7 +165,7 @@ export default async function StatistikenPage() {
                   </div>
                   <div className="mt-1 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
                     <div
-                      className="h-full rounded-full bg-accent-light dark:bg-accent-dark"
+                      className="h-full rounded-full bg-accent-light dark:bg-accent"
                       style={{
                         width: `${(comp.count / stats.totalCompetitions) * 100}%`,
                       }}
@@ -177,7 +177,7 @@ export default async function StatistikenPage() {
           </section>
 
           {/* Einreichungen pro Monat */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <section className="rounded-lg bg-lit-surface p-6 dark:bg-dark-surface">
             <h2 className="text-lg font-semibold text-black dark:text-white">
               Einreichungen pro Monat
             </h2>

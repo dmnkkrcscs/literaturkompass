@@ -136,7 +136,7 @@ export default async function DashboardPage() {
   ])
 
   return (
-    <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
+    <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
 
         {/* ── Hero heading ── */}
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
                 <Clock className="h-4 w-4 text-wine" />
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Nächste Deadlines</h2>
               </div>
-              <Link href="/entdecken" className="text-xs text-accent-light dark:text-accent-dark hover:underline flex items-center gap-0.5">
+              <Link href="/entdecken" className="text-xs text-accent-light dark:text-accent-light hover:underline flex items-center gap-0.5">
                 alle <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
@@ -217,10 +217,10 @@ export default async function DashboardPage() {
           <section className="rounded-2xl bg-white dark:bg-dark-surface shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-accent-light dark:text-accent-dark" />
+                <Sparkles className="h-4 w-4 text-accent-light dark:text-accent-light" />
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Neue Funde</h2>
               </div>
-              <Link href="/entdecken" className="text-xs text-accent-light dark:text-accent-dark hover:underline flex items-center gap-0.5">
+              <Link href="/entdecken" className="text-xs text-accent-light dark:text-accent-light hover:underline flex items-center gap-0.5">
                 alle <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
@@ -259,7 +259,7 @@ export default async function DashboardPage() {
         {/* ── KI-Empfehlungen ── */}
         <section className="rounded-2xl bg-white dark:bg-dark-surface shadow-sm overflow-hidden">
           <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100 dark:border-gray-800">
-            <Sparkles className="h-4 w-4 text-accent-light dark:text-accent-dark" />
+            <Sparkles className="h-4 w-4 text-accent-light dark:text-accent-light" />
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white">KI-Empfehlungen</h2>
             {recs.length > 0 && (
               <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
@@ -286,7 +286,7 @@ export default async function DashboardPage() {
                   </p>
                   <Link
                     href="/entdecken"
-                    className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-accent-light dark:text-accent-dark hover:underline"
+                    className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-accent-light dark:text-accent-light hover:underline"
                   >
                     Ausschreibungen entdecken <ArrowRight className="h-3 w-3" />
                   </Link>
@@ -298,13 +298,13 @@ export default async function DashboardPage() {
               {recs.map((rec) => {
                 if (!rec.competition) return null
                 const tc = typeColors[rec.competition.type]
-                const pct = Math.round((rec.score ?? 0) * 100)
+                const pct = Math.round(rec.score ?? 0)
                 return (
                   <div key={rec.competitionId} className="px-6 py-4">
                     <div className="flex items-start gap-3">
                       {/* Score ring */}
                       <div className="shrink-0 flex flex-col items-center">
-                        <span className="font-mono text-lg font-bold text-accent-light dark:text-accent-dark">
+                        <span className="font-mono text-lg font-bold text-accent-light dark:text-accent-light">
                           {pct}
                         </span>
                         <span className="text-[10px] text-gray-400 dark:text-gray-500 leading-none">%</span>
@@ -320,15 +320,15 @@ export default async function DashboardPage() {
                         <p className="text-sm font-semibold text-gray-900 dark:text-white leading-snug truncate">
                           {rec.competition.name}
                         </p>
-                        {rec.reason && (
+                        {rec.reasoning && (
                           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed line-clamp-2">
-                            {rec.reason}
+                            {rec.reasoning}
                           </p>
                         )}
                       </div>
                       <Link
                         href="/entdecken"
-                        className="shrink-0 mt-0.5 text-xs text-accent-light dark:text-accent-dark hover:underline"
+                        className="shrink-0 mt-0.5 text-xs text-accent-light dark:text-accent-light hover:underline"
                       >
                         <ArrowRight className="h-4 w-4" />
                       </Link>

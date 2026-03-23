@@ -32,7 +32,7 @@ export function Card({
 }: CardProps) {
   return (
     <div
-      className={`rounded-lg bg-light-surface dark:bg-dark-surface border border-gray-200 dark:border-gray-700 ${borderLeftColor !== 'none' ? `border-l-4 ${borderColors[borderLeftColor]}` : ''} ${className}`}
+      className={`rounded-lg bg-lit-surface dark:bg-dark-surface border border-gray-200 dark:border-gray-700 ${borderLeftColor !== 'none' ? `border-l-4 ${borderColors[borderLeftColor]}` : ''} ${className}`}
     >
       {header && (
         <div className={`${paddingClasses[padding]} border-b border-gray-200 dark:border-gray-700`}>

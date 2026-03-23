@@ -32,7 +32,7 @@ html {
 }
 
 body {
-  @apply bg-light-bg text-gray-900 dark:bg-dark-bg dark:text-gray-100;
+  @apply bg-lit-bg text-gray-900 dark:bg-dark-bg dark:text-gray-100;
   font-family: 'Albert Sans', system-ui, sans-serif;
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;

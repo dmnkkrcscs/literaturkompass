@@ -11,9 +11,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantClasses = {
-  primary: 'bg-accent-light dark:bg-accent-dark text-white hover:opacity-90 active:opacity-80',
-  secondary: 'bg-light-surface dark:bg-dark-surface text-black dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700',
-  ghost: 'text-accent-light dark:text-accent-dark hover:bg-light-surface dark:hover:bg-dark-surface',
+  primary: 'bg-accent-light dark:bg-accent text-white hover:opacity-90 active:opacity-80',
+  secondary: 'bg-lit-surface dark:bg-dark-surface text-black dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700',
+  ghost: 'text-accent-light dark:text-accent-light hover:bg-lit-surface dark:hover:bg-dark-surface',
   danger: 'bg-red-500 text-white hover:bg-red-600 active:bg-red-700',
 }
 

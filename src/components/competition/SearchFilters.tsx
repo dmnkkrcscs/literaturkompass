@@ -111,7 +111,7 @@ export function SearchFilters({
   }, [onFilterChange])
 
   return (
-    <div className="space-y-4 bg-light-surface dark:bg-dark-surface rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+    <div className="space-y-4 bg-lit-surface dark:bg-dark-surface rounded-lg border border-gray-200 dark:border-gray-700 p-4">
       {/* Search Bar */}
       <div className="flex gap-2">
         <div className="flex-1 relative">
@@ -121,7 +121,7 @@ export function SearchFilters({
             placeholder="Suche nach Name, Thema..."
             value={filters.search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-light-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-accent-light dark:focus:border-accent-dark"
+            className="w-full pl-10 pr-4 py-2 rounded-lg bg-lit-bg dark:bg-dark-bg border border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-accent-light dark:focus:border-accent-dark"
           />
         </div>
         <Button

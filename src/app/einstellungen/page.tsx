@@ -1,16 +1,23 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
-import { Download, Upload, Moon, Sun } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Download, Upload, Moon, Sun, Send, CheckCircle, XCircle, RotateCw } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 export default function EinstellungenPage() {
   const { theme, setTheme } = useTheme()
   const [exportLoading, setExportLoading] = useState(false)
   const [importLoading, setImportLoading] = useState(false)
-  const [telegramConnected, setTelegramConnected] = useState(false)
+  const [telegramConfigured, setTelegramConfigured] = useState<boolean | null>(null)
+  const [telegramTest, setTelegramTest] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle')
+  const [telegramError, setTelegramError] = useState('')
+
+  useEffect(() => {
+    fetch('/api/telegram')
+      .then((r) => r.json())
+      .then((d) => setTelegramConfigured(d.configured ?? false))
+      .catch(() => setTelegramConfigured(false))
+  }, [])
 
   const handleExportData = async () => {
     setExportLoading(true)
@@ -37,201 +44,189 @@ export default function EinstellungenPage() {
   const handleImportV1Data = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
     setImportLoading(true)
     try {
       const formData = new FormData()
       formData.append('file', file)
-
-      const response = await fetch('/api/import/v1', {
-        method: 'POST',
-        body: formData,
-      })
-
+      const response = await fetch('/api/import/v1', { method: 'POST', body: formData })
       if (response.ok) {
         const result = await response.json()
         alert(`${result.count} Einträge importiert`)
       }
-    } catch (error) {
-      console.error('Import failed:', error)
+    } catch {
       alert('Import fehlgeschlagen')
     } finally {
       setImportLoading(false)
     }
   }
 
+  const handleTelegramTest = async () => {
+    setTelegramTest('loading')
+    setTelegramError('')
+    try {
+      const res = await fetch('/api/telegram', { method: 'POST' })
+      const data = await res.json()
+      if (data.success) {
+        setTelegramTest('ok')
+      } else {
+        setTelegramTest('error')
+        setTelegramError(data.error || 'Unbekannter Fehler')
+      }
+    } catch {
+      setTelegramTest('error')
+      setTelegramError('Verbindungsfehler')
+    }
+  }
+
   return (
-    <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
-      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
+      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black dark:text-white">
-            Einstellungen
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Konfigurieren Sie Ihre Präferenzen
-          </p>
+          <p className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">Konfiguration</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Einstellungen</h1>
         </div>
 
-        {/* Settings Sections */}
-        <div className="space-y-6">
-          {/* Theme Settings */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
-            <h2 className="text-xl font-semibold text-black dark:text-white">
-              Erscheinungsbild
-            </h2>
+        <div className="space-y-4">
 
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-black dark:text-white">
-                    Theme
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Wählen Sie zwischen hellem und dunklem Theme
-                  </p>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setTheme('light')}
-                    className={`rounded-lg p-2 transition-colors ${
-                      theme === 'light'
-                        ? 'bg-accent-light text-white'
-                        : 'bg-light-surface dark:bg-dark-bg text-black dark:text-white'
-                    }`}
-                  >
-                    <Sun className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => setTheme('dark')}
-                    className={`rounded-lg p-2 transition-colors ${
-                      theme === 'dark'
-                        ? 'bg-accent-dark text-white'
-                        : 'bg-light-surface dark:bg-dark-bg text-black dark:text-white'
-                    }`}
-                  >
-                    <Moon className="h-5 w-5" />
-                  </button>
-                </div>
+          {/* ── Erscheinungsbild ── */}
+          <section className="rounded-2xl bg-white dark:bg-dark-surface shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Erscheinungsbild</h2>
+            </div>
+            <div className="px-6 py-5 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Theme</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Hell oder dunkel</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setTheme('light')}
+                  className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+                    theme === 'light'
+                      ? 'bg-accent text-white shadow-sm'
+                      : 'bg-lit-muted dark:bg-dark-muted text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-muted/80'
+                  }`}
+                >
+                  <Sun className="h-4 w-4" />
+                  Hell
+                </button>
+                <button
+                  onClick={() => setTheme('dark')}
+                  className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+                    theme === 'dark'
+                      ? 'bg-accent text-white shadow-sm'
+                      : 'bg-lit-muted dark:bg-dark-muted text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-muted/80'
+                  }`}
+                >
+                  <Moon className="h-4 w-4" />
+                  Dunkel
+                </button>
               </div>
             </div>
           </section>
 
-          {/* Telegram Settings */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
-            <h2 className="text-xl font-semibold text-black dark:text-white">
-              Benachrichtigungen
-            </h2>
+          {/* ── Telegram ── */}
+          <section className="rounded-2xl bg-white dark:bg-dark-surface shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Telegram-Benachrichtigungen</h2>
+              {telegramConfigured === null ? (
+                <span className="text-xs text-gray-400">Prüfe…</span>
+              ) : telegramConfigured ? (
+                <span className="flex items-center gap-1 text-xs font-medium text-sage">
+                  <CheckCircle className="h-3.5 w-3.5" /> Konfiguriert
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-xs font-medium text-gray-400">
+                  <XCircle className="h-3.5 w-3.5" /> Nicht konfiguriert
+                </span>
+              )}
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Der Literaturkompass kann dir über einen Telegram-Bot Benachrichtigungen schicken — bei neuen Ausschreibungen, nahenden Deadlines oder KI-Empfehlungen.
+              </p>
 
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-black dark:text-white">
-                    Telegram Bot
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Erhalten Sie Benachrichtigungen über neue Wettbewerbe und Deadline-Erinnerungen
-                  </p>
-                </div>
-
-                <div>
-                  {telegramConnected ? (
-                    <Badge variant="sage">Verbunden</Badge>
-                  ) : (
-                    <Badge variant="default">Nicht verbunden</Badge>
-                  )}
+              <div className="rounded-xl bg-lit-muted dark:bg-dark-muted px-5 py-4 text-sm space-y-2">
+                <p className="font-medium text-gray-800 dark:text-gray-200 text-xs uppercase tracking-wider">So richtest du es ein</p>
+                <ol className="text-gray-600 dark:text-gray-400 space-y-1.5 text-xs">
+                  <li><span className="font-mono text-accent">1.</span> Schreibe auf Telegram: <span className="font-mono text-accent">@BotFather</span> → <span className="font-mono">/newbot</span></li>
+                  <li><span className="font-mono text-accent">2.</span> Kopiere den <strong>Bot Token</strong></li>
+                  <li><span className="font-mono text-accent">3.</span> Sende dem Bot eine Nachricht, rufe dann <span className="font-mono text-accent">@userinfobot</span> auf für deine Chat-ID</li>
+                  <li><span className="font-mono text-accent">4.</span> Trage in <strong>Coolify → Environment Variables</strong> ein:</li>
+                </ol>
+                <div className="rounded-lg bg-dark-bg/80 dark:bg-dark-bg px-4 py-2.5 font-mono text-xs text-gray-300 space-y-1">
+                  <p>TELEGRAM_BOT_TOKEN=<span className="text-gold">1234567890:ABC...</span></p>
+                  <p>TELEGRAM_CHAT_ID=<span className="text-gold">123456789</span></p>
                 </div>
               </div>
 
-              {!telegramConnected && (
-                <Button variant="secondary" className="w-full">
-                  Telegram Bot verbinden
-                </Button>
+              {telegramConfigured && (
+                <div>
+                  <button
+                    onClick={handleTelegramTest}
+                    disabled={telegramTest === 'loading'}
+                    className="flex items-center gap-2 rounded-xl bg-accent/10 px-4 py-2.5 text-sm font-medium text-accent hover:bg-accent/20 disabled:opacity-50 transition-all"
+                  >
+                    {telegramTest === 'loading'
+                      ? <RotateCw className="h-4 w-4 animate-spin" />
+                      : <Send className="h-4 w-4" />
+                    }
+                    Testnachricht senden
+                  </button>
+                  {telegramTest === 'ok' && (
+                    <p className="mt-2 text-xs text-sage flex items-center gap-1">
+                      <CheckCircle className="h-3.5 w-3.5" /> Nachricht erfolgreich gesendet!
+                    </p>
+                  )}
+                  {telegramTest === 'error' && (
+                    <p className="mt-2 text-xs text-red-500">{telegramError}</p>
+                  )}
+                </div>
               )}
             </div>
           </section>
 
-          {/* Data Management */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
-            <h2 className="text-xl font-semibold text-black dark:text-white">
-              Datenverwaltung
-            </h2>
-
-            <div className="mt-4 space-y-4">
-              {/* Export */}
-              <div>
-                <p className="font-medium text-black dark:text-white">
-                  Daten exportieren
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Laden Sie Ihre Daten als JSON-Datei herunter
-                </p>
-
-                <Button
-                  onClick={handleExportData}
-                  loading={exportLoading}
-                  variant="secondary"
-                  className="mt-3"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Exportieren
-                </Button>
-              </div>
-
-              {/* Import */}
-              <div>
-                <p className="font-medium text-black dark:text-white">
-                  v1 Daten importieren
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Importieren Sie Ihre Daten aus Literaturkompass v1
-                </p>
-
-                <div className="mt-3">
-                  <label className="block">
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleImportV1Data}
-                      disabled={importLoading}
-                      className="hidden"
-                    />
-                    <Button
-                      variant="secondary"
-                      loading={importLoading}
-                      className="cursor-pointer"
-                    >
-                      <Upload className="mr-2 h-4 w-4" />
-                      JSON auswählen
-                    </Button>
-                  </label>
+          {/* ── Datenverwaltung ── */}
+          <section className="rounded-2xl bg-white dark:bg-dark-surface shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Datenverwaltung</h2>
+            </div>
+            <div className="px-6 py-5 space-y-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Daten exportieren</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Alle Daten als JSON-Datei</p>
                 </div>
-
-                <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                  Hinweis: Ein Migrations-Script steht zur Verfügung, um Ihre v1-Daten zu konvertieren.
-                  Weitere Informationen finden Sie in der Dokumentation.
-                </p>
+                <button
+                  onClick={handleExportData}
+                  disabled={exportLoading}
+                  className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-dark-border px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-muted disabled:opacity-50 transition-colors"
+                >
+                  {exportLoading ? <RotateCw className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                  Exportieren
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200">v1 Daten importieren</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">JSON-Export aus Literaturkompass v1</p>
+                </div>
+                <label className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-dark-border px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-muted cursor-pointer transition-colors">
+                  {importLoading ? <RotateCw className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  JSON auswählen
+                  <input type="file" accept=".json" onChange={handleImportV1Data} disabled={importLoading} className="hidden" />
+                </label>
               </div>
             </div>
           </section>
 
-          {/* About */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
-            <h2 className="text-xl font-semibold text-black dark:text-white">
-              Über
-            </h2>
+          {/* ── About ── */}
+          <div className="px-2 py-3 text-xs text-gray-400 dark:text-gray-600 text-center">
+            Literaturkompass v2.0 · KI-gestützte Wettbewerbsverwaltung
+          </div>
 
-            <div className="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <p>
-                <strong>Literaturkompass</strong> v2.0
-              </p>
-              <p>
-                Eine KI-gestützte Plattform zur Entdeckung und Verwaltung von
-                Schreibwettbewerben.
-              </p>
-            </div>
-          </section>
         </div>
       </div>
     </main>

@@ -157,7 +157,7 @@ export function CompetitionCard({
             {config.label}
           </span>
           {relevanceScore && relevanceScore > 0.5 && (
-            <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold bg-accent-light/10 dark:bg-accent-dark/10 text-accent-light dark:text-accent-dark">
+            <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold bg-accent-light/10 dark:bg-accent/10 text-accent-light dark:text-accent-light">
               ✦ {(relevanceScore * 100).toFixed(0)}% Match
             </span>
           )}
@@ -213,7 +213,7 @@ export function CompetitionCard({
           disabled={loadingPlan}
           className={`flex items-center gap-1.5 text-xs font-medium transition-all rounded-lg px-3 py-1.5 ${
             isPlanned
-              ? 'bg-accent-light text-white dark:bg-accent-dark dark:text-dark-bg'
+              ? 'bg-accent-light text-white dark:bg-accent dark:text-dark-bg'
               : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
           }`}
         >
@@ -225,7 +225,7 @@ export function CompetitionCard({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-auto flex items-center gap-1 text-xs font-medium text-accent-light dark:text-accent-dark hover:underline"
+          className="ml-auto flex items-center gap-1 text-xs font-medium text-accent-light dark:text-accent-light hover:underline"
         >
           Zur Ausschreibung
           <ExternalLink className="h-3 w-3" />

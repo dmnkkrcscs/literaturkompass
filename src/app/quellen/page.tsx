@@ -103,7 +103,7 @@ export default function QuellenPage() {
   }
 
   return (
-    <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
+    <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
@@ -125,7 +125,7 @@ export default function QuellenPage() {
         {showAddForm && (
           <form
             onSubmit={handleAddSource}
-            className="mb-8 rounded-lg bg-light-surface p-6 dark:bg-dark-surface"
+            className="mb-8 rounded-lg bg-lit-surface p-6 dark:bg-dark-surface"
           >
             <div className="space-y-4">
               <div>
@@ -190,7 +190,7 @@ export default function QuellenPage() {
             {sources.map((source) => (
               <div
                 key={source.id}
-                className="rounded-lg border border-gray-200 bg-light-surface p-4 dark:border-gray-700 dark:bg-dark-surface"
+                className="rounded-lg border border-gray-200 bg-lit-surface p-4 dark:border-gray-700 dark:bg-dark-surface"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
