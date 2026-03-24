@@ -23,6 +23,36 @@ interface Recommendation {
   competition?: CompetitionDisplay & { theme?: string | null; url?: string }
 }
 
+// ─── Background cleanup ────────────────────────────────────────────────────────
+
+/**
+ * Runs silently on every dashboard load.
+ * Deletes expired competitions that have no starring and no submissions.
+ * Also marks past-deadline ACTIVE competitions as EXPIRED.
+ */
+async function runCleanup() {
+  try {
+    const now = new Date()
+    // Mark ACTIVE → EXPIRED for all past-deadline competitions
+    await db.competition.updateMany({
+      where: { deadline: { lt: now }, status: 'ACTIVE' },
+      data: { status: 'EXPIRED' },
+    })
+    // Hard-delete expired, unstarred competitions with no submissions
+    const toDelete = await db.competition.findMany({
+      where: { deadline: { lt: now }, starred: false, submissions: { none: {} } },
+      select: { id: true },
+    })
+    if (toDelete.length > 0) {
+      await db.competition.deleteMany({
+        where: { id: { in: toDelete.map((c) => c.id) } },
+      })
+    }
+  } catch {
+    // Non-critical — never block page render
+  }
+}
+
 // ─── Data fetching ─────────────────────────────────────────────────────────────
 
 async function getStats() {
@@ -128,12 +158,14 @@ function DeadlinePill({ deadline }: { deadline: Date }) {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function DashboardPage() {
+  // Run cleanup in parallel with data fetching — fire and don't block
   const [stats, deadlines, latest, recs] = await Promise.all([
+    runCleanup(),
     getStats(),
     getUpcomingDeadlines(),
     getLatestCompetitions(),
     getRecommendationsServer(),
-  ])
+  ]).then(([, s, d, l, r]) => [s, d, l, r])
 
   return (
     <main className="min-h-screen bg-lit-bg dark:bg-dark-bg">
