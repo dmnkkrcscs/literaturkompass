@@ -1,0 +1,34 @@
+[
+    {
+        "id": "sub-dum-winken",
+        "name": "DUM – winken",
+        "title": "Seit du vergisst.",
+        "theme": "winken",
+        "publication": "DUM – Das ultimative Magazin",
+        "date": "2026-01-31"
+    },
+    {
+        "id": "sub-moelltal-grenzenlos",
+        "name": "Mölltaler Geschichten Festival – grenzenlos",
+        "title": "Fahr einfach.",
+        "theme": "grenzenlos",
+        "publication": "Mölltaler Geschichten Festival",
+        "date": "2026-01-31"
+    },
+    {
+        "id": "sub-etcetera-naechtliches",
+        "name": "etcetera – Nächtliches",
+        "title": "Temporäre Freiheit.",
+        "theme": "Nächtliches",
+        "publication": "etcetera",
+        "date": "2026-01-31"
+    },
+    {
+        "id": "sub-morgenschtean-neiche-fetzn",
+        "name": "morgenschtean – Neiche Fetzn, oide Hådern",
+        "title": "Des oide Büdl im Spürgi",
+        "theme": "Neiche Fetzn, oide Hådern",
+        "publication": "morgenschtean",
+        "date": "2026-03-05"
+    }
+]
