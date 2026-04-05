@@ -38,7 +38,6 @@
     "minio": "^7.1.0",
     "zod": "^3.22.0",
     "lucide-react": "^0.344.0",
-    "@hello-pangea/dnd": "^16.5.0",
     "date-fns": "^3.3.0",
     "next-themes": "^0.2.1"
   },
