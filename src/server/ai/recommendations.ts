@@ -27,7 +27,7 @@ NUR das JSON-Array, keine andere Formatierung.`
 export async function generateRecommendations(): Promise<AiRecommendation[]> {
   try {
     // Build user profile from submission history
-    const [submissions, accepted, feedback, starred] = await Promise.all([
+    const [submissions, accepted, feedback, starred, textsWithContent] = await Promise.all([
       db.submission.findMany({
         include: { competition: { select: { name: true, type: true, theme: true, genres: true } } },
         orderBy: { createdAt: 'desc' },
@@ -47,6 +47,12 @@ export async function generateRecommendations(): Promise<AiRecommendation[]> {
         where: { starred: true, dismissed: false },
         select: { name: true, type: true, theme: true, genres: true },
       }),
+      db.submission.findMany({
+        where: { textContent: { not: null } },
+        select: { textContent: true, title: true },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+      }),
     ])
 
     // Build profile text
@@ -63,6 +69,16 @@ export async function generateRecommendations(): Promise<AiRecommendation[]> {
     if (starredThemes) profile += `Interessante Themen: ${starredThemes}\n`
     profile += `Einreichungen gesamt: ${submissions.length}, Zusagen: ${accepted.length}\n`
     if (dismissedReasons) profile += `Nicht interessiert an: ${dismissedReasons}\n`
+
+    // Add writing style analysis from submitted texts
+    if (textsWithContent.length > 0) {
+      profile += `\nTextproben des Autors:\n`
+      for (const t of textsWithContent) {
+        const snippet = (t.textContent || '').substring(0, 500)
+        profile += `--- "${t.title || 'Ohne Titel'}" (Auszug) ---\n${snippet}\n\n`
+      }
+    }
+
     if (!profile) profile = 'Neuer Autor, noch keine Einreichungen. Empfehle vielfältige, zugängliche Wettbewerbe.\n'
 
     // Get competitions to recommend

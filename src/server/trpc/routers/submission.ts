@@ -165,6 +165,7 @@ export const submissionRouter = router({
         id: z.string(),
         title: z.string().optional(),
         notes: z.string().nullable().optional(),
+        textContent: z.string().nullable().optional(),
         submittedAt: z.date().nullable().optional(),
         responseAt: z.date().nullable().optional(),
         publishedUrl: z.string().nullable().optional(),

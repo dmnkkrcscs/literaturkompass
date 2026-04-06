@@ -63,23 +63,11 @@ export async function scheduleDailyCrawl(): Promise<void> {
 }
 
 /**
- * Schedule deadline reminders every 6 hours
+ * @deprecated Deadline reminders are now included in the daily digest
  */
 export async function scheduleDeadlineReminders(): Promise<void> {
-  const queue = initializeReminderQueue()
-  const repeatableJobs = await queue.getRepeatableJobs()
-  for (const job of repeatableJobs) {
-    if (job.name === 'check-deadlines') {
-      await queue.removeRepeatableByKey(job.key)
-    }
-  }
-
-  await queue.add('check-deadlines', {}, {
-    repeat: { pattern: '0 */6 * * *' },
-    attempts: 2,
-    backoff: { type: 'exponential', delay: 2000 },
-  })
-  console.log('[Scheduler] Deadline reminder check scheduled every 6 hours')
+  // Disabled: deadline info is included in the daily digest at 09:00
+  console.log('[Scheduler] Deadline reminders disabled (included in daily digest)')
 }
 
 /**

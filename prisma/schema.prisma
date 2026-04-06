@@ -144,6 +144,7 @@ model Submission {
 
   title               String?           // Titel des eingereichten Textes
   publishedUrl        String?           // Link zur Veröffentlichung (Hall of Fame)
+  textContent         String?           // Eingereichten Text (für KI-Stilanalyse)
 
   documentUrl         String?
   documentName        String?
