@@ -3,6 +3,7 @@
 import { trpc } from '@/lib/trpc'
 import { RefreshCw, Sparkles, TrendingUp, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { formatDateShort } from '@/lib/utils'
 
 export function AiMessage() {
   const { data, isLoading, refetch } = trpc.ai.dashboardMessage.useQuery(undefined, {
@@ -123,7 +124,7 @@ export function AiRecommendations() {
                   </p>
                   <div className="mt-1 flex items-center gap-3 text-xs text-gray-400">
                     {rec.deadline && (
-                      <span>Deadline: {new Date(rec.deadline).toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                      <span>Deadline: {formatDateShort(new Date(rec.deadline))}</span>
                     )}
                     {rec.theme && <span>{rec.theme}</span>}
                   </div>

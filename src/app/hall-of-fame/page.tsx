@@ -1,9 +1,8 @@
 'use client'
 
 import { trpc } from '@/lib/trpc'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
 import Link from 'next/link'
+import { formatDateShort } from '@/lib/utils'
 import { Trophy, ExternalLink, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useToast } from '@/components/ui/Toast'
@@ -102,12 +101,12 @@ export default function HallOfFamePage() {
                   <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                     {sub.submittedAt && (
                       <span>
-                        Eingereicht: {format(new Date(sub.submittedAt), 'dd. MMM yyyy', { locale: de })}
+                        Eingereicht: {formatDateShort(new Date(sub.submittedAt))}
                       </span>
                     )}
                     {sub.responseAt && (
                       <span className="font-medium text-amber-600 dark:text-amber-400">
-                        Angenommen: {format(new Date(sub.responseAt), 'dd. MMM yyyy', { locale: de })}
+                        Angenommen: {formatDateShort(new Date(sub.responseAt))}
                       </span>
                     )}
                   </div>

@@ -1,5 +1,6 @@
 import { anthropic } from './client'
 import { db } from '@/lib/db'
+import { formatDateDE, daysUntil } from '@/lib/utils'
 
 const DASHBOARD_SYSTEM_PROMPT = `Du bist der Literaturkompass – ein warmherziger, begeisterter Literatur-Assistent. Deine Aufgabe ist es, dem Autor eine kurze, motivierende Nachricht zu schreiben.
 
@@ -48,16 +49,13 @@ export async function generateDashboardMessage(): Promise<string> {
       db.submission.count({ where: { status: 'SUBMITTED' } }),
     ])
 
-    const formatDate = (d: Date) =>
-      new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'long' }).format(d)
-
-    let context = `Heute ist ${formatDate(now)}.\n\n`
+    let context = `Heute ist ${formatDateDE(now)}.\n\n`
 
     if (upcomingStarred.length > 0) {
       context += `Geplante Einreichungen mit nahenden Deadlines:\n`
       for (const c of upcomingStarred) {
-        const days = Math.ceil((c.deadline!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-        context += `- "${c.name}" (Deadline: ${formatDate(c.deadline!)}, noch ${days} Tage)${c.theme ? ` – Thema: ${c.theme}` : ''}\n`
+        const days = daysUntil(c.deadline!)
+        context += `- "${c.name}" (Deadline: ${formatDateDE(c.deadline!)}, noch ${days} Tage)${c.theme ? ` – Thema: ${c.theme}` : ''}\n`
       }
       context += '\n'
     }
@@ -65,7 +63,7 @@ export async function generateDashboardMessage(): Promise<string> {
     if (newCompetitions.length > 0) {
       context += `Neue Ausschreibungen der letzten 48 Stunden:\n`
       for (const c of newCompetitions) {
-        context += `- "${c.name}"${c.theme ? ` – ${c.theme}` : ''}${c.deadline ? ` (Deadline: ${formatDate(c.deadline)})` : ''}\n`
+        context += `- "${c.name}"${c.theme ? ` – ${c.theme}` : ''}${c.deadline ? ` (Deadline: ${formatDateDE(c.deadline)})` : ''}\n`
       }
       context += '\n'
     }

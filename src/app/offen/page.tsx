@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { trpc } from '@/lib/trpc'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
+import { daysSince, formatDateShort } from '@/lib/utils'
 import Link from 'next/link'
 import { Clock, Check, X, ChevronDown, ChevronUp, FileText, Pencil } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
@@ -12,9 +11,8 @@ import { useToast } from '@/components/ui/Toast'
 
 export default function OffenPage() {
   const { toast } = useToast()
-  const [publishedUrlInput, setPublishedUrlInput] = useState<string | null>(null)
+  const [acceptingId, setAcceptingId] = useState<string | null>(null)
   const [publishedUrlValue, setPublishedUrlValue] = useState('')
-  const [activeSubmissionId, setActiveSubmissionId] = useState<string | null>(null)
   const [expandedText, setExpandedText] = useState<string | null>(null)
   const [textInputs, setTextInputs] = useState<Record<string, string>>({})
   const [editingTitle, setEditingTitle] = useState<string | null>(null)
@@ -26,8 +24,7 @@ export default function OffenPage() {
     onSuccess: (data) => {
       const status = data.status === 'ACCEPTED' ? 'Zusage' : 'Absage'
       toast(`${status} gespeichert!`, data.status === 'ACCEPTED' ? 'success' : 'info')
-      setActiveSubmissionId(null)
-      setPublishedUrlInput(null)
+      setAcceptingId(null)
       refetch()
     },
   })
@@ -40,15 +37,14 @@ export default function OffenPage() {
   })
 
   const handleAccept = (id: string) => {
-    setActiveSubmissionId(id)
-    setPublishedUrlInput(id)
+    setAcceptingId(id)
     setPublishedUrlValue('')
   }
 
   const confirmAccept = () => {
-    if (!activeSubmissionId) return
+    if (!acceptingId) return
     markResultMutation.mutate({
-      id: activeSubmissionId,
+      id: acceptingId,
       status: 'ACCEPTED',
       publishedUrl: publishedUrlValue || undefined,
     })
@@ -101,9 +97,7 @@ export default function OffenPage() {
         ) : (
           <div className="space-y-4">
             {submissions.map((sub: any) => {
-              const daysWaiting = sub.submittedAt
-                ? Math.floor((Date.now() - new Date(sub.submittedAt).getTime()) / (1000 * 60 * 60 * 24))
-                : 0
+              const daysWaiting = sub.submittedAt ? daysSince(new Date(sub.submittedAt)) : 0
               const hasText = !!sub.textContent || (textInputs[sub.id] !== undefined && textInputs[sub.id] !== '')
               const isExpanded = expandedText === sub.id
 
@@ -164,7 +158,7 @@ export default function OffenPage() {
                         <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                           {sub.submittedAt && (
                             <span>
-                              Eingereicht: {format(new Date(sub.submittedAt), 'dd. MMM yyyy', { locale: de })}
+                              Eingereicht: {formatDateShort(new Date(sub.submittedAt))}
                             </span>
                           )}
                           <Badge variant="default">
@@ -196,7 +190,7 @@ export default function OffenPage() {
                     </div>
 
                     {/* Published URL input for acceptance */}
-                    {publishedUrlInput === sub.id && (
+                    {acceptingId === sub.id && (
                       <div className="mt-4 rounded-xl border border-gold/30 bg-gold/5 p-4">
                         <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Link zur Veröffentlichung (optional)
@@ -220,7 +214,7 @@ export default function OffenPage() {
                           <Button
                             variant="secondary"
                             size="sm"
-                            onClick={() => { setPublishedUrlInput(null); setActiveSubmissionId(null) }}
+                            onClick={() => { setAcceptingId(null) }}
                           >
                             Abbrechen
                           </Button>

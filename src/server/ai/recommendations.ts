@@ -27,7 +27,7 @@ NUR das JSON-Array, keine andere Formatierung.`
 export async function generateRecommendations(): Promise<AiRecommendation[]> {
   try {
     // Build user profile from submission history
-    const [submissions, accepted, feedback, starred, textsWithContent] = await Promise.all([
+    const [submissions, accepted, feedback, starred, textsWithContent, competitions] = await Promise.all([
       db.submission.findMany({
         include: { competition: { select: { name: true, type: true, theme: true, genres: true } } },
         orderBy: { createdAt: 'desc' },
@@ -52,6 +52,20 @@ export async function generateRecommendations(): Promise<AiRecommendation[]> {
         select: { textContent: true, title: true },
         orderBy: { createdAt: 'desc' },
         take: 5,
+      }),
+      db.competition.findMany({
+        where: {
+          dismissed: false,
+          starred: false,
+          status: 'ACTIVE',
+          deadline: { gt: new Date() },
+        },
+        select: {
+          id: true, name: true, type: true, theme: true, genres: true,
+          description: true, deadline: true, maxLength: true, prize: true, url: true,
+        },
+        orderBy: { deadline: 'asc' },
+        take: 15,
       }),
     ])
 
@@ -80,30 +94,6 @@ export async function generateRecommendations(): Promise<AiRecommendation[]> {
     }
 
     if (!profile) profile = 'Neuer Autor, noch keine Einreichungen. Empfehle vielfältige, zugängliche Wettbewerbe.\n'
-
-    // Get competitions to recommend
-    const competitions = await db.competition.findMany({
-      where: {
-        dismissed: false,
-        starred: false, // Don't recommend already starred
-        status: 'ACTIVE',
-        deadline: { gt: new Date() },
-      },
-      select: {
-        id: true,
-        name: true,
-        type: true,
-        theme: true,
-        genres: true,
-        description: true,
-        deadline: true,
-        maxLength: true,
-        prize: true,
-        url: true,
-      },
-      orderBy: { deadline: 'asc' },
-      take: 15,
-    })
 
     if (competitions.length === 0) {
       return []

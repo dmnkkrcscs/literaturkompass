@@ -1,5 +1,6 @@
 import { anthropic } from './client'
 import { db } from '@/lib/db'
+import { formatDateDE, daysUntil } from '@/lib/utils'
 
 const TELEGRAM_DIGEST_SYSTEM_PROMPT = `Du bist der Literaturkompass – ein literaturbegeisterter Assistent, der täglich per Telegram eine kurze Nachricht sendet.
 
@@ -33,6 +34,7 @@ export async function generateTelegramDigest(): Promise<string> {
         },
         select: { name: true, deadline: true, theme: true },
         orderBy: { deadline: 'asc' },
+        take: 10,
       }),
       // Deadlines in the next 30 days
       db.competition.findMany({
@@ -59,30 +61,26 @@ export async function generateTelegramDigest(): Promise<string> {
       db.submission.count({ where: { status: 'ACCEPTED' } }),
     ])
 
-    const formatDate = (d: Date) =>
-      new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'long' }).format(d)
-
-    let context = `Heute: ${formatDate(now)}\n`
+    let context = `Heute: ${formatDateDE(now)}\n`
 
     if (urgentDeadlines.length > 0) {
       context += `\n⚠️ DRINGENDE Deadlines (nächste 7 Tage):\n`
       for (const c of urgentDeadlines) {
-        const days = Math.ceil((c.deadline!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-        context += `- "${c.name}" in ${days} Tag(en)${c.theme ? ` – Thema: ${c.theme}` : ''}\n`
+        context += `- "${c.name}" in ${daysUntil(c.deadline!)} Tag(en)${c.theme ? ` – Thema: ${c.theme}` : ''}\n`
       }
     }
 
     if (upcomingDeadlines.length > 0) {
       context += `\nKommende Deadlines (nächste 30 Tage):\n`
       for (const c of upcomingDeadlines) {
-        context += `- "${c.name}" am ${formatDate(c.deadline!)}${c.theme ? ` – ${c.theme}` : ''}\n`
+        context += `- "${c.name}" am ${formatDateDE(c.deadline!)}${c.theme ? ` – ${c.theme}` : ''}\n`
       }
     }
 
     if (newCompetitions.length > 0) {
       context += `\n${newCompetitions.length} neue Ausschreibung(en):\n`
       for (const c of newCompetitions) {
-        context += `- "${c.name}"${c.deadline ? ` (Deadline: ${formatDate(c.deadline)})` : ''}\n`
+        context += `- "${c.name}"${c.deadline ? ` (Deadline: ${formatDateDE(c.deadline)})` : ''}\n`
       }
     }
 

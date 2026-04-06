@@ -106,12 +106,6 @@ async function main() {
     }
   }
 
-  // Merge manual deadlines into a lookup
-  const manualDeadlineMap = new Map<string, any>()
-  for (const md of manualDeadlines) {
-    manualDeadlineMap.set(md.id, md)
-  }
-
   // Merge manual magazines
   for (const mm of manualMags) {
     if (!magazines.find((m: any) => m.id === mm.id)) {

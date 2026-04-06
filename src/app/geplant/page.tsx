@@ -2,11 +2,10 @@
 
 import { useState } from 'react'
 import { trpc } from '@/lib/trpc'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
 import Link from 'next/link'
 import { Star, Send } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { daysUntil, formatDateShort, TYPE_LABELS } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { SubmitDialog } from '@/components/competition/SubmitDialog'
 import { useToast } from '@/components/ui/Toast'
@@ -25,12 +24,6 @@ export default function GeplantPage() {
   })
 
   const competitions = data?.competitions || []
-
-  const typeLabels: Record<string, string> = {
-    WETTBEWERB: 'Wettbewerb',
-    ANTHOLOGIE: 'Anthologie',
-    ZEITSCHRIFT: 'Zeitschrift',
-  }
 
   return (
     <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
@@ -67,9 +60,7 @@ export default function GeplantPage() {
         ) : (
           <div className="space-y-4">
             {competitions.map((comp) => {
-              const daysLeft = comp.deadline
-                ? Math.ceil((new Date(comp.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-                : null
+              const daysLeft = comp.deadline ? daysUntil(new Date(comp.deadline)) : null
 
               return (
                 <div
@@ -93,7 +84,7 @@ export default function GeplantPage() {
                       )}
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <Badge variant="default">
-                          {typeLabels[comp.type] || comp.type}
+                          {TYPE_LABELS[comp.type] || comp.type}
                         </Badge>
                         {comp.deadline && (
                           <span className={`text-sm font-medium ${
@@ -101,7 +92,7 @@ export default function GeplantPage() {
                               ? 'text-red-600 dark:text-red-400'
                               : 'text-gray-600 dark:text-gray-400'
                           }`}>
-                            {format(new Date(comp.deadline), 'dd. MMM yyyy', { locale: de })}
+                            {formatDateShort(new Date(comp.deadline))}
                             {daysLeft !== null && daysLeft > 0 && (
                               <span className="ml-1">({daysLeft} Tage)</span>
                             )}

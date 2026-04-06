@@ -1,9 +1,8 @@
 export const dynamic = 'force-dynamic'
 
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
 import Link from 'next/link'
 import { db } from '@/lib/db'
+import { formatDateShort, TYPE_LABELS } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { AiMessage, AiRecommendations } from '@/components/dashboard/AiMessage'
@@ -87,12 +86,6 @@ export default async function DashboardPage() {
     getLatestCompetitions(),
   ])
 
-  const typeLabels: Record<string, string> = {
-    WETTBEWERB: 'Wettbewerb',
-    ANTHOLOGIE: 'Anthologie',
-    ZEITSCHRIFT: 'Zeitschrift',
-  }
-
   return (
     <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -162,11 +155,11 @@ export default async function DashboardPage() {
                     <div className="ml-4 text-right">
                       <p className="text-sm font-medium text-accent-light dark:text-accent-dark">
                         {comp.deadline
-                          ? format(comp.deadline, 'dd. MMM yyyy', { locale: de })
+                          ? formatDateShort(comp.deadline)
                           : 'TBD'}
                       </p>
                       <Badge variant="default" className="mt-1">
-                        {typeLabels[comp.type] || comp.type}
+                        {TYPE_LABELS[comp.type] || comp.type}
                       </Badge>
                     </div>
                   </Link>
@@ -210,7 +203,7 @@ export default async function DashboardPage() {
                       )}
                     </div>
                     <Badge variant="accent" className="ml-4">
-                      {typeLabels[comp.type] || comp.type}
+                      {TYPE_LABELS[comp.type] || comp.type}
                     </Badge>
                   </Link>
                 ))}
