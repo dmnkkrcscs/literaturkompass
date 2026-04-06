@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Albert_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/layout/Navbar";
 
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+const albertSans = Albert_Sans({ variable: "--font-albert-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Literaturkompass",
@@ -39,7 +39,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body className={`${inter.variable} bg-light-bg dark:bg-dark-bg`}>
+      <body className={`${albertSans.variable} font-sans bg-light-bg dark:bg-dark-bg`}>
         <Providers>
           <Navbar />
           <main>{children}</main>
