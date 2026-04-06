@@ -1,0 +1,1135 @@
+{
+  "lastUpdated": "2026-02-17T21:47:20.604Z",
+  "competitions": [
+    {
+      "id": "nature-writing-2026",
+      "type": "wettbewerb",
+      "name": "Deutscher Preis für Nature Writing 2026",
+      "organizer": "Verlag Matthes & Seitz Berlin / Umweltbundesamt / Stiftung Kunst und Natur",
+      "deadline": "2026-03-01",
+      "theme": "Nature Writing",
+      "genres": [
+        "Prosa",
+        "Essay",
+        "Nature Writing"
+      ],
+      "prize": "10.000 €",
+      "maxLength": "Mindestens ein veröffentlichtes literarisches Werk erforderlich",
+      "requirements": "Deutschsprachige Autor:innen mit mindestens einer Publikation in einem Verlag oder einer Literaturzeitschrift",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.zugetextet.com/einsendeschluss-01-03-2026-deutscher-preis-fuer-nature-writing-2026/",
+      "description": "Der Deutsche Preis für Nature Writing geht 2026 in seine neunte Ausschreibungsrunde. Er fördert deutschsprachige Autorinnen und Autoren, die sich literarisch mit der Natur auseinandersetzen.",
+      "source": "zugetextet.com"
+    },
+    {
+      "id": "verlierer-neg-philosophie-2026",
+      "type": "wettbewerb",
+      "name": "Verlierer Verlag – Negative Philosophie: Achselzuckend leben",
+      "organizer": "Verlierer Verlag",
+      "deadline": "2026-03-10",
+      "theme": "Negative Philosophie — Achselzuckend leben",
+      "genres": [
+        "Lyrik",
+        "Kurzgeschichte",
+        "Essay"
+      ],
+      "prize": "1. Preis: 1.000 €, 2. Preis: 500 €, 3. Preis: 300 €",
+      "maxLength": "Max. 40.000 Zeichen inkl. Leerzeichen",
+      "requirements": "Gedichte, Kurzgeschichten und Aufsätze in deutscher Sprache",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://verliererverlag.com/schreibwettbewerb-2026/",
+      "description": "Eingereicht werden können Gedichte, Kurzgeschichten und Aufsätze. Stimmabgabe vom 11. bis 20. März 2026.",
+      "source": "verliererverlag.com"
+    },
+    {
+      "id": "sf-smartokratie-2026",
+      "type": "anthologie",
+      "name": "Science-Fiction-Anthologie: Smartokratie",
+      "organizer": "Nicht spezifiziert",
+      "deadline": "2026-03-31",
+      "theme": "Smartokratie – Smarte Technologien in der nahen Zukunft (bis 2075)",
+      "genres": [
+        "Science-Fiction",
+        "Kurzgeschichte"
+      ],
+      "prize": "Veröffentlichung in Anthologie + Freiexemplar",
+      "maxLength": "Max. 40.000 Zeichen",
+      "requirements": "Kurzgeschichten über smarte Technologien, die auf der Erde spielen",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://blog.bod.de/schreiben/schreibwettbewerbe-im-ueberblick/",
+      "description": "Gesucht werden Kurzgeschichten über smarte Technologien in der nahen Zukunft.",
+      "source": "BoD.de"
+    },
+    {
+      "id": "erostepost-2026",
+      "type": "zeitschrift",
+      "name": "erostepost – Literaturzeitschrift (Neue Ausgabe)",
+      "organizer": "erostepost",
+      "deadline": "2026-04-01",
+      "theme": "Frei (keine thematische Vorgabe)",
+      "genres": [
+        "Lyrik",
+        "Prosa",
+        "Erzählung"
+      ],
+      "prize": "Veröffentlichung in der Zeitschrift",
+      "maxLength": "Lyrik: max. 15 Gedichte; Prosa: max. 10 Normseiten pro Einzeltext",
+      "requirements": "Texte per E-Mail an einsendung@erostepost.at als .doc oder .docx. AutorInnen behalten das Copyright.",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://geest-verlag.de/news/erostepost-einsendem%C3%B6glichkeit-bis-1-april-2026-f%C3%BCr-die-neue-ausgabe",
+      "description": "Auch abseits des Literaturpreises sind jederzeit deutschsprachige Texteinsendungen aus dem In- und Ausland willkommen.",
+      "source": "geest-verlag.de"
+    },
+    {
+      "id": "pan-drachenverlag-2026",
+      "type": "anthologie",
+      "name": "PAN – Drachenverlag Jubiläumsanthologie (20 Jahre)",
+      "organizer": "PAN – Phantastik-Autoren-Netzwerk / Drachenverlag",
+      "deadline": "2026-04-15",
+      "theme": "Phantastik – 20 Jahre Drachenverlag",
+      "genres": [
+        "Fantasy",
+        "Kurzgeschichte",
+        "Lyrik",
+        "Illustration"
+      ],
+      "prize": "Veröffentlichung in Jubiläumsanthologie",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Jedes Subgenre der Phantastik erlaubt. Kurzgeschichten, Gedichte, Illustrationen, Grußworte, Anekdoten.",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://wir-erschaffen-welten.net/aktivitaeten/aktuelle-ausschreibungen/",
+      "description": "Zum zwanzigjährigen Bestehen des Verlages wird eine vielfältige Sammlung gesucht.",
+      "source": "PAN"
+    },
+    {
+      "id": "sebald-preis-2026",
+      "type": "wettbewerb",
+      "name": "W.-G.-Sebald-Literaturpreis 2026",
+      "organizer": "Städte Kempten und Sonthofen / Deutsche Sebald Gesellschaft",
+      "deadline": "2026-04-30",
+      "theme": "Erinnerung und Gedächtnis",
+      "genres": [
+        "Prosa"
+      ],
+      "prize": "10.000 €",
+      "maxLength": "30.000 Zeichen (unveröffentlichter Prosatext)",
+      "requirements": "Deutschsprachig. Schriftsteller:innen sollen sich mit Fragen und Motiven auseinandersetzen, die für Sebalds Schaffen wesentlich waren.",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.epubli.com/wissen/schreibwettbewerbe",
+      "description": "Die Städte Kempten und Sonthofen und die Deutsche Sebald Gesellschaft schreiben zum vierten Mal einen Literaturwettbewerb aus.",
+      "source": "epubli.com"
+    },
+    {
+      "id": "wiener-werkstattpreis-2026",
+      "type": "wettbewerb",
+      "name": "Wiener Werkstattpreis 2026/2027",
+      "organizer": "Unabhängiger Wettbewerb (Wien)",
+      "deadline": "2026-04-30",
+      "theme": "Frei (keine thematische Vorgabe)",
+      "genres": [
+        "Kurzprosa",
+        "Lyrik"
+      ],
+      "prize": "Jurypreis: 1.100 €, Publikumspreis: 800 €, Sonderpreis der Stadt Wien: 800 € (gesamt 2.700 €)",
+      "maxLength": "Kurzprosa: max. 10.000 Zeichen inkl. Leerzeichen; Lyrik: max. 10 Gedichte (max. 30 Zeilen pro Gedicht)",
+      "requirements": "Weder altersmäßig noch hinsichtlich der Nationalität beschränkt. Fördert deutschsprachige Nachwuchsautor:innen seit 1992.",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://fza.or.at/wiener-werkstattpreis-2024-2025-ausschreibungsbedingungen-literatur/",
+      "description": "Der unabhängige Wettbewerb fördert seit 1992 deutschsprachige Nachwuchsautor:innen.",
+      "source": "fza.or.at"
+    },
+    {
+      "id": "pan-schattengesellschaft-2026",
+      "type": "anthologie",
+      "name": "PAN – Schattengesellschaft-Anthologie",
+      "organizer": "PAN – Phantastik-Autoren-Netzwerk",
+      "deadline": "2026-05-01",
+      "theme": "Schattengesellschaft – Elemente Feuer, Erde, Wasser, Luft",
+      "genres": [
+        "Fantasy",
+        "Phantastik",
+        "Kurzgeschichte"
+      ],
+      "prize": "Veröffentlichung in Anthologie",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Die Schattengesellschaft lebt im Verborgenen unter den Menschen.",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://wir-erschaffen-welten.net/aktivitaeten/aktuelle-ausschreibungen/",
+      "description": "Die Elemente flüsterten schon vor den Göttern ihre Geheimnisse.",
+      "source": "PAN"
+    },
+    {
+      "id": "moerderische-schwestern-2026",
+      "type": "wettbewerb",
+      "name": "Arbeitsstipendium der Mörderischen Schwestern e.V.",
+      "organizer": "Mörderische Schwestern e.V.",
+      "deadline": "2026-05-31",
+      "theme": "Kriminalliteratur (alle Formen)",
+      "genres": [
+        "Krimi",
+        "Thriller"
+      ],
+      "prize": "1. Preis: 2.400 €, 2. Preis: 500 €",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "In deutscher Sprache verfasst, richtet sich an Erwachsene. Nur für Frauen.",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.epubli.com/wissen/schreibwettbewerbe",
+      "description": "Alle Formen der Kriminalliteratur sind erlaubt, solange sie in deutscher Sprache verfasst sind.",
+      "source": "epubli.com",
+      "note": "Nur für Frauen"
+    },
+    {
+      "id": "beethoven-anthologie-2026",
+      "type": "anthologie",
+      "name": "Anthologie zum 200. Todestag Ludwig van Beethovens",
+      "organizer": "Nicht spezifiziert",
+      "deadline": "2026-05-31",
+      "theme": "200. Todestag Ludwig van Beethovens",
+      "genres": [
+        "Krimi",
+        "Thriller",
+        "Kurzkrimi",
+        "Belletristik"
+      ],
+      "prize": "1. Preis: 300 €, 2. Preis: 200 €, 3. Preis: 100 €",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Kriminalliteratur zum Thema Beethoven",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.epubli.com/wissen/schreibwettbewerbe",
+      "description": "2027 jährt sich der Todestag Beethovens zum 200. Mal.",
+      "source": "epubli.com"
+    },
+    {
+      "id": "harzer-brocken-2026",
+      "type": "anthologie",
+      "name": "Literaturpreis Harz – Ein Harzer Brocken",
+      "organizer": "Nicht spezifiziert",
+      "deadline": "2026-05-31",
+      "theme": "Ein Harzer Brocken",
+      "genres": [
+        "Belletristik",
+        "Erzählung",
+        "Kurzgeschichte",
+        "Kurzkrimi",
+        "LGBTQ+",
+        "Lyrik",
+        "Märchen",
+        "Sagen",
+        "Mundart",
+        "Novelle",
+        "Prosa",
+        "Satire"
+      ],
+      "prize": "1. Preis: 200 €, 2. Preis: 100 €, 3. Preis: Buchpaket 50 €",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Breites Genrespektrum",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.epubli.com/wissen/schreibwettbewerbe",
+      "description": "Breites Spektrum an Genres willkommen.",
+      "source": "epubli.com"
+    },
+    {
+      "id": "dunkelheit-2026",
+      "type": "wettbewerb",
+      "name": "Kurzgeschichtenwettbewerb – Natürliche Dunkelheit",
+      "organizer": "Nicht spezifiziert",
+      "deadline": "2026-06-21",
+      "theme": "Die Schönheit der natürlichen Dunkelheit, Nacht und Astronomie",
+      "genres": [
+        "Kurzgeschichte"
+      ],
+      "prize": "Sachpreise (u.a. eine Sternenführung)",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Kurzgeschichten über Nacht, Dunkelheit und Astronomie",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.epubli.com/wissen/schreibwettbewerbe",
+      "description": "Die Schönheit der natürlichen Dunkelheit und des Nachthimmels als literarisches Thema.",
+      "source": "epubli.com"
+    },
+    {
+      "id": "bodensee-zwischenwelten-2026",
+      "type": "wettbewerb",
+      "name": "Bodensee-Literaturpreis \"Zwischenwelten\"",
+      "organizer": "Bodensee-Region",
+      "deadline": "2026-06-30",
+      "theme": "Zwischenwelten",
+      "genres": [
+        "Frei wählbar"
+      ],
+      "prize": "1. Preis: 500 €, 2. Preis: 300 €, 3. Preis: 200 €",
+      "maxLength": "Max. 4.500 Zeichen inkl. Leerzeichen",
+      "requirements": "Autor:innen mit Wohnsitz in der Bodenseeregion (D/AT/CH), Oberschwaben und Allgäu",
+      "ageRestriction": null,
+      "regionRestriction": "Bodenseeregion (D/AT/CH), Oberschwaben, Allgäu",
+      "fee": null,
+      "url": "https://kreativ-schreiben-lernen.de/wettbewerbe-preise-etc/",
+      "description": "Regionaler Preis, aber auch für österreichische Teilnehmer:innen aus der Bodenseeregion offen.",
+      "source": "kreativ-schreiben-lernen.de",
+      "note": "Regional: Bodensee – inkl. Vorarlberg"
+    },
+    {
+      "id": "beltz-kinderbuch-2026",
+      "type": "wettbewerb",
+      "name": "Kinder- & Jugendbuchpreis (Beltz & Gelberg)",
+      "organizer": "Verlag Beltz & Gelberg",
+      "deadline": "2026-07-03",
+      "theme": "Kinder- & Jugendbuch",
+      "genres": [
+        "Kinderbuch",
+        "Jugendbuch"
+      ],
+      "prize": "3.000 € + Veröffentlichung im Verlag",
+      "maxLength": "Buchmanuskript (unveröffentlicht)",
+      "requirements": "Manuskript für Leser:innen 8–15 Jahre",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://kreativ-schreiben-lernen.de/wettbewerbe-preise-etc/",
+      "description": "Verlag Beltz & Gelberg sucht neue Talente für Kinder- und Jugendbücher.",
+      "source": "kreativ-schreiben-lernen.de"
+    },
+    {
+      "id": "pan-halloween-2026",
+      "type": "anthologie",
+      "name": "PAN – Halloween-Anthologie (Queerer Horror)",
+      "organizer": "PAN – Phantastik-Autoren-Netzwerk",
+      "deadline": "2026-09-01",
+      "theme": "Progressiver, queerer Horror – Monster, mystische Wesen, garstige Entitäten",
+      "genres": [
+        "Horror",
+        "Phantastik",
+        "Queere Literatur"
+      ],
+      "prize": "Veröffentlichung in Anthologie",
+      "maxLength": "Max. 15.000 Zeichen inkl. Leerzeichen",
+      "requirements": "Texte mit Monstern, mystischen Wesen und progressiven, queeren Inhalten",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://wir-erschaffen-welten.net/aktivitaeten/aktuelle-ausschreibungen/",
+      "description": "Gesucht werden Texte für eine Halloween-Anthologie.",
+      "source": "PAN"
+    },
+    {
+      "id": "gruppe48-2026",
+      "type": "wettbewerb",
+      "name": "Preis der Gruppe 48",
+      "organizer": "Gruppe 48 e.V.",
+      "deadline": "2026-09-13",
+      "theme": "Frei (kein Thema vorgegeben)",
+      "genres": [
+        "Prosa",
+        "Lyrik"
+      ],
+      "prize": "10.000 € gesamt (Publikumspreis + Jurypreis für Lyrik und Prosa + Nominierungspreise)",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Prosa und Lyrik, kein Thema vorgegeben",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.die-gruppe-48.net/",
+      "description": "Finale Wettbewerbsveranstaltung am 13.09.2026 in Rösrath (Schloss Eulenbroich).",
+      "source": "die-gruppe-48.net"
+    },
+    {
+      "id": "psycho-prosa-2026",
+      "type": "wettbewerb",
+      "name": "Psychologische Prosa-Wettbewerb",
+      "organizer": "Nicht spezifiziert",
+      "deadline": "2026-09-13",
+      "theme": "Innere Abgründe, begrenzte Örtlichkeiten, kein klassisches Happy End",
+      "genres": [
+        "Prosa",
+        "Psychologische Literatur"
+      ],
+      "prize": "Nicht spezifiziert",
+      "maxLength": "10.000 Zeichen inkl. Leerzeichen",
+      "requirements": "Epische Texte mit drei Elementen: innere Abgründe, begrenzte Örtlichkeiten, kein Happy End",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://kreativ-schreiben-lernen.de/wettbewerbe-preise-etc/",
+      "description": "Atmosphärisch dichte psychologische Prosa.",
+      "source": "kreativ-schreiben-lernen.de"
+    },
+    {
+      "id": "kempowski-2026",
+      "type": "wettbewerb",
+      "name": "Walter-Kempowski-Literaturpreis (HAV)",
+      "organizer": "Hamburger Autorenvereinigung",
+      "deadline": "2026-09-30",
+      "theme": "Texte, die in der lautstarken Stille entstehen, nachdem alles gesagt wurde",
+      "genres": [
+        "Belletristik",
+        "Erzählung",
+        "Kurzgeschichte",
+        "Lyrik"
+      ],
+      "prize": "Nicht spezifiziert",
+      "maxLength": "Zwischen 1 und 15.000 Zeichen",
+      "requirements": "Deutschsprachige Texte",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.literaturport.de/preise-stipendien/",
+      "description": "Es werden Texte gesucht, die in der lautstarken Stille entstehen.",
+      "source": "literaturport.de"
+    },
+    {
+      "id": "spacenet-award-2026",
+      "type": "wettbewerb",
+      "name": "SpaceNet Award 2026 – Lösung",
+      "organizer": "SpaceNet AG",
+      "deadline": "2026-02-22",
+      "theme": "Lösung (Solution)",
+      "genres": [
+        "Kurzgeschichte"
+      ],
+      "prize": "1. Preis: 2.500 €, 2. Preis: 200 €, 3. Preis: 200 €, Nachwuchspreis: 200 €, Gesamtpreisgeld: 6.200 €",
+      "maxLength": "Max. 10.000 Zeichen inkl. Leerzeichen",
+      "requirements": "Unveröffentlichte Kurzgeschichten in deutscher Sprache",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.spacenet-award.de/",
+      "description": "Der SpaceNet Award wird zum siebten Mal vergeben und sucht die besten Kurzgeschichten zum Thema Lösung. 30 beste Geschichten werden in einem Buch veröffentlicht.",
+      "source": "spacenet-award.de"
+    },
+    {
+      "id": "zeilen-lauf-2026",
+      "type": "wettbewerb",
+      "name": "zeilen.lauf – Österreichischer Literaturwettbewerb 2026",
+      "organizer": "Stadt:Kultur Wien",
+      "deadline": null,
+      "theme": "Frei (keine thematische Vorgabe)",
+      "genres": [
+        "Kurzgeschichte",
+        "Lyrik"
+      ],
+      "prize": "Geldpreise und Sachpreise für die besten 15 Beiträge",
+      "maxLength": "Kurzgeschichte: max. 4.500 Zeichen (ohne Leerzeichen); Lyrik: max. 1.800 Zeichen (ohne Leerzeichen)",
+      "requirements": "Autor:innen müssen zum Zeitpunkt des Einsendeschlusses 18 Jahre oder älter sein",
+      "ageRestriction": "ab 18",
+      "regionRestriction": null,
+      "fee": "8 € nach einmonatiger kostenlosen Einreichungsphase",
+      "url": "https://www.zeilen-lauf.at/",
+      "description": "Einer der größten Literaturwettbewerbe Österreichs mit Teilnehmern aus Österreich, Deutschland und der Schweiz. Finale mit Lesung vor Publikum erforderlich.",
+      "source": "zeilen-lauf.at"
+    },
+    {
+      "id": "die-feder-glaube-2026",
+      "type": "wettbewerb",
+      "name": "Schreibwettbewerb \"DIE FEDER\" – Glaube (Hanns-Seidel-Stiftung)",
+      "organizer": "Hanns-Seidel-Stiftung",
+      "deadline": "2026-02-28",
+      "theme": "Glaube",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Essay",
+        "Erlebnisbericht",
+        "Alle Textgattungen"
+      ],
+      "prize": "50 € je Gewinner:in + Seminar \"Kreatives Schreiben\"; Veröffentlichung in Sammelband",
+      "maxLength": "Max. 20.000 Zeichen",
+      "requirements": "Unveröffentlichte Beiträge in deutscher Sprache. Altersgruppen: 6-12, 13-18, 19-99 Jahre",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.hss.de/die-feder",
+      "description": "Fünfter Durchgang des Schreibwettbewerbs. Preisverleihung im Juni 2026 in München. Getrennte Bewertung nach Altersgruppen.",
+      "source": "hss.de"
+    }
+  ],
+  "magazines": [
+    {
+      "id": "dum-magazin",
+      "type": "zeitschrift",
+      "name": "DUM – Das Ultimative Magazin",
+      "location": "Langenlois, Niederösterreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Mundart"
+      ],
+      "submissionStatus": "Thematische Ausschreibungen (4x/Jahr)",
+      "deadline": null,
+      "submissionEmail": "dummail@gmx.at",
+      "requirements": "Max. 1 Prosatext (max. 5 A4-Seiten) und/oder 5 Gedichte pro Thema. Word-Dokument, 12pt, 1.5 Zeilenabstand, Times New Roman. Anonymisiert: kein Name auf dem Text!",
+      "url": "https://dum.at/doc/themen.php?nav=themen",
+      "description": "Seit 1992, erscheint 4x/Jahr mit wechselnden Themen. Jährlich eine Dialekt-Ausgabe. Nächste Themen: DUM 118 'blinken' (15.4.2026), DUM 119 'sinken' (15.7.2026), DUM 120 'hinken' (15.9.2026).",
+      "submissionDeadlines": [
+        {
+          "date": "2026-04-15",
+          "theme": "DUM 118: 'blinken'"
+        },
+        {
+          "date": "2026-07-15",
+          "theme": "DUM 119: 'sinken'"
+        },
+        {
+          "date": "2026-09-15",
+          "theme": "DUM 120: 'hinken'"
+        }
+      ]
+    },
+    {
+      "id": "radieschen-wien",
+      "type": "zeitschrift",
+      "name": "& Radieschen – Zeitschrift für Literatur",
+      "location": "Wien, Österreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Experimentell",
+        "Grafik"
+      ],
+      "submissionStatus": "Thematische Ausschreibungen (4x/Jahr)",
+      "deadline": null,
+      "submissionEmail": "redaktion@radieschen.at",
+      "requirements": "Max. 8.000 Zeichen inkl. Leerzeichen bzw. max. 3 Gedichte. Nur .doc/.docx. Unveröffentlicht. Österreichbezug erforderlich (Wohnsitz oder Schaffen).",
+      "url": "https://radieschen.at/einsenden/",
+      "description": "Seit 2006, 4x/Jahr (März, Mai, September, Dezember). Bietet vor allem unbekannten Autor:innen eine Publikationsplattform. Zwölfköpfige Redaktion.",
+      "submissionDeadlines": [
+        {
+          "date": "2026-03-01",
+          "theme": "Frühjahrsausgabe (März)"
+        },
+        {
+          "date": "2026-05-01",
+          "theme": "Maiausgabe"
+        },
+        {
+          "date": "2026-09-01",
+          "theme": "Septemberausgabe"
+        },
+        {
+          "date": "2026-12-01",
+          "theme": "Dezemberausgabe"
+        }
+      ]
+    },
+    {
+      "id": "die-brache",
+      "type": "zeitschrift",
+      "name": "Die Brache – Hefte für Poesie",
+      "location": "St. Pölten, Niederösterreich",
+      "genres": [
+        "Lyrik",
+        "Lyrische Prosa"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Lyrik und lyrische Prosa, max. 1 A4-Seite. Kein Thema vorgegeben. Texte von AutorInnen jedes Alters.",
+      "url": "https://www.st-poelten.at/kultur/literatur-und-archive/die-brache",
+      "description": "Seit 2021, erscheint 2x/Jahr. Unabhängige Zeitschrift für Lyrik und lyrische Prosa. Gegründet in St. Pölten."
+    },
+    {
+      "id": "etcetera-stpoelten",
+      "type": "zeitschrift",
+      "name": "etcetera – Literarisch-kulturelles Magazin",
+      "location": "St. Pölten, Niederösterreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Essay",
+        "Kulturkritik"
+      ],
+      "submissionStatus": "Thematische Ausschreibungen",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Einreichung über Webformular auf litges.at. Ausschließlich unveröffentlichte, digitalisierte Texte. Word-Dokument mit max. 5 Zeilen Biografie.",
+      "url": "https://www.litges.at/etcetera/einreichung",
+      "description": "Magazin der Literarischen Gesellschaft St. Pölten. Wechselnde Themen pro Ausgabe, siehe 'etcetera Vorschau' auf der Website."
+    },
+    {
+      "id": "mosaik-zeitschrift",
+      "type": "zeitschrift",
+      "name": "mosaik – Zeitschrift für Literatur und Kultur",
+      "location": "Salzburg, Österreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Essay",
+        "Rezension",
+        "Interview",
+        "Kurzdrama"
+      ],
+      "submissionStatus": "Permanent offen",
+      "deadline": null,
+      "submissionEmail": "schreib@edition-mosaik.at",
+      "requirements": "Texte digital als .doc, .docx, .odt oder PDF. Alternative Textformate willkommen.",
+      "url": "https://www.mosaikzeitschrift.at/ueber/einsendungen/",
+      "description": "Plattform zur Vermittlung und Vernetzung gegenwärtiger Literaturen."
+    },
+    {
+      "id": "manuskripte-graz",
+      "type": "zeitschrift",
+      "name": "manuskripte",
+      "location": "Graz, Österreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Avantgarde"
+      ],
+      "submissionStatus": "Auf Anfrage / Einsendung",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Eine der renommiertesten deutschsprachigen Literaturzeitschriften. Kontakt über Website.",
+      "url": "https://www.manuskripte.at/wordpress/",
+      "description": "Gilt als beste deutschsprachige avantgardistische Literaturzeitschrift."
+    },
+    {
+      "id": "lichtungen-graz",
+      "type": "zeitschrift",
+      "name": "Lichtungen – Zeitschrift für Literatur, Kunst und Zeitkritik",
+      "location": "Graz, Österreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Essay",
+        "Kunst",
+        "Zeitkritik"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "International ausgerichtet, Förderung junger AutorInnen.",
+      "url": "https://www.onb.ac.at/oe-literaturzeitschriften/Lichtungen/Lichtungen.htm",
+      "description": "Schwerpunkte: internationale Literatur und Förderung junger AutorInnen."
+    },
+    {
+      "id": "wespennest-wien",
+      "type": "zeitschrift",
+      "name": "wespennest – Zeitschrift für brauchbare Texte und Bilder",
+      "location": "Wien, Österreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Essay",
+        "Kunst"
+      ],
+      "submissionStatus": "Auf Anfrage",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Kontakt über Website.",
+      "url": "https://wespennest.at/",
+      "description": "Zeitschrift für brauchbare Texte und Bilder mit Sitz in Wien."
+    },
+    {
+      "id": "kolik-wien",
+      "type": "zeitschrift",
+      "name": "kolik",
+      "location": "Wien, Österreich",
+      "genres": [
+        "Prosa",
+        "Lyrik"
+      ],
+      "submissionStatus": "Auf Anfrage",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Kontakt über Website.",
+      "url": "https://alte-schmiede.at/galerie-der-literaturzeitschriften",
+      "description": "Bekannte Wiener Literaturzeitschrift."
+    },
+    {
+      "id": "salz-salzburg",
+      "type": "zeitschrift",
+      "name": "Salz – Zeitschrift für Literatur",
+      "location": "Salzburg, Österreich",
+      "genres": [
+        "Lyrik",
+        "Prosa"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Publiziert Erstdrucke von Gedichten und Prosa.",
+      "url": "https://www.literaturportal.de/links_show_5.html",
+      "description": "Die Literaturzeitschrift aus Salzburg publiziert Erstdrucke."
+    },
+    {
+      "id": "rampe-ooe",
+      "type": "zeitschrift",
+      "name": "Die Rampe – Hefte für Literatur",
+      "location": "Oberösterreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Drama",
+        "Essay"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Literaturzeitschrift des Landes Oberösterreich. Texte aller literarischen Gattungen ohne thematische Bindung.",
+      "url": "https://www.stifterhaus.at/service/ausschreibungen",
+      "description": "Zeitschrift zur Förderung zeitgenössischer Literatur."
+    },
+    {
+      "id": "podium",
+      "type": "zeitschrift",
+      "name": "Podium",
+      "location": "Österreich",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Buchbesprechung"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Länder- und Themenschwerpunkte, neueste literarische Arbeiten.",
+      "url": "https://www.ogl.at/info/links/zeitschriften/",
+      "description": "Bietet Länder- und Themenschwerpunkte, Buchbesprechungen und Illustrationen."
+    },
+    {
+      "id": "bella-triste",
+      "type": "zeitschrift",
+      "name": "BELLA triste",
+      "location": "Deutschland",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Dramatik",
+        "Essay",
+        "Interview"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Dreimal jährlich. Deutschsprachige Gegenwartsliteratur.",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Zeitschrift für deutschsprachige Gegenwartsliteratur, dreimal jährlich."
+    },
+    {
+      "id": "edit-zeitschrift",
+      "type": "zeitschrift",
+      "name": "Edit – Papier für neue Texte",
+      "location": "Leipzig, Deutschland",
+      "genres": [
+        "Prosa",
+        "Lyrik",
+        "Dramatik",
+        "Übersetzung"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Dreimal jährlich. Neue Literatur, dramatische Formen, Erstübersetzungen.",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Namen und Kategorien sind weniger wichtig als der Umgang mit den Möglichkeiten von Literatur."
+    },
+    {
+      "id": "ostragehege",
+      "type": "zeitschrift",
+      "name": "Ostragehege",
+      "location": "Dresden, Deutschland",
+      "genres": [
+        "Lyrik",
+        "Prosa",
+        "Essay",
+        "Rezension"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Viermal jährlich. Unveröffentlichte Texte.",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Seit 1994, unveröffentlichte Lyrik, Prosa und Essays zeitgenössischer Autor:innen."
+    },
+    {
+      "id": "das-gedicht",
+      "type": "zeitschrift",
+      "name": "DAS GEDICHT",
+      "location": "Deutschland",
+      "genres": [
+        "Lyrik"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Internationales Poesie-Organ.",
+      "url": "https://www.literaturport.de/literaturzeitschriften/register/zeitschrift/das-gedicht/",
+      "description": "Versteht sich als internationales Poesie-Organ für ein breites Publikum."
+    },
+    {
+      "id": "park-lyrik",
+      "type": "zeitschrift",
+      "name": "PARK – Zeitschrift für neue Lyrik",
+      "location": "Österreich/Deutschland",
+      "genres": [
+        "Lyrik"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Seit 1976, älteste reine Lyrikzeitschrift im deutschen Sprachraum.",
+      "url": "https://www.netzwerk-lyrik.org/lyriklandschaft/verlage-und-zeitschriften/zeitschriften.html",
+      "description": "Die älteste noch bestehende reine Lyrikzeitschrift im deutschen Sprachraum."
+    },
+    {
+      "id": "glitter-queer",
+      "type": "zeitschrift",
+      "name": "Glitter – Queere Literaturzeitschrift",
+      "location": "Deutschland",
+      "genres": [
+        "Kurzgeschichte",
+        "Lyrik",
+        "Essay",
+        "LGBTQIA+"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Erste queere Literaturzeitschrift im deutschsprachigen Raum.",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Themen der LGBTQIA+ Community in Kurzgeschichten, Gedichten und Essays."
+    },
+    {
+      "id": "konzepte-bvja",
+      "type": "zeitschrift",
+      "name": "Konzepte – Zeitschrift für Literatur",
+      "location": "Deutschland",
+      "genres": [
+        "Prosa",
+        "Lyrik"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Herausgegeben vom Bundesverband junger Autoren und Autorinnen (BVjA) seit 1987.",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Zählt zu den maßgebenden Literaturzeitschriften des deutschsprachigen Raums."
+    },
+    {
+      "id": "metamorphosen-berlin",
+      "type": "zeitschrift",
+      "name": "metamorphosen – Berliner Literaturmagazin",
+      "location": "Berlin, Deutschland",
+      "genres": [
+        "Lyrik",
+        "Prosa",
+        "Kunst",
+        "Kultur"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Vierteljährlich seit 2013.",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Literatur, Kunst und Kultur gleichermaßen."
+    },
+    {
+      "id": "kapitelzwei",
+      "type": "zeitschrift",
+      "name": "kapitelzwei",
+      "location": "Deutschland",
+      "genres": [
+        "Prosa",
+        "Lyrik"
+      ],
+      "submissionStatus": "Jährliche thematische Ausschreibung",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Einmal im Jahr thematische Ausschreibung, offen für Texte jeder Art.",
+      "url": "https://kapitelzwei-zeitschrift.de/homepage/ausschreibung/",
+      "description": "Jährliche thematische Ausschreibung für Texte jeder Art."
+    },
+    {
+      "id": "ausser-dem-muenchen",
+      "type": "zeitschrift",
+      "name": "außer.dem – Münchner Literaturzeitschrift",
+      "location": "München, Deutschland",
+      "genres": [
+        "Lyrik",
+        "Prosa",
+        "Experimentell"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Interessiert an zeitgenössischen, modernen Texten jenseits klassischer Muster.",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Innovative Textalternativen jenseits üblicher Lyrik und Prosa."
+    },
+    {
+      "id": "poesie-xyz",
+      "type": "zeitschrift",
+      "name": "poesie.xyz – Online-Magazin für Gedicht & Kommentar",
+      "location": "Online",
+      "genres": [
+        "Lyrik"
+      ],
+      "submissionStatus": "Permanent offen",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Zweimal pro Woche ein unveröffentlichtes Gedicht mit begleitendem Kommentar.",
+      "url": "https://www.netzwerk-lyrik.org/lyriklandschaft/verlage-und-zeitschriften/zeitschriften.html",
+      "description": "Online-Magazin, publiziert unveröffentlichte Gedichte."
+    },
+    {
+      "id": "sachen-mit-woertern",
+      "type": "zeitschrift",
+      "name": "Sachen mit Wœrtern",
+      "location": "Berlin, Deutschland",
+      "genres": [
+        "Lyrik",
+        "Prosa",
+        "Grafik",
+        "Illustration"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Lyrik und Prosa in Dialog mit Grafik und Illustration.",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Bringt Farbe ins Schwarz-Weiß der Buchstaben."
+    },
+    {
+      "id": "morgenschtean",
+      "type": "zeitschrift",
+      "name": "morgenschtean – Wiener Dialektzeitschrift",
+      "location": "Wien, Österreich",
+      "genres": [
+        "Mundart",
+        "Lyrik",
+        "Prosa",
+        "Dialekt"
+      ],
+      "submissionStatus": "Einsendung möglich",
+      "deadline": null,
+      "submissionEmail": null,
+      "requirements": "Texte in Wiener Dialekt oder anderen österreichischen Mundarten. Einsendung über die Website.",
+      "url": "https://morgenschtean.at/",
+      "submissionUrl": "https://morgenschtean.at/einsenden/",
+      "description": "Wiener Dialektzeitschrift – Plattform für Mundart-Literatur aus Wien und Österreich."
+    }
+  ],
+  "resourceLinks": [
+    {
+      "name": "literaturcafe.de – Schreibwettbewerbe",
+      "url": "https://www.literaturcafe.de/rubrik/schreibwettbewerbe/",
+      "description": "Aktuelle Liste von Kurzgeschichten- und Lyrik-Wettbewerben"
+    },
+    {
+      "name": "kreativ-schreiben-lernen.de – Ausschreibungen & Preise",
+      "url": "https://kreativ-schreiben-lernen.de/wettbewerbe-preise-etc/",
+      "description": "Neueste Ausschreibungen für literarische Wettbewerbe im DACH-Raum"
+    },
+    {
+      "name": "epubli.com – Schreibwettbewerbe 2026",
+      "url": "https://www.epubli.com/wissen/schreibwettbewerbe",
+      "description": "Überblick aktueller Literaturpreise und Wettbewerbe"
+    },
+    {
+      "name": "BoD.de – Schreibwettbewerbe im Überblick",
+      "url": "https://blog.bod.de/schreiben/schreibwettbewerbe-im-ueberblick/",
+      "description": "Sammlung von Wettbewerben mit Tipps zur Teilnahme"
+    },
+    {
+      "name": "Autorenwelt – Aufrufe & Förderungen",
+      "url": "https://www.autorenwelt.de/verzeichnis/aufrufe",
+      "description": "Aufrufe für Literaturzeitschriften und Anthologien"
+    },
+    {
+      "name": "Treffpunkt Schreiben – Wettbewerbe",
+      "url": "https://treffpunktschreiben.at/wettbewerbe/",
+      "description": "Österreichische Übersicht aktueller Wettbewerbe"
+    },
+    {
+      "name": "literaturport.de – Preise & Stipendien",
+      "url": "https://www.literaturport.de/preise-stipendien/",
+      "description": "Literaturstipendien und Wettbewerbe (DACH)"
+    },
+    {
+      "name": "Schreiblust Verlag – Wettbewerbstipps",
+      "url": "https://schreiblust-verlag.de/wettbewerbstipps",
+      "description": "Hinweise auf Wettbewerbe für Anthologien und Zeitschriften"
+    },
+    {
+      "name": "PAN – Aktuelle Ausschreibungen",
+      "url": "https://wir-erschaffen-welten.net/aktivitaeten/aktuelle-ausschreibungen/",
+      "description": "Phantastik-Autoren-Netzwerk Ausschreibungen"
+    },
+    {
+      "name": "Wortmagier – Ausschreibungen",
+      "url": "https://www.wortmagier.de/ausschreibungen-wettbewerbe.html",
+      "description": "Datenbank mit 43+ aktuellen Wettbewerben"
+    },
+    {
+      "name": "Anton Weyrothers Liste der Literaturzeitschriften",
+      "url": "https://weyrother.net/2020/12/30/liste-der-aktiven-deutschsprachigen-literaturzeitschriften/",
+      "description": "Umfangreichste Liste aktiver deutschsprachiger Literaturzeitschriften"
+    },
+    {
+      "name": "Textmanufaktur – Literaturzeitschriften",
+      "url": "https://text-manufaktur.de/service/welche-literaturzeitschriften-gibt-es",
+      "description": "Übersicht mit Details zu Einreichung und Abo-Infos"
+    },
+    {
+      "name": "Netzwerk Lyrik – Zeitschriften",
+      "url": "https://www.netzwerk-lyrik.org/lyriklandschaft/verlage-und-zeitschriften/zeitschriften.html",
+      "description": "Spezialisiert auf Lyrik-Zeitschriften"
+    },
+    {
+      "name": "Alte Schmiede Wien – Galerie der Literaturzeitschriften",
+      "url": "https://alte-schmiede.at/galerie-der-literaturzeitschriften",
+      "description": "Umfangreiche Sammlung österreichischer Literaturzeitschriften"
+    },
+    {
+      "name": "Buchschmiede.at – Schreibwettbewerbe",
+      "url": "https://www.buchschmiede.at/schreibwettbewerbe/",
+      "description": "Tipps für erfolgreiche Teilnahme an Schreibwettbewerben"
+    },
+    {
+      "name": "Papierfresserchen Verlag – Anthologie-Reihen",
+      "url": "https://www.papierfresserchen.eu/",
+      "description": "Diverse offene Anthologie-Ausschreibungen"
+    }
+  ],
+  "papierfresserchen": [
+    {
+      "id": "pf-stein-und-zeit",
+      "type": "anthologie",
+      "name": "Versteckt in Stein und Zeit",
+      "organizer": "Papierfresserchen Verlag",
+      "deadline": null,
+      "deadlineNote": "Herbst 2026 geplante Veröffentlichung – Einreichung bis Buch voll",
+      "theme": "Orte, die zwischen Stein und Zeit verborgen liegen",
+      "genres": [
+        "Erzählung",
+        "Märchen",
+        "Kurzgeschichte",
+        "Lyrik",
+        "Experimentell"
+      ],
+      "prize": "Veröffentlichung",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Ab 16 Jahren, unveröffentlicht, deutsch",
+      "ageRestriction": "Ab 16",
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.papierfresserchen.eu/anthologie-reihen/versteckt-in-stein-und-zeit/",
+      "description": "Türen öffnen und an verborgene Orte mitnehmen."
+    },
+    {
+      "id": "pf-rad-der-zeit-6",
+      "type": "anthologie",
+      "name": "Rad der Zeit – Band 6",
+      "organizer": "Papierfresserchen Verlag",
+      "deadline": null,
+      "deadlineNote": "Herbst 2026 geplante Veröffentlichung – Einreichung bis Buch voll",
+      "theme": "Zeit",
+      "genres": [
+        "Erzählung",
+        "Märchen",
+        "Kurzgeschichte",
+        "Lyrik",
+        "Experimentell"
+      ],
+      "prize": "Veröffentlichung (keine Vergütung, alle Rechte beim Autor)",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Ab 16 Jahren, unveröffentlicht, deutsch",
+      "ageRestriction": "Ab 16",
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.papierfresserchen.eu/anthologie-reihen/rad-der-zeit/",
+      "description": "Band 6 soll im Herbst 2026 erscheinen."
+    },
+    {
+      "id": "pf-pflaumen",
+      "type": "anthologie",
+      "name": "Auf den Kern gebracht – Pflaumen-Anthologie",
+      "organizer": "Papierfresserchen Verlag",
+      "deadline": null,
+      "deadlineNote": "Sommer 2026 geplante Veröffentlichung – Einreichung bis Buch voll",
+      "theme": "Pflaumen",
+      "genres": [
+        "Erzählung",
+        "Märchen",
+        "Kurzgeschichte",
+        "Lyrik",
+        "Experimentell"
+      ],
+      "prize": "Veröffentlichung",
+      "maxLength": "Max. 7.500 Zeichen inkl. Leerzeichen",
+      "requirements": "Unveröffentlicht, deutsch",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.papierfresserchen.eu/anthologie-reihen/auf-den-kern-gebracht/",
+      "description": "Jede Person kann einen Beitrag einreichen."
+    },
+    {
+      "id": "pf-berge",
+      "type": "anthologie",
+      "name": "Meine Berge … und ich",
+      "organizer": "Papierfresserchen Verlag",
+      "deadline": null,
+      "deadlineNote": "Spätsommer 2026 geplante Veröffentlichung – Einreichung bis Buch voll",
+      "theme": "Berge",
+      "genres": [
+        "Erzählung",
+        "Märchen",
+        "Kurzgeschichte",
+        "Lyrik",
+        "Experimentell"
+      ],
+      "prize": "Veröffentlichung",
+      "maxLength": "Max. 12.000 Zeichen",
+      "requirements": "Ab 16 Jahren, unveröffentlicht, deutsch",
+      "ageRestriction": "Ab 16",
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.papierfresserchen.eu/anthologie-reihen/meine-berge-und-ich/",
+      "description": "Anthologie rund um das Thema Berge."
+    },
+    {
+      "id": "pf-krimizimmerei",
+      "type": "anthologie",
+      "name": "Die Krimizimmerei – Krimi-Anthologie",
+      "organizer": "Papierfresserchen Verlag",
+      "deadline": null,
+      "deadlineNote": "2026 – Einreichung bis Buch voll",
+      "theme": "Krimi",
+      "genres": [
+        "Krimi",
+        "Kurzkrimi"
+      ],
+      "prize": "Veröffentlichung",
+      "maxLength": "Nicht spezifiziert",
+      "requirements": "Kriminalgeschichten",
+      "ageRestriction": null,
+      "regionRestriction": null,
+      "fee": null,
+      "url": "https://www.papierfresserchen.eu/anthologie-reihen/die-krimizimmerei/",
+      "description": "Krimi-Anthologie des Papierfresserchen Verlags."
+    }
+  ]
+}

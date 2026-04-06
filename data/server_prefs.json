@@ -1,0 +1,204 @@
+{
+    "radieschen-wien-2026-03-01": {
+        "overrides": {
+            "name": "& Radieschen – Zeitschrift für Literatur – Frühjahrsausgabe (März)",
+            "organizer": "",
+            "url": "https:\/\/radieschen.at\/einsenden\/",
+            "theme": "Tür und Angel",
+            "prize": "",
+            "deadline": "2026-03-31",
+            "maxLength": "",
+            "requirements": "Max. 8.000 Zeichen inkl. Leerzeichen bzw. max. 3 Gedichte. Nur .doc\/.docx. Unveröffentlicht. Österreichbezug erforderlich (Wohnsitz oder Schaffen).",
+            "description": "Seit 2006, 4x\/Jahr (März, Mai, September, Dezember). Bietet vor allem unbekannten Autor:innen eine Publikationsplattform. Zwölfköpfige Redaktion."
+        },
+        "starred": true
+    },
+    "manual_mag_1772403037340": {
+        "sourceUrl": "https:\/\/morgenschtean.at\/einsenden\/"
+    },
+    "manual_mag_1772403037340-2026-03-02": {
+        "starred": false,
+        "upload": {
+            "name": "Des oide Büdl im Spürgi .docx",
+            "charCount": 2489,
+            "checks": [
+                {
+                    "pass": true,
+                    "msg": "Text länger als 100 Zeichen (2489 Zeichen)"
+                },
+                {
+                    "pass": true,
+                    "msg": "Deutsche Sprache erkannt"
+                }
+            ]
+        }
+    },
+    "dum-magazin-2026-04-15": {
+        "starred": true,
+        "overrides": {
+            "name": "DUM – Frühlingsausgabe",
+            "organizer": "",
+            "url": "https:\/\/dum.at\/doc\/themen.php?nav=themen",
+            "theme": "DUM 118: 'blinken'",
+            "prize": "",
+            "deadline": "2026-04-15",
+            "maxLength": "",
+            "requirements": "Max. 1 Prosatext (max. 5 A4-Seiten) und\/oder 5 Gedichte pro Thema. Word-Dokument, 12pt, 1.5 Zeilenabstand, Times New Roman. Anonymisiert: kein Name auf dem Text!",
+            "description": "Seit 1992, erscheint 4x\/Jahr mit wechselnden Themen. Jährlich eine Dialekt-Ausgabe. Nächste Themen: DUM 118 'blinken' (15.4.2026), DUM 119 'sinken' (15.7.2026), DUM 120 'hinken' (15.9.2026)."
+        }
+    },
+    "radieschen-wien-2026-05-01": {
+        "overrides": {
+            "name": "& Radieschen Sommerausgabe",
+            "organizer": "",
+            "url": "https:\/\/radieschen.at\/einsenden\/",
+            "theme": "zögern und zagen",
+            "prize": "",
+            "deadline": "2026-06-30",
+            "maxLength": "",
+            "requirements": "Max. 8.000 Zeichen inkl. Leerzeichen bzw. max. 3 Gedichte. Nur .doc\/.docx. Unveröffentlicht. Österreichbezug erforderlich (Wohnsitz oder Schaffen).",
+            "description": "Seit 2006, 4x\/Jahr (März, Mai, September, Dezember). Bietet vor allem unbekannten Autor:innen eine Publikationsplattform. Zwölfköpfige Redaktion."
+        },
+        "starred": true
+    },
+    "dum-magazin-2026-07-15": {
+        "starred": true,
+        "overrides": {
+            "name": "DUM – Sommerausgabe",
+            "organizer": "",
+            "url": "https:\/\/dum.at\/doc\/themen.php?nav=themen",
+            "theme": "DUM 119: 'sinken'",
+            "prize": "",
+            "deadline": "2026-07-15",
+            "maxLength": "",
+            "requirements": "Max. 1 Prosatext (max. 5 A4-Seiten) und\/oder 5 Gedichte pro Thema. Word-Dokument, 12pt, 1.5 Zeilenabstand, Times New Roman. Anonymisiert: kein Name auf dem Text!",
+            "description": "Seit 1992, erscheint 4x\/Jahr mit wechselnden Themen. Jährlich eine Dialekt-Ausgabe. Nächste Themen: DUM 118 'blinken' (15.4.2026), DUM 119 'sinken' (15.7.2026), DUM 120 'hinken' (15.9.2026)."
+        }
+    },
+    "radieschen-wien-2026-09-01": {
+        "overrides": {
+            "name": "& Radieschen Herbstausgabe",
+            "organizer": "",
+            "url": "https:\/\/radieschen.at\/einsenden\/",
+            "theme": "alles & nichts",
+            "prize": "",
+            "deadline": "2026-09-30",
+            "maxLength": "",
+            "requirements": "Max. 8.000 Zeichen inkl. Leerzeichen bzw. max. 3 Gedichte. Nur .doc\/.docx. Unveröffentlicht. Österreichbezug erforderlich (Wohnsitz oder Schaffen).",
+            "description": "Seit 2006, 4x\/Jahr (März, Mai, September, Dezember). Bietet vor allem unbekannten Autor:innen eine Publikationsplattform. Zwölfköpfige Redaktion."
+        },
+        "starred": true
+    },
+    "gruppe48-2026": {
+        "starred": true
+    },
+    "dum-magazin-2026-09-15": {
+        "starred": true,
+        "overrides": {
+            "name": "DUM – Herbstausgabe",
+            "organizer": "",
+            "url": "https:\/\/dum.at\/doc\/themen.php?nav=themen",
+            "theme": "DUM 120: 'hinken'",
+            "prize": "",
+            "deadline": "2026-09-15",
+            "maxLength": "",
+            "requirements": "Max. 1 Prosatext (max. 5 A4-Seiten) und\/oder 5 Gedichte pro Thema. Word-Dokument, 12pt, 1.5 Zeilenabstand, Times New Roman. Anonymisiert: kein Name auf dem Text!",
+            "description": "Seit 1992, erscheint 4x\/Jahr mit wechselnden Themen. Jährlich eine Dialekt-Ausgabe. Nächste Themen: DUM 118 'blinken' (15.4.2026), DUM 119 'sinken' (15.7.2026), DUM 120 'hinken' (15.9.2026)."
+        }
+    },
+    "radieschen-wien-2026-12-01": {
+        "dismissed": true
+    },
+    "die-freiheit-die-ich-meine-2026": {
+        "dismissed": true
+    },
+    "schreibwettbewerbe-2026": {
+        "dismissed": true
+    },
+    "nature-writing-2026": {
+        "starred": false
+    },
+    "die-feder-glaube-2026": {
+        "starred": false
+    },
+    "manual_mag_1772206987399": {
+        "customRequirements": "Für den Thementeil nehmen wir ausschließlich unveröffentlichte Texte an.\nFür die Bundesland-Sonderseiten können veröffentlichte Texte eingesendet werden, wenn die Rechte bei dem:der Autor:in liegen bzw. der Verlag, in dem der Text erschien, einverstanden ist.\nPro Einsendung nehmen wir maximal 5 Gedichte oder einen Prosatext zu max. 4.000 Zeichen an.\nEinsendungen von Kindern\/ Schüler:innen sind erwünscht (bei Minderjährigen muss der:die Erziehungsberechtigte oder eine Lehrkraft einreichen)\nBitte senden Sie Ihre(n) Text(e) wie folgt:\n\nin einem einzigen Word-Format\nSchrift: Times New Roman, Zeilenabstand: 1,5\nmehrere Gedichte bitte durch Seitenumbrüche trennen\nkeine Formatierungen \/ Einzüge\n(Falls Sie ein Gedicht in einem ungewöhnlichen Satzformat einsenden wollen, können Sie zusätzlich ein PDF senden.)\nDas Word-File bitte mit ihrem Namen bzw. Pseudonym benennen (Beispiel: max-mustermann.doc)\n​Bitte senden Sie uns außerdem:\n\nIhre Anschrift (falls Ihr Text veröffentlicht wird, erhalten Sie ein Belegexemplar). Bitte geben Sie Ihre Adresse bei jeder Einreichung bekannt, das vereinfacht den Verwaltungsaufwand für den Versand.\neine kurze Biografie von max. 500 Zeichen, optional mit Foto und Link zu Ihrer Website.\n!!! Bitte senden Sie uns Ihre Einsendung über jene Mailadresse, unter der wir Sie dann auch für das Lektorat gut erreichen könhttps:\/\/morgenschtean.at\/nen.",
+        "sourceUrl": "https:\/\/morgenschtean.at\/einsenden\/"
+    },
+    "manual_mag_1772206987399-2026-03-02": {
+        "overrides": [],
+        "starred": true
+    },
+    "dum-magazin": {
+        "starred": true
+    },
+    "erostepost-2026": {
+        "starred": false,
+        "dismissed": true
+    },
+    "sebald-preis-2026": {
+        "starred": true
+    },
+    "wiener-werkstattpreis-2026": {
+        "dismissed": true
+    },
+    "moerderische-schwestern-2026": {
+        "dismissed": true
+    },
+    "bodensee-zwischenwelten-2026": {
+        "dismissed": true
+    },
+    "manual_1772519938583": {
+        "starred": true
+    },
+    "manual_mag_1772520072020": {
+        "sourceUrl": "https:\/\/www.erostepost.at\/texteinsendungen\/"
+    },
+    "manual_mag_1772520072020-2026-04-01": {
+        "starred": false,
+        "overrides": {
+            "name": "erostepost",
+            "organizer": "",
+            "url": "https:\/\/www.erostepost.at\/texteinsendungen\/",
+            "theme": "themenfrei",
+            "prize": "",
+            "deadline": "2026-04-01",
+            "maxLength": "",
+            "requirements": "",
+            "description": ""
+        }
+    },
+    "literaturpreis-erostepost-2026": {
+        "dismissed": true
+    },
+    "verlierer-neg-philosophie-2026": {
+        "starred": false,
+        "upload": {
+            "name": "Du hast nichts getan_NegativePhilosophie.docx",
+            "charCount": 1991,
+            "checks": [
+                {
+                    "pass": true,
+                    "msg": "Zeichenbegrenzung: 1991 \/ 40000"
+                },
+                {
+                    "pass": true,
+                    "msg": "Text länger als 100 Zeichen (1991 Zeichen)"
+                },
+                {
+                    "pass": true,
+                    "msg": "Deutsche Sprache erkannt"
+                }
+            ]
+        }
+    },
+    "haiku-2026": {
+        "starred": true
+    },
+    "manual_1774945115307": {
+        "starred": true
+    },
+    "manual_mag_1775413510982-2026-04-05": {
+        "starred": true
+    }
+}

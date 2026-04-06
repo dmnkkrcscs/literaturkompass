@@ -15,6 +15,7 @@
     "db:studio": "prisma studio",
     "migrate:v1": "tsx scripts/migrate-json.ts",
     "import:v1-site": "tsx scripts/scrape-v1-site.ts",
+    "import:v1": "tsx scripts/import-v1-data.ts",
     "fix:urls": "tsx scripts/fix-broken-urls.ts",
     "worker": "tsx src/worker/index.ts",
     "postinstall": "prisma generate"

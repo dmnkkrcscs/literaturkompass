@@ -1,0 +1,32 @@
+[
+    {
+        "id": "manual_1772519938583",
+        "type": "wettbewerb",
+        "name": "erostepost Literaturpreis 2026",
+        "url": "https:\/\/www.erostepost.at\/literaturpreis\/",
+        "deadline": "2026-05-31",
+        "description": "Inspiriert von Miles Davis (geboren am 26. Mai 1926), der die Musik dort feststellte, wo sie offensichtlich pausierte („It’s not the notes you play, it’s the notes you don’t play.“), machen wir uns auf die Suche nach Texten, die in der lautstarken Stille entstehen, nachdem alles gesagt wurde.",
+        "theme": "Benutzereingabe",
+        "genres": [],
+        "prize": "Siehe Website",
+        "maxLength": "Siehe Website",
+        "requirements": "Siehe Website",
+        "organizer": "Keine Angabe",
+        "source": "Benutzereingabe"
+    },
+    {
+        "id": "manual_1774945115307",
+        "type": "wettbewerb",
+        "name": "Alois Vogel-Literaturpreis 2026",
+        "url": "https:\/\/www.podiumliteratur.at\/der-alois-vogel-literaturpreis\/",
+        "deadline": "2026-03-31",
+        "description": "Das Motto des Alois Vogel-Literaturpreises 2026 ist: „Auch wir wollten auf dem Berg der Wahrheit unsere Zelte aufschlagen“.",
+        "theme": "Benutzereingabe",
+        "genres": [],
+        "prize": "Siehe Website",
+        "maxLength": "Siehe Website",
+        "requirements": "Siehe Website",
+        "organizer": "Keine Angabe",
+        "source": "Benutzereingabe"
+    }
+]

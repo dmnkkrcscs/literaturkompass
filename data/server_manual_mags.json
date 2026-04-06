@@ -1,0 +1,46 @@
+[
+    {
+        "id": "manual_mag_1772403037340",
+        "type": "zeitschrift",
+        "name": "Morgenschtean",
+        "location": "Wien",
+        "url": "https:\/\/morgenschtean.at\/einsenden\/",
+        "description": "Morgenschtean",
+        "genres": [],
+        "submissionStatus": "Einsendung möglich",
+        "requirements": "Siehe Website"
+    },
+    {
+        "id": "manual_mag_1772520072020",
+        "type": "zeitschrift",
+        "name": "erostepost",
+        "location": "Salzburg ",
+        "url": "https:\/\/www.erostepost.at\/texteinsendungen\/",
+        "description": "erostepost",
+        "genres": [],
+        "submissionStatus": "Einsendung möglich",
+        "requirements": "Siehe Website"
+    },
+    {
+        "id": "manual_mag_1775413510982",
+        "type": "zeitschrift",
+        "name": "KLW - Kollektive Literaturzeitschrift Würzburg",
+        "location": "Würzburg",
+        "url": "https:\/\/literatur-wuerzburg.de\/",
+        "submissionUrl": "https:\/\/literatur-wuerzburg.de\/einsendungen\/",
+        "description": "Formalia\nImmerzu her mit den Texten. Zu jeder Zeit, auch wenn keine neuen Ausgaben angekündigt sind. Jedwedes Genre, da soll sich niemand einschränken.Über Post an autorenseelsorge@literatur-wuerzburg.de freuen wir uns im Format:",
+        "genres": [
+            "Prosa",
+            "Gedicht"
+        ],
+        "submissionStatus": "Einsendung möglich",
+        "requirements": "Siehe Website",
+        "maxLength": "maximal 6 Normseiten",
+        "submissionDeadlines": [
+            {
+                "date": "2026-04-05",
+                "theme": "Ausschreibung"
+            }
+        ]
+    }
+]

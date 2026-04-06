@@ -1,0 +1,35 @@
+[
+    {
+        "id": "manual_mag_1772403037340-2026-03-02",
+        "originalId": "manual_mag_1772403037340",
+        "type": "zeitschrift",
+        "name": "Morgenschtean – Neiche Fetzn, Oide Hådern",
+        "deadline": "2026-03-02",
+        "theme": "Neiche Fetzn, Oide Hådern",
+        "isMagazineDeadline": true,
+        "url": "https:\/\/morgenschtean.at\/einsenden\/",
+        "source": "manuell"
+    },
+    {
+        "id": "manual_mag_1772520072020-2026-04-01",
+        "originalId": "manual_mag_1772520072020",
+        "type": "zeitschrift",
+        "name": "erostepost – themenfrei",
+        "deadline": "2026-04-01",
+        "theme": "themenfrei",
+        "isMagazineDeadline": true,
+        "url": "https:\/\/www.erostepost.at\/texteinsendungen\/",
+        "source": "manuell"
+    },
+    {
+        "id": "manual_mag_1775413510982-2026-04-05",
+        "originalId": "manual_mag_1775413510982",
+        "type": "zeitschrift",
+        "name": "KLW - Kollektive Literaturzeitschrift Würzburg – Flaschenpost",
+        "deadline": "2026-04-05",
+        "theme": "Flaschenpost",
+        "isMagazineDeadline": true,
+        "url": "",
+        "source": "manuell"
+    }
+]

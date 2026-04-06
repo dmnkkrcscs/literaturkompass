@@ -24,11 +24,43 @@
         "date": "2026-01-31"
     },
     {
+        "id": "verlierer-neg-philosophie-2026",
+        "name": "Verlierer Verlag – Negative Philosophie: Achselzuckend leben",
+        "title": "Du hast nichts getan.",
+        "theme": "Negative Philosophie — Achselzuckend leben",
+        "publication": "Verlierer Verlag",
+        "date": "2026-03-10"
+    },
+    {
+        "id": "radieschen-wien-2026-03-01",
+        "name": "& Radieschen – Zeitschrift für Literatur – Frühjahrsausgabe (März)",
+        "title": "Und halt trotzdem nicht.",
+        "theme": "Frühjahrsausgabe (März)",
+        "publication": "& Radieschen – Zeitschrift für Literatur",
+        "date": "2026-03-29"
+    },
+    {
+        "id": "manual_1774945115307",
+        "name": "Alois Vogel-Literaturpreis 2026",
+        "title": "Die Stille nach uns.",
+        "theme": "Benutzereingabe",
+        "publication": "Keine Angabe",
+        "date": "2026-03-31"
+    },
+    {
         "id": "sub-morgenschtean-neiche-fetzn",
         "name": "morgenschtean – Neiche Fetzn, oide Hådern",
         "title": "Des oide Büdl im Spürgi",
         "theme": "Neiche Fetzn, oide Hådern",
         "publication": "morgenschtean",
-        "date": "2026-03-05"
+        "date": "2026-03-02"
+    },
+    {
+        "id": "manual_mag_1775413510982-2026-04-05",
+        "name": "KLW - Kollektive Literaturzeitschrift Würzburg – Ausschreibung",
+        "title": "An die, die noch leben.",
+        "theme": "Ausschreibung",
+        "publication": "KLW - Kollektive Literaturzeitschrift Würzburg",
+        "date": "2026-04-05"
     }
 ]
