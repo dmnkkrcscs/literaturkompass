@@ -5,7 +5,7 @@ import { trpc } from '@/lib/trpc'
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import Link from 'next/link'
-import { Clock, Check, X, ChevronDown, ChevronUp, FileText } from 'lucide-react'
+import { Clock, Check, X, ChevronDown, ChevronUp, FileText, Pencil } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { useToast } from '@/components/ui/Toast'
@@ -17,6 +17,8 @@ export default function OffenPage() {
   const [activeSubmissionId, setActiveSubmissionId] = useState<string | null>(null)
   const [expandedText, setExpandedText] = useState<string | null>(null)
   const [textInputs, setTextInputs] = useState<Record<string, string>>({})
+  const [editingTitle, setEditingTitle] = useState<string | null>(null)
+  const [titleValue, setTitleValue] = useState('')
 
   const { data, isLoading, refetch } = trpc.submission.listOpen.useQuery()
 
@@ -113,10 +115,46 @@ export default function OffenPage() {
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        {sub.title && (
-                          <p className="text-lg font-semibold text-black dark:text-white">
-                            &bdquo;{sub.title}&ldquo;
-                          </p>
+                        {editingTitle === sub.id ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={titleValue}
+                              onChange={(e) => setTitleValue(e.target.value)}
+                              className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-lg font-semibold text-black dark:border-gray-600 dark:bg-dark-bg dark:text-white"
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  updateMutation.mutate({ id: sub.id, title: titleValue }, {
+                                    onSuccess: () => setEditingTitle(null),
+                                  })
+                                }
+                                if (e.key === 'Escape') setEditingTitle(null)
+                              }}
+                            />
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => updateMutation.mutate({ id: sub.id, title: titleValue }, {
+                                onSuccess: () => setEditingTitle(null),
+                              })}
+                              loading={updateMutation.isPending}
+                            >
+                              OK
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="group flex items-center gap-2">
+                            <p className="text-lg font-semibold text-black dark:text-white">
+                              {sub.title ? <>&bdquo;{sub.title}&ldquo;</> : <span className="text-gray-400 italic">Ohne Titel</span>}
+                            </p>
+                            <button
+                              onClick={() => { setEditingTitle(sub.id); setTitleValue(sub.title || '') }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         )}
                         <Link href={`/wettbewerb/${sub.competition.id}`}>
                           <p className="mt-0.5 text-sm text-gray-600 hover:text-accent-light dark:text-gray-400 dark:hover:text-accent-dark transition-colors">

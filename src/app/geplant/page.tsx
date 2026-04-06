@@ -19,7 +19,7 @@ export default function GeplantPage() {
   } | null>(null)
 
   const { data, isLoading, refetch } = trpc.competition.list.useQuery({
-    filters: { starred: true, dismissed: false },
+    filters: { starred: true, dismissed: false, noSubmissions: true },
     pagination: { take: 100 },
     sort: 'deadline',
   })

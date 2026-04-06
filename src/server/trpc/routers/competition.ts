@@ -12,6 +12,7 @@ const competitionFilterSchema = z.object({
   starred: z.boolean().optional(),
   dismissed: z.boolean().optional(),
   minScore: z.number().optional(),
+  noSubmissions: z.boolean().optional(), // Exclude competitions with SUBMITTED/ACCEPTED submissions
 })
 
 const paginationSchema = z.object({
@@ -57,6 +58,9 @@ export const competitionRouter = router({
       }
       if (filters.minScore !== undefined) {
         where.relevanceScore = { gte: filters.minScore }
+      }
+      if (filters.noSubmissions) {
+        where.submissions = { none: { status: { in: ['SUBMITTED', 'ACCEPTED'] } } }
       }
       if (filters.search) {
         where.OR = [
