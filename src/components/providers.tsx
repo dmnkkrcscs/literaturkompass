@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ThemeProvider } from 'next-themes'
 import { trpc, getTRPCClient } from '@/lib/trpc'
 import { ToastProvider } from '@/components/ui/Toast'
 
@@ -21,12 +22,14 @@ export function Providers({ children }: { children: ReactNode }) {
   const [trpcClient] = useState(getTRPCClient)
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          {children}
-        </ToastProvider>
-      </QueryClientProvider>
-    </trpc.Provider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </QueryClientProvider>
+      </trpc.Provider>
+    </ThemeProvider>
   )
 }

@@ -73,7 +73,7 @@ export function AiRecommendations() {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-black dark:text-white">Empfehlungen</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">KI-basiert auf deinem Profil</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Basiert auf deinem Profil und deinen Texten</p>
           </div>
         </div>
         <button

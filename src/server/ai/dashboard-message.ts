@@ -2,18 +2,18 @@ import { anthropic } from './client'
 import { db } from '@/lib/db'
 import { formatDateDE, daysUntil } from '@/lib/utils'
 
-const DASHBOARD_SYSTEM_PROMPT = `Du bist der Literaturkompass – ein warmherziger, begeisterter Literatur-Assistent. Deine Aufgabe ist es, dem Autor eine kurze, motivierende Nachricht zu schreiben.
+const DASHBOARD_SYSTEM_PROMPT = `Du bist der Literaturkompass – ein smarter, sachlicher Literatur-Assistent. Du gibst dem Autor einen kurzen, informativen Lagebericht.
 
 Regeln:
-- Schreibe auf Deutsch, persönlich und ermutigend
-- Variiere deinen Ton: mal enthusiastisch, mal nachdenklich, mal humorvoll, mal poetisch
-- Referenziere konkrete Wettbewerbsnamen und Deadlines aus dem Kontext
-- Halte dich kurz: 2-4 Sätze
+- Schreibe auf Deutsch, direkt und informativ – KEIN Lob, KEINE Motivation, NICHT "toll gemacht"
+- Fokus auf KONKRETE INFOS: nahende Deadlines mit Tagen, neue Funde, offene Einreichungen
+- Wenn Deadlines nahen: nenne Name + verbleibende Tage klar und direkt
+- Wenn neue Wettbewerbe gefunden wurden: nenne sie beim Namen, sag kurz worum es geht
+- Wenn es passende Wettbewerbe gibt: heb hervor warum sie passen könnten (Thema, Genre)
+- Halte dich kurz: 2-4 Sätze, maximal 5
 - Verwende keine Emojis
-- Beginne nie mit "Hey" oder "Hallo" – sei kreativer
-- Wenn Deadlines nahen, erwähne sie mit sanftem Druck
-- Wenn neue Wettbewerbe gefunden wurden, mache neugierig
-- Wenn es gerade nichts Neues gibt, ermutige zum Schreiben
+- Beginne nie mit "Hey", "Hallo" oder Lob – starte direkt mit der wichtigsten Info
+- Ton: wie ein knapper Briefing eines persönlichen Assistenten
 
 Antworte NUR mit dem Nachrichtentext, kein JSON, keine Formatierung.`
 
@@ -22,14 +22,25 @@ export async function generateDashboardMessage(): Promise<string> {
     // Gather context
     const now = new Date()
     const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+    const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
     const yesterday = new Date(now.getTime() - 48 * 60 * 60 * 1000)
 
-    const [upcomingStarred, newCompetitions, recentAccepted, openSubmissions] = await Promise.all([
+    const [urgentDeadlines, upcomingDeadlines, newCompetitions, openSubmissions, textsCount, totalActive] = await Promise.all([
       db.competition.findMany({
         where: {
           starred: true,
           dismissed: false,
           deadline: { gt: now, lte: in7Days },
+        },
+        select: { name: true, deadline: true, theme: true },
+        orderBy: { deadline: 'asc' },
+        take: 5,
+      }),
+      db.competition.findMany({
+        where: {
+          starred: true,
+          dismissed: false,
+          deadline: { gt: in7Days, lte: in30Days },
         },
         select: { name: true, deadline: true, theme: true },
         orderBy: { deadline: 'asc' },
@@ -45,38 +56,46 @@ export async function generateDashboardMessage(): Promise<string> {
         orderBy: { createdAt: 'desc' },
         take: 5,
       }),
-      db.submission.count({ where: { status: 'ACCEPTED' } }),
       db.submission.count({ where: { status: 'SUBMITTED' } }),
+      db.submission.count({ where: { textContent: { not: null } } }),
+      db.competition.count({ where: { status: 'ACTIVE', dismissed: false, deadline: { gt: now } } }),
     ])
 
     let context = `Heute ist ${formatDateDE(now)}.\n\n`
 
-    if (upcomingStarred.length > 0) {
-      context += `Geplante Einreichungen mit nahenden Deadlines:\n`
-      for (const c of upcomingStarred) {
+    if (urgentDeadlines.length > 0) {
+      context += `DRINGEND – Deadlines diese Woche:\n`
+      for (const c of urgentDeadlines) {
         const days = daysUntil(c.deadline!)
-        context += `- "${c.name}" (Deadline: ${formatDateDE(c.deadline!)}, noch ${days} Tage)${c.theme ? ` – Thema: ${c.theme}` : ''}\n`
+        context += `- "${c.name}" (noch ${days} Tag${days !== 1 ? 'e' : ''})${c.theme ? ` – Thema: ${c.theme}` : ''}\n`
+      }
+      context += '\n'
+    }
+
+    if (upcomingDeadlines.length > 0) {
+      context += `Kommende Deadlines (nächste 30 Tage):\n`
+      for (const c of upcomingDeadlines) {
+        const days = daysUntil(c.deadline!)
+        context += `- "${c.name}" (noch ${days} Tage)${c.theme ? ` – Thema: ${c.theme}` : ''}\n`
       }
       context += '\n'
     }
 
     if (newCompetitions.length > 0) {
-      context += `Neue Ausschreibungen der letzten 48 Stunden:\n`
+      context += `Neue Ausschreibungen (letzte 48h):\n`
       for (const c of newCompetitions) {
         context += `- "${c.name}"${c.theme ? ` – ${c.theme}` : ''}${c.deadline ? ` (Deadline: ${formatDateDE(c.deadline)})` : ''}\n`
       }
       context += '\n'
     }
 
-    if (openSubmissions > 0) {
-      context += `${openSubmissions} offene Einreichung(en) warten auf Antwort.\n`
-    }
-    if (recentAccepted > 0) {
-      context += `Bisherige Zusagen: ${recentAccepted}\n`
+    context += `Status: ${openSubmissions} offene Einreichung${openSubmissions !== 1 ? 'en' : ''}, ${totalActive} aktive Wettbewerbe verfügbar.\n`
+    if (textsCount > 0) {
+      context += `${textsCount} eingereichte Texte sind hinterlegt und werden für personalisierte Empfehlungen analysiert.\n`
     }
 
-    if (upcomingStarred.length === 0 && newCompetitions.length === 0) {
-      context += 'Gerade gibt es keine dringenden Deadlines und keine neuen Funde. Ein guter Moment zum Schreiben!\n'
+    if (urgentDeadlines.length === 0 && newCompetitions.length === 0 && upcomingDeadlines.length === 0) {
+      context += 'Keine dringenden Deadlines und keine neuen Funde. Ruhige Phase.\n'
     }
 
     const response = await anthropic.messages.create({

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
@@ -19,11 +19,14 @@ const navLinks = [
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
+
+  useEffect(() => setMounted(true), [])
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
   }
 
   const isActive = (href: string) => {
@@ -41,7 +44,7 @@ export function Navbar() {
             className="flex items-center gap-2 font-bold text-xl text-accent-light dark:text-accent-dark hover:opacity-80 transition-opacity"
           >
             <span>📚</span>
-            <span className="hidden sm:inline">Literaturkompass</span>
+            <span>Literaturkompass</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -71,7 +74,9 @@ export function Navbar() {
               aria-label="Toggle theme"
               className="p-2"
             >
-              {theme === 'dark' ? (
+              {!mounted ? (
+                <Moon className="h-5 w-5" />
+              ) : resolvedTheme === 'dark' ? (
                 <Sun className="h-5 w-5" />
               ) : (
                 <Moon className="h-5 w-5" />
