@@ -3,7 +3,7 @@
 import { trpc } from '@/lib/trpc'
 import Link from 'next/link'
 import { formatDateShort } from '@/lib/utils'
-import { Trophy, ExternalLink, Pencil } from 'lucide-react'
+import { Trophy, ExternalLink, Pencil, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useToast } from '@/components/ui/Toast'
 import { useState } from 'react'
@@ -24,9 +24,32 @@ export default function HallOfFamePage() {
   })
 
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [editUrl, setEditUrl] = useState('')
+  const [editFields, setEditFields] = useState<{
+    title: string
+    publishedUrl: string
+    notes: string
+  }>({ title: '', publishedUrl: '', notes: '' })
 
   const submissions = data?.submissions || []
+
+  const startEditing = (sub: any) => {
+    setEditingId(sub.id)
+    setEditFields({
+      title: sub.title || '',
+      publishedUrl: sub.publishedUrl || '',
+      notes: sub.notes || '',
+    })
+  }
+
+  const saveEditing = () => {
+    if (!editingId) return
+    updateMutation.mutate({
+      id: editingId,
+      title: editFields.title || undefined,
+      publishedUrl: editFields.publishedUrl || null,
+      notes: editFields.notes || null,
+    })
+  }
 
   return (
     <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
@@ -75,94 +98,124 @@ export default function HallOfFamePage() {
                 {/* Gold accent bar */}
                 <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-yellow-400 to-amber-600" />
 
-                <div className="p-8 pl-7">
-                  {/* Title - large and prominent */}
-                  <h2 className="text-2xl font-bold text-black dark:text-white">
-                    {sub.title
-                      ? <>&bdquo;{sub.title}&ldquo;</>
-                      : <span className="italic text-gray-400">Ohne Titel</span>
-                    }
-                  </h2>
+                {editingId === sub.id ? (
+                  /* ── Edit mode ── */
+                  <div className="p-8 pl-7 space-y-4">
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Titel</label>
+                      <input
+                        type="text"
+                        value={editFields.title}
+                        onChange={(e) => setEditFields(f => ({ ...f, title: e.target.value }))}
+                        placeholder="Titel des Textes"
+                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-lg font-bold text-black dark:border-gray-600 dark:bg-dark-bg dark:text-white"
+                        autoFocus
+                      />
+                    </div>
 
-                  {/* Competition / Magazine + Theme */}
-                  <div className="mt-2">
-                    <Link
-                      href={`/wettbewerb/${sub.competition.id}`}
-                      className="text-base text-gray-700 hover:text-accent-light dark:text-gray-300 dark:hover:text-accent-dark transition-colors"
-                    >
-                      {sub.competition.name}
-                    </Link>
-                    {sub.competition.organizer && (
-                      <span className="text-gray-400 dark:text-gray-500"> · {sub.competition.organizer}</span>
-                    )}
-                  </div>
-
-                  {/* Dates */}
-                  <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                    {sub.submittedAt && (
-                      <span>
-                        Eingereicht: {formatDateShort(new Date(sub.submittedAt))}
-                      </span>
-                    )}
-                    {sub.responseAt && (
-                      <span className="font-medium text-amber-600 dark:text-amber-400">
-                        Angenommen: {formatDateShort(new Date(sub.responseAt))}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Published URL */}
-                  {editingId === sub.id ? (
-                    <div className="mt-4 flex gap-2">
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Link zur Veröffentlichung</label>
                       <input
                         type="url"
-                        value={editUrl}
-                        onChange={(e) => setEditUrl(e.target.value)}
+                        value={editFields.publishedUrl}
+                        onChange={(e) => setEditFields(f => ({ ...f, publishedUrl: e.target.value }))}
                         placeholder="https://..."
-                        className="flex-1 rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-black dark:border-gray-600 dark:bg-dark-bg dark:text-white"
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            updateMutation.mutate({ id: sub.id, publishedUrl: editUrl || null })
-                          }
-                          if (e.key === 'Escape') setEditingId(null)
-                        }}
+                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-black dark:border-gray-600 dark:bg-dark-bg dark:text-white"
                       />
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => updateMutation.mutate({ id: sub.id, publishedUrl: editUrl || null })}
-                        loading={updateMutation.isPending}
-                      >
+                    </div>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">Notizen</label>
+                      <textarea
+                        value={editFields.notes}
+                        onChange={(e) => setEditFields(f => ({ ...f, notes: e.target.value }))}
+                        placeholder="z.B. Erscheinungsdatum, Ausgabe, ..."
+                        rows={2}
+                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-black dark:border-gray-600 dark:bg-dark-bg dark:text-white"
+                      />
+                    </div>
+
+                    <div className="flex gap-2 pt-1">
+                      <Button variant="primary" size="sm" onClick={saveEditing} loading={updateMutation.isPending}>
+                        <Check className="mr-1 h-4 w-4" />
                         Speichern
                       </Button>
                       <Button variant="secondary" size="sm" onClick={() => setEditingId(null)}>
+                        <X className="mr-1 h-4 w-4" />
                         Abbrechen
                       </Button>
                     </div>
-                  ) : (
-                    <div className="mt-4 flex items-center gap-3">
-                      {sub.publishedUrl && (
-                        <a
-                          href={sub.publishedUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-4 py-1.5 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30"
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                          Zur Veröffentlichung
-                        </a>
-                      )}
+                  </div>
+                ) : (
+                  /* ── View mode ── */
+                  <div className="p-8 pl-7">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        {/* Title */}
+                        <h2 className="text-2xl font-bold text-black dark:text-white">
+                          {sub.title
+                            ? <>&bdquo;{sub.title}&ldquo;</>
+                            : <span className="italic text-gray-400">Ohne Titel</span>
+                          }
+                        </h2>
+
+                        {/* Competition / Magazine */}
+                        <div className="mt-2">
+                          <Link
+                            href={`/wettbewerb/${sub.competition.id}`}
+                            className="text-base text-gray-700 hover:text-accent-light dark:text-gray-300 dark:hover:text-accent-dark transition-colors"
+                          >
+                            {sub.competition.name}
+                          </Link>
+                          {sub.competition.organizer && (
+                            <span className="text-gray-400 dark:text-gray-500"> · {sub.competition.organizer}</span>
+                          )}
+                        </div>
+
+                        {/* Notes */}
+                        {sub.notes && (
+                          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 italic">{sub.notes}</p>
+                        )}
+
+                        {/* Dates */}
+                        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                          {sub.submittedAt && (
+                            <span>Eingereicht: {formatDateShort(new Date(sub.submittedAt))}</span>
+                          )}
+                          {sub.responseAt && (
+                            <span className="font-medium text-amber-600 dark:text-amber-400">
+                              Angenommen: {formatDateShort(new Date(sub.responseAt))}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Published URL + Edit */}
+                        <div className="mt-4 flex items-center gap-3">
+                          {sub.publishedUrl && (
+                            <a
+                              href={sub.publishedUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-4 py-1.5 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              Zur Veröffentlichung
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Edit button */}
                       <button
-                        onClick={() => { setEditingId(sub.id); setEditUrl(sub.publishedUrl || '') }}
-                        className="inline-flex items-center gap-1 text-sm text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-gray-600 dark:hover:text-gray-300"
+                        onClick={() => startEditing(sub)}
+                        className="shrink-0 rounded-lg p-2 text-gray-300 opacity-0 transition-all group-hover:opacity-100 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                        title="Bearbeiten"
                       >
-                        <Pencil className="h-3 w-3" />
-                        {sub.publishedUrl ? 'Bearbeiten' : 'Link hinzufügen'}
+                        <Pencil className="h-4 w-4" />
                       </button>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
