@@ -5,6 +5,7 @@ import { sourceRouter } from './routers/source'
 import { crawlRouter } from './routers/crawl'
 import { aiRouter } from './routers/ai'
 import { statsRouter } from './routers/stats'
+import { importRouter } from './routers/import'
 
 export const appRouter = router({
   competition: competitionRouter,
@@ -13,6 +14,7 @@ export const appRouter = router({
   crawl: crawlRouter,
   ai: aiRouter,
   stats: statsRouter,
+  import: importRouter,
 })
 
 export type AppRouter = typeof appRouter

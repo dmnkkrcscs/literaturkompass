@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { Plus, RotateCw } from 'lucide-react'
+import { Plus, RotateCw, Upload } from 'lucide-react'
+import { trpc } from '@/lib/trpc'
+import { useToast } from '@/components/ui/Toast'
 
 interface Source {
   id: string
@@ -96,6 +98,17 @@ export default function QuellenPage() {
     }
   }
 
+  const { toast } = useToast()
+  const importStatus = trpc.import.status.useQuery()
+  const importMutation = trpc.import.runV1Import.useMutation({
+    onSuccess: (data) => {
+      toast(data.message, data.success ? 'success' : 'error')
+      importStatus.refetch()
+      loadSources()
+    },
+    onError: (err) => toast(err.message, 'error'),
+  })
+
   const typeLabels: Record<string, string> = {
     AGGREGATOR: 'Aggregator',
     SEARCH: 'Suchmaschine',
@@ -119,6 +132,31 @@ export default function QuellenPage() {
             <Plus className="mr-2 h-4 w-4" />
             Quelle hinzufügen
           </Button>
+        </div>
+
+        {/* V1 Import */}
+        <div className="mb-8 rounded-lg border border-gray-200 bg-light-surface p-6 dark:border-gray-700 dark:bg-dark-surface">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-black dark:text-white">
+                V1-Daten importieren
+              </h3>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                {importStatus.data?.imported
+                  ? `${importStatus.data.count} Einträge bereits importiert`
+                  : 'Wettbewerbe, Zeitschriften und Einreichungen aus der alten Version übernehmen'}
+              </p>
+            </div>
+            <Button
+              onClick={() => importMutation.mutate()}
+              loading={importMutation.isPending}
+              variant={importStatus.data?.imported ? 'secondary' : 'primary'}
+              size="sm"
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              {importStatus.data?.imported ? 'Erneut importieren' : 'Import starten'}
+            </Button>
+          </div>
         </div>
 
         {/* Add Source Form */}
