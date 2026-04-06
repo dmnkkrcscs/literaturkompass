@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { db } from '@/lib/db'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { AiMessage } from '@/components/dashboard/AiMessage'
+import { AiMessage, AiRecommendations } from '@/components/dashboard/AiMessage'
 
 interface DashboardStats {
   totalCompetitions: number
@@ -136,7 +136,7 @@ export default async function DashboardPage() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Nächste Deadlines */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <section className="rounded-2xl bg-light-surface p-6 dark:bg-dark-surface">
             <h2 className="mb-4 text-xl font-semibold text-black dark:text-white">
               Nächste Deadlines
             </h2>
@@ -186,7 +186,7 @@ export default async function DashboardPage() {
           </section>
 
           {/* Neue Funde */}
-          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+          <section className="rounded-2xl bg-light-surface p-6 dark:bg-dark-surface">
             <h2 className="mb-4 text-xl font-semibold text-black dark:text-white">
               Neue Funde
             </h2>
@@ -227,6 +227,10 @@ export default async function DashboardPage() {
               </Button>
             </Link>
           </section>
+        </div>
+        {/* AI Recommendations */}
+        <div className="mt-8">
+          <AiRecommendations />
         </div>
       </div>
     </main>
