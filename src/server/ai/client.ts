@@ -10,6 +10,7 @@ export const anthropic =
   globalForAnthropic.anthropic ||
   new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
+    timeout: 25_000, // 25s - fail fast before Cloudflare's 100s timeout
   })
 
 // Prevent multiple instances during development
