@@ -59,6 +59,7 @@ export async function generateRecommendations(): Promise<AiRecommendation[]> {
           starred: false,
           status: 'ACTIVE',
           deadline: { gt: new Date() },
+          submissions: { none: { status: { in: ['SUBMITTED', 'ACCEPTED'] } } },
         },
         select: {
           id: true, name: true, type: true, theme: true, genres: true,

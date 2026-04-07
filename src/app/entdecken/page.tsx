@@ -17,6 +17,8 @@ interface Competition {
   theme?: string | null
   prize?: string | null
   genres: string[]
+  submissions?: { id: string }[]
+  magazine?: { id: string; name: string } | null
 }
 
 interface FilterState {
@@ -218,6 +220,12 @@ export default function EntdeckenPage() {
                           ? 'Anthologie'
                           : 'Zeitschrift'}
                     </Badge>
+                    {comp.submissions && comp.submissions.length > 0 && (
+                      <Badge variant="submitted">Bereits eingereicht</Badge>
+                    )}
+                    {comp.magazine && (
+                      <Badge variant="gold">{comp.magazine.name}</Badge>
+                    )}
                     {comp.genres && comp.genres.length > 0 && (
                       <Badge variant="sage">
                         {comp.genres.slice(0, 2).join(', ')}

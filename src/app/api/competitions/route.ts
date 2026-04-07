@@ -45,6 +45,12 @@ export async function GET(request: NextRequest) {
           theme: true,
           prize: true,
           genres: true,
+          submissions: {
+            where: { status: { in: ['SUBMITTED', 'ACCEPTED'] } },
+            select: { id: true },
+            take: 1,
+          },
+          magazine: { select: { id: true, name: true } },
         },
         orderBy: { deadline: 'asc' },
         take,

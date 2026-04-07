@@ -105,11 +105,38 @@ export const importRouter = router({
       } catch { skipped++ }
     }
 
-    // Import magazines with deadlines
+    // Import magazines — create Magazine records + link issues
     for (const mag of magazines) {
       const pref = prefs[mag.id] || {}
       const baseUrl = mag.submissionUrl || mag.url
       if (!baseUrl) { skipped++; continue }
+
+      // Upsert Magazine record
+      const magazine = await db.magazine.upsert({
+        where: { url: baseUrl },
+        update: {},
+        create: {
+          name: mag.name,
+          url: baseUrl,
+          location: mag.location || null,
+          description: mag.description || null,
+          genres: mag.genres || [],
+          requirements: mag.requirements || null,
+        },
+      })
+
+      // Link any existing ZEITSCHRIFT competitions to this magazine
+      await db.competition.updateMany({
+        where: {
+          type: 'ZEITSCHRIFT',
+          magazineId: null,
+          OR: [
+            { legacyId: { startsWith: mag.id } },
+            { url: { startsWith: baseUrl } },
+          ],
+        },
+        data: { magazineId: magazine.id },
+      })
 
       const deadlines = mag.submissionDeadlines || []
       if (deadlines.length > 0) {
@@ -121,6 +148,10 @@ export const importRouter = router({
 
           const existing = await db.competition.findFirst({ where: { legacyId: dlId } })
           if (existing) {
+            // Ensure it's linked to the magazine
+            if (!existing.magazineId) {
+              await db.competition.update({ where: { id: existing.id }, data: { magazineId: magazine.id } })
+            }
             subs += await maybeCreateSub(existing.id, dlId, submittedMap, acceptedMap)
             skipped++; continue
           }
@@ -139,6 +170,7 @@ export const importRouter = router({
                 url: uniqueUrl,
                 description: dlOverrides.description || mag.description || null,
                 source: { connect: { id: source.id } },
+                magazine: { connect: { id: magazine.id } },
                 starred: dlPref.starred === true || pref.starred === true || starredItems.includes(dlId),
                 dismissed: dlPref.dismissed === true,
               },
@@ -164,6 +196,7 @@ export const importRouter = router({
               url: baseUrl,
               description: mag.description || null,
               source: { connect: { id: source.id } },
+              magazine: { connect: { id: magazine.id } },
               starred: pref.starred === true || starredItems.includes(mag.id),
               dismissed: pref.dismissed === true,
             },

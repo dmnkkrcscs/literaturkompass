@@ -188,6 +188,16 @@ export default function WettbewerbPage() {
             {typeLabels[competition.type] || competition.type}
           </Badge>
 
+          {competition.submissions.some((s: any) => ['SUBMITTED', 'ACCEPTED'].includes(s.status)) && (
+            <Badge variant="submitted">Bereits eingereicht</Badge>
+          )}
+
+          {(competition as any).magazine && (
+            <Link href="/zeitschriften">
+              <Badge variant="gold">{(competition as any).magazine.name}</Badge>
+            </Link>
+          )}
+
           {competition.deadline && (
             <div className={`flex items-center gap-1 text-sm font-medium ${
               daysLeft !== null && daysLeft <= 0

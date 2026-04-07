@@ -84,6 +84,12 @@ export const competitionRouter = router({
             _count: {
               select: { submissions: true, analyses: true },
             },
+            submissions: {
+              where: { status: { in: ['SUBMITTED', 'ACCEPTED'] } },
+              select: { id: true },
+              take: 1,
+            },
+            magazine: { select: { id: true, name: true } },
           },
         }),
         db.competition.count({ where }),
@@ -109,6 +115,7 @@ export const competitionRouter = router({
         include: {
           submissions: true,
           analyses: true,
+          magazine: { select: { id: true, name: true, url: true } },
         },
       })
     }),

@@ -3,7 +3,7 @@
 import React from 'react'
 
 export interface BadgeProps {
-  variant?: 'default' | 'wine' | 'sage' | 'gold' | 'accent'
+  variant?: 'default' | 'wine' | 'sage' | 'gold' | 'accent' | 'submitted'
   children: React.ReactNode
   className?: string
 }
@@ -14,6 +14,7 @@ const variantClasses = {
   sage: 'bg-sage/20 text-sage dark:text-sage border border-sage/30',
   gold: 'bg-gold/20 text-gold dark:text-gold border border-gold/30',
   accent: 'bg-accent-light/20 dark:bg-accent-dark/20 text-accent-light dark:text-accent-dark border border-accent-light/30 dark:border-accent-dark/30',
+  submitted: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800',
 }
 
 export function Badge({ variant = 'default', children, className = '' }: BadgeProps) {

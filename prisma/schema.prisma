@@ -100,6 +100,9 @@ model Competition {
   starred             Boolean           @default(false)
   starredAt           DateTime?
 
+  magazineId          String?
+  magazine            Magazine?         @relation(fields: [magazineId], references: [id], onDelete: SetNull)
+
   submissions         Submission[]
   analyses            AiAnalysis[]
   crawlLogs           CrawlLog[]
@@ -113,6 +116,7 @@ model Competition {
   @@index([status, dismissed, deadline])
   @@index([type])
   @@index([starred])
+  @@index([magazineId])
 }
 
 model Source {
@@ -222,6 +226,22 @@ model UserFeedback {
 
   // Index for common queries
   @@index([competitionId])
+}
+
+model Magazine {
+  id            String        @id @default(cuid())
+  name          String
+  url           String        @unique
+  location      String?
+  description   String?
+  genres        String[]      @default([])
+  requirements  String?
+  isActive      Boolean       @default(true)
+
+  issues        Competition[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 // ============================================================================
