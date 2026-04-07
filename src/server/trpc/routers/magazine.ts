@@ -108,7 +108,7 @@ export const magazineRouter = router({
       z.object({
         magazineId: z.string(),
         theme: z.string().min(1),
-        deadline: z.date(),
+        deadline: z.coerce.date(),
         requirements: z.string().optional(),
       })
     )
@@ -128,6 +128,12 @@ export const magazineRouter = router({
       const issueUrl = `${magazine.url}#${dateStr}`
       const issueName = `${magazine.name} – ${input.theme}`
 
+      // Check for duplicate URL (same magazine + same deadline date)
+      const existing = await db.competition.findUnique({ where: { url: issueUrl } })
+      if (existing) {
+        throw new Error(`Ausgabe für dieses Datum existiert bereits: ${issueName}`)
+      }
+
       return db.competition.create({
         data: {
           type: 'ZEITSCHRIFT',
@@ -138,8 +144,8 @@ export const magazineRouter = router({
           url: issueUrl,
           genres: magazine.genres,
           requirements: input.requirements || magazine.requirements,
-          sourceId: source.id,
-          magazineId: magazine.id,
+          source: { connect: { id: source.id } },
+          magazine: { connect: { id: magazine.id } },
         },
       })
     }),
