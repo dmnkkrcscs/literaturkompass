@@ -13,6 +13,7 @@ interface DismissDialogProps {
 }
 
 const quickReasons = [
+  'Duplikat',
   'Falsches Genre',
   'Zu teuer',
   'Zu kurze Deadline',

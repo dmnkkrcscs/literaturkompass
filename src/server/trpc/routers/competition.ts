@@ -161,7 +161,8 @@ export const competitionRouter = router({
       })
 
       // If reason provided, extract and store dismissal pattern for AI learning
-      if (input.reason) {
+      // Skip pattern learning for "Duplikat" — it's just cleanup, not a preference signal
+      if (input.reason && !input.reason.toLowerCase().includes('duplikat')) {
         const reason = input.reason.toLowerCase().trim()
         // Map common reasons to patterns
         const patternMap: Record<string, string[]> = {

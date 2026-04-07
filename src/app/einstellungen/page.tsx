@@ -1,16 +1,32 @@
 'use client'
 
 import { useState } from 'react'
+import { trpc } from '@/lib/trpc'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { Download, Upload, Moon, Sun } from 'lucide-react'
+import { useToast } from '@/components/ui/Toast'
+import { Download, Upload, Moon, Sun, Send, CheckCircle, XCircle } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 export default function EinstellungenPage() {
   const { theme, setTheme } = useTheme()
+  const { toast } = useToast()
   const [exportLoading, setExportLoading] = useState(false)
   const [importLoading, setImportLoading] = useState(false)
-  const [telegramConnected, setTelegramConnected] = useState(false)
+
+  const { data: telegramStatus, isLoading: telegramLoading } = trpc.telegram.status.useQuery()
+  const testMutation = trpc.telegram.testMessage.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        toast('Testnachricht gesendet! Prüfe Telegram.', 'success')
+      } else {
+        toast('Nachricht konnte nicht gesendet werden. Prüfe Bot-Token und Chat-ID.', 'error')
+      }
+    },
+    onError: () => {
+      toast('Fehler beim Senden der Testnachricht.', 'error')
+    },
+  })
 
   const handleExportData = async () => {
     setExportLoading(true)
@@ -131,23 +147,58 @@ export default function EinstellungenPage() {
                     Telegram Bot
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Erhalten Sie Benachrichtigungen über neue Wettbewerbe und Deadline-Erinnerungen
+                    Tägliches Briefing um 9:00 Uhr mit Deadlines, neuen Funden und Status.
                   </p>
                 </div>
 
                 <div>
-                  {telegramConnected ? (
-                    <Badge variant="sage">Verbunden</Badge>
+                  {telegramLoading ? (
+                    <Badge variant="default">Prüfe...</Badge>
+                  ) : telegramStatus?.connected ? (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <Badge variant="sage">Verbunden</Badge>
+                    </div>
                   ) : (
-                    <Badge variant="default">Nicht verbunden</Badge>
+                    <div className="flex items-center gap-2">
+                      <XCircle className="h-4 w-4 text-red-400" />
+                      <Badge variant="default">Nicht verbunden</Badge>
+                    </div>
                   )}
                 </div>
               </div>
 
-              {!telegramConnected && (
-                <Button variant="secondary" className="w-full">
-                  Telegram Bot verbinden
-                </Button>
+              {telegramStatus?.connected && (
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Bot: <span className="font-mono text-black dark:text-white">@{telegramStatus.botUsername}</span>
+                    {' · '}Chat-ID: <span className="font-mono text-black dark:text-white">{telegramStatus.chatId}</span>
+                  </p>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => testMutation.mutate()}
+                    loading={testMutation.isPending}
+                  >
+                    <Send className="mr-1 h-4 w-4" />
+                    Testnachricht senden
+                  </Button>
+                </div>
+              )}
+
+              {!telegramLoading && !telegramStatus?.connected && (
+                <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
+                  <p className="text-sm font-medium text-black dark:text-white">So verbindest du Telegram:</p>
+                  <ol className="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                    <li>1. Erstelle einen Bot via <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" className="text-accent-light dark:text-accent-dark underline">@BotFather</a></li>
+                    <li>2. Schreibe dem Bot eine Nachricht, damit der Chat aktiv wird</li>
+                    <li>3. Trage <code className="rounded bg-gray-200 px-1 dark:bg-gray-700">TELEGRAM_BOT_TOKEN</code> und <code className="rounded bg-gray-200 px-1 dark:bg-gray-700">TELEGRAM_CHAT_ID</code> in die Environment-Variablen ein</li>
+                    <li>4. Redeploy — der Status wird automatisch geprüft</li>
+                  </ol>
+                  {telegramStatus?.reason && (
+                    <p className="mt-2 text-xs text-red-500">{telegramStatus.reason}</p>
+                  )}
+                </div>
               )}
             </div>
           </section>
