@@ -59,11 +59,13 @@ export async function GET(request: NextRequest) {
       db.competition.count({ where }),
     ])
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       competitions,
       hasMore: skip + take < count,
       total: count,
     })
+    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120')
+    return response
   } catch (error) {
     console.error('Failed to fetch competitions:', error)
     return NextResponse.json(
