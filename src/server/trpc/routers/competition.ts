@@ -36,7 +36,15 @@ export const competitionRouter = router({
       const { filters = {}, pagination = {}, sort = 'deadline' } = input
       const { take = 20, skip = 0 } = pagination
 
-      const where: Prisma.CompetitionWhereInput = {}
+      const now = new Date()
+      const where: Prisma.CompetitionWhereInput = {
+        // Hide expired deadlines unless the competition is starred
+        OR: [
+          { deadline: { gt: now } },
+          { deadline: null },
+          { starred: true },
+        ],
+      }
 
       if (filters.type) {
         where.type = filters.type as Prisma.CompetitionWhereInput['type']
@@ -63,9 +71,13 @@ export const competitionRouter = router({
         where.submissions = { none: { status: { in: ['SUBMITTED', 'ACCEPTED'] } } }
       }
       if (filters.search) {
-        where.OR = [
-          { name: { contains: filters.search, mode: 'insensitive' } },
-          { description: { contains: filters.search, mode: 'insensitive' } },
+        where.AND = [
+          {
+            OR: [
+              { name: { contains: filters.search, mode: 'insensitive' } },
+              { description: { contains: filters.search, mode: 'insensitive' } },
+            ],
+          },
         ]
       }
 

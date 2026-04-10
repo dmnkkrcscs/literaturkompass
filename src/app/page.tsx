@@ -62,10 +62,17 @@ async function getUpcomingDeadlines(): Promise<CompetitionDisplay[]> {
 }
 
 async function getLatestCompetitions(): Promise<CompetitionDisplay[]> {
+  const now = new Date()
   return db.competition.findMany({
     where: {
       status: 'ACTIVE',
       dismissed: false,
+      // Hide expired deadlines unless the competition is starred
+      OR: [
+        { deadline: { gt: now } },
+        { deadline: null },
+        { starred: true },
+      ],
     },
     select: {
       id: true,

@@ -10,9 +10,20 @@ export async function GET(request: NextRequest) {
     const skip = parseInt(searchParams.get('skip') || '0', 10)
     const take = parseInt(searchParams.get('take') || '10', 10)
 
+    const now = new Date()
     const where: any = {
       dismissed: false,
       status: 'ACTIVE',
+      AND: [
+        // Hide expired deadlines unless the competition is starred
+        {
+          OR: [
+            { deadline: { gt: now } },
+            { deadline: null },
+            { starred: true },
+          ],
+        },
+      ],
     }
 
     // Apply filters
@@ -26,11 +37,13 @@ export async function GET(request: NextRequest) {
 
     // Add search filter
     if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { organizer: { contains: search, mode: 'insensitive' } },
-      ]
+      where.AND.push({
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+          { organizer: { contains: search, mode: 'insensitive' } },
+        ],
+      })
     }
 
     const [competitions, count] = await Promise.all([
