@@ -104,7 +104,7 @@ export const submissionRouter = router({
       z.object({
         competitionId: z.string(),
         title: z.string(),
-        submittedAt: z.date().optional(),
+        submittedAt: z.coerce.date().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -138,7 +138,7 @@ export const submissionRouter = router({
       z.object({
         id: z.string(),
         status: z.enum(['ACCEPTED', 'REJECTED']),
-        responseAt: z.date().optional(),
+        responseAt: z.coerce.date().optional(),
         publishedUrl: z.string().optional(),
       })
     )
@@ -166,8 +166,8 @@ export const submissionRouter = router({
         title: z.string().optional(),
         notes: z.string().nullable().optional(),
         textContent: z.string().nullable().optional(),
-        submittedAt: z.date().nullable().optional(),
-        responseAt: z.date().nullable().optional(),
+        submittedAt: z.coerce.date().nullable().optional(),
+        responseAt: z.coerce.date().nullable().optional(),
         publishedUrl: z.string().nullable().optional(),
         status: z.enum(['PLANNED', 'SUBMITTED', 'ACCEPTED', 'REJECTED']).optional(),
       })
