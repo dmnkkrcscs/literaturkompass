@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { publicProcedure, router } from '../init'
+import { getCrawlQueue } from '@/server/crawl/scheduler'
 
 export const crawlRouter = router({
   trigger: publicProcedure
@@ -11,9 +12,18 @@ export const crawlRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // Just return a trigger response — actual crawl happens via BullMQ
+      const queue = getCrawlQueue()
+      const job = await queue.add('crawl-all-sources-manual', {
+        sourceId: input.sourceId,
+        manual: true,
+      }, {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 2000 },
+      })
+
       return {
-        message: 'Crawl job triggered successfully',
+        message: 'Crawl job enqueued',
+        jobId: job.id,
         timestamp: new Date(),
       }
     }),
