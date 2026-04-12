@@ -1,4 +1,4 @@
-export const revalidate = 120 // ISR: regenerate every 2 min, serve cached instantly
+export const dynamic = 'force-dynamic'
 
 import { db } from '@/lib/db'
 
