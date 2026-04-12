@@ -75,7 +75,7 @@ export async function generateRecommendations(): Promise<AiRecommendation[]> {
     const starredThemes = starred.map(s => s.theme).filter(Boolean).join(', ')
     const allGenres = [...starred, ...submissions.map(s => s.competition)].flatMap(c => c.genres)
     const genreCounts = allGenres.reduce((acc, g) => ({ ...acc, [g]: (acc[g] || 0) + 1 }), {} as Record<string, number>)
-    const topGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([g]) => g)
+    const topGenres = Object.entries(genreCounts).sort((a, b) => (b[1] as number) - (a[1] as number))
     const dismissedReasons = feedback.map(f => f.reason).filter(Boolean).join(', ')
 
     let profile = ''
