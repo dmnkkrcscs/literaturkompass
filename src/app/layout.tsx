@@ -38,19 +38,18 @@ export default function RootLayout({
                         <link rel="preconnect" href="https://fonts.googleapis.com" />
                         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                         <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@100..900&display=swap" rel="stylesheet" />
-                </head>head>
+                </head>
                 <body className={`font-sans bg-light-bg dark:bg-dark-bg`}>
                         <Providers>
                                   <Navbar />
-                                  <main>{children}</main>main>
-                        </Providers>Providers>
+                                  <main>{children}</main>
+                        </Providers>
                         <script
                                     dangerouslySetInnerHTML={{
                         __html: `if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js')})}`,
                                     }}
                                   />
-                </body>body>
-          </html>html>
+                </body>
+          </html>
         );
 }
-</html>
