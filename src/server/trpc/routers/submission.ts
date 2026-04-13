@@ -1,4 +1,4 @@
-import { z } from 'zod'
+  import { z } from 'zod'
 import { db } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { publicProcedure, router } from '../init'
@@ -15,7 +15,7 @@ export const submissionRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const where: Prisma.SubmissionWhereInput = {
+      const where: any = {
         ...(input.status && { status: input.status }),
         ...(input.competitionId && { competitionId: input.competitionId }),
       }
