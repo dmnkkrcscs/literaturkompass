@@ -37,7 +37,7 @@ export const competitionRouter = router({
       const { take = 20, skip = 0 } = pagination
 
       const now = new Date()
-      const where: Prisma.CompetitionWhereInput = {
+            const where: any = {
         // Hide expired deadlines unless the competition is starred
         OR: [
           { deadline: { gt: now } },
@@ -47,7 +47,7 @@ export const competitionRouter = router({
       }
 
       if (filters.type) {
-        where.type = filters.type as Prisma.CompetitionWhereInput['type']
+                where.type = filters.type
       }
       if (filters.genre) {
         where.genres = { hasSome: [filters.genre] }
@@ -81,7 +81,7 @@ export const competitionRouter = router({
         ]
       }
 
-      const orderBy: Prisma.CompetitionOrderByWithRelationInput =
+            const orderBy: any =
         sort === 'relevance' ? { relevanceScore: 'desc' } :
         sort === 'created' ? { createdAt: 'desc' } :
         { deadline: 'asc' }
