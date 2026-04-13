@@ -37,7 +37,7 @@ export const crawlRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const where: Prisma.CrawlLogWhereInput = {
+const where: any = {
         ...(input.sourceId && { sourceId: input.sourceId }),
       }
 
