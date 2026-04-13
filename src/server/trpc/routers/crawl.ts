@@ -11,10 +11,8 @@ export const crawlRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // Run crawl directly without BullMQ
       const { crawlAllSources, crawlSource } = await import('@/server/crawl/pipeline')
 
-      // Fire and forget - don't await (would timeout the request)
       const promise = input.sourceId
         ? (async () => {
             const source = await db.source.findUnique({ where: { id: input.sourceId } })
@@ -23,14 +21,10 @@ export const crawlRouter = router({
           })()
         : crawlAllSources()
 
-      promise
-        .then(stats => console.log('[Crawl] Manual trigger completed:', JSON.stringify(stats.map(s => ({ name: s.sourceName, success: s.successCount, failed: s.failureCount })))))
-        .catch(err => console.error('[Crawl] Manual trigger failed:', err))
+      // Fire and forget
+      promise.catch(err => console.error('[Crawl] Manual trigger failed:', err))
 
-      return {
-        message: 'Crawl started',
-        timestamp: new Date(),
-      }
+      return { message: 'Crawl started', timestamp: new Date() }
     }),
 
   logs: publicProcedure
