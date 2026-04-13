@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { publicProcedure, router } from '../init'
-import { getCrawlQueue } from '@/server/crawl/scheduler'
 
 export const crawlRouter = router({
   trigger: publicProcedure
@@ -12,18 +11,24 @@ export const crawlRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const queue = getCrawlQueue()
-      const job = await queue.add('crawl-all-sources-manual', {
-        sourceId: input.sourceId,
-        manual: true,
-      }, {
-        attempts: 3,
-        backoff: { type: 'exponential', delay: 2000 },
-      })
+      // Run crawl directly without BullMQ
+      const { crawlAllSources, crawlSource } = await import('@/server/crawl/pipeline')
+
+      // Fire and forget - don't await (would timeout the request)
+      const promise = input.sourceId
+        ? (async () => {
+            const source = await db.source.findUnique({ where: { id: input.sourceId } })
+            if (!source) throw new Error('Source not found')
+            return [await crawlSource(source)]
+          })()
+        : crawlAllSources()
+
+      promise
+        .then(stats => console.log('[Crawl] Manual trigger completed:', JSON.stringify(stats.map(s => ({ name: s.sourceName, success: s.successCount, failed: s.failureCount })))))
+        .catch(err => console.error('[Crawl] Manual trigger failed:', err))
 
       return {
-        message: 'Crawl job enqueued',
-        jobId: job.id,
+        message: 'Crawl started',
         timestamp: new Date(),
       }
     }),

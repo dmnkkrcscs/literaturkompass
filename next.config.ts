@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'standalone',
   reactStrictMode: true,
+  instrumentationHook: true,
   serverExternalPackages: ["playwright", "bullmq", "prisma", "@prisma/client"],
   headers: async () => [
     {
