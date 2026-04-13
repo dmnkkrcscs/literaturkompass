@@ -3,7 +3,8 @@ import { extractCompetitionFromUrl } from '@/server/ai/extract'
 type CrawlStatus = 'SUCCESS' | 'FAILED' | 'DUPLICATE' | 'IRRELEVANT'
 import { fetchWithCheerio } from './fetcher'
 import { getAdapterForSource, getAllAdapters } from './adapters'
-import type { Source } from '@prisma/client'
+// Source type defined locally to avoid Prisma client import at build time
+interface Source { id: string; name: string; url: string }
 
 /**
  * Statistics from a crawl session
@@ -11,7 +12,7 @@ import type { Source } from '@prisma/client'
 export interface CrawlStats {
   sourceName: string
   totalUrls: number
-  successCount: numbe
+  successCount: number
   duplicateCount: number
   irrelevantCount: number
   failureCount: number
