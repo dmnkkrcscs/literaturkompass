@@ -10,13 +10,13 @@ export const ExtractionResponseSchema = z.object({
   data: z
     .object({
       name: z.string().describe('Name of the competition'),
-      type: z.enum(['text', 'poetry', 'drama', 'mixed']).describe('Type of competition'),
+      type: z.enum(['text', 'poetry', 'drama', 'mixed']).catch('mixed').describe('Type of competition'),
       organizer: z.string().describe('Organization running the competition'),
       deadline: z.string().describe('Submission deadline (ISO date or description)'),
       theme: z.string().optional().describe('Theme or topic of the competition'),
-      genres: z.array(z.string()).describe('Accepted genres'),
+      genres: z.union([z.array(z.string()), z.string().transform(s => s.split(/[,;]+/).map(g => g.trim()).filter(Boolean))]).describe('Accepted genres'),
       prize: z.string().optional().describe('Prize or award'),
-      maxLength: z.number().optional().describe('Maximum text length in characters'),
+      maxLength: z.union([z.number(), z.string().transform(s => parseInt(s.replace(/\D/g, '')) || undefined)]).optional().describe('Maximum text length in characters'),
       requirements: z.array(z.string()).optional().describe('Special requirements'),
       description: z.string().optional().describe('Full description of the competition'),
       fee: z.string().optional().describe('Submission fee if any'),

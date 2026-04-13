@@ -31,7 +31,22 @@ Extrahiere alle relevanten Informationen und antworte mit einem JSON-Objekt mit 
 - confidence (0.0 bis 1.0)
 - reason (optional, kurze Erklärung)
 - data (optional, nur wenn relevant):
-  - name, type, organizer, deadline, theme, genres, prize, maxLength, requirements, description, fee, ageRestriction, regionRestriction, relevanceScore`
+  - name: string
+  - type: MUSS einer dieser exakten Werte sein: "text" | "poetry" | "drama" | "mixed" (kein anderer Wert erlaubt!)
+  - organizer: string
+  - deadline: string (ISO-Datum oder Beschreibung)
+  - theme: string (optional)
+  - genres: string[] (Array von Strings, z.B. ["Kurzgeschichte", "Lyrik"])
+  - prize: string (optional)
+  - maxLength: number (optional, nur Zahl in Zeichen, kein Text)
+  - requirements: string[] (Array von Strings, optional)
+  - description: string (optional)
+  - fee: string (optional)
+  - ageRestriction: string (optional)
+  - regionRestriction: string (optional)
+  - relevanceScore: number (0-100)
+
+Wichtig: Antworte NUR mit dem JSON-Objekt, ohne Markdown-Formatierung oder Codeblöcke.`
 
 export const ANALYSIS_SYSTEM_PROMPT = `Du bist Lektor für deutschsprachige Literatur und Experte in Literaturwettbewerben. Deine Aufgabe ist die detaillierte Analyse von Texteinreichungen im Hinblick auf ihre Eignung für spezifische Wettbewerbe.
 

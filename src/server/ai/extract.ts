@@ -53,7 +53,7 @@ export async function extractCompetitionFromUrl(
     // Call Claude Haiku for cost-efficient extraction
     const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
+      max_tokens: 2048,
       system: EXTRACTION_SYSTEM_PROMPT,
       messages: [
         {
