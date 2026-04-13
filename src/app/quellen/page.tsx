@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { Plus, RotateCw, Upload } from 'lucide-react'
+import { Plus, RotateCw, Upload, Activity } from 'lucide-react'
+import Link from 'next/link'
 import { trpc } from '@/lib/trpc'
 import { useToast } from '@/components/ui/Toast'
 
@@ -128,10 +129,18 @@ export default function QuellenPage() {
               Verwaltung von Crawling-Quellen
             </p>
           </div>
-          <Button onClick={() => setShowAddForm(!showAddForm)} variant="primary">
-            <Plus className="mr-2 h-4 w-4" />
-            Quelle hinzufügen
-          </Button>
+          <div className="flex gap-3">
+            <Link href="/crawl-log">
+              <Button variant="secondary">
+                <Activity className="mr-2 h-4 w-4" />
+                Crawl Log
+              </Button>
+            </Link>
+            <Button onClick={() => setShowAddForm(!showAddForm)} variant="primary">
+              <Plus className="mr-2 h-4 w-4" />
+              Quelle hinzufügen
+            </Button>
+          </div>
         </div>
 
         {/* V1 Import */}

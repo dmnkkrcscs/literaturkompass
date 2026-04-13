@@ -1,4 +1,5 @@
 import { initializeScheduler, createWorkers } from '@/server/crawl/scheduler'
+import { autoSeedSources } from '@/server/crawl/auto-seed'
 import { db } from '@/lib/db'
 
 /**
@@ -13,6 +14,9 @@ async function main() {
   console.log(`[Worker] Redis host: ${process.env.REDIS_HOST || 'localhost'}`)
 
   try {
+    // Auto-seed sources (ensures all 11 aggregator sources exist with correct URLs)
+    await autoSeedSources()
+
     // Initialize scheduler and create workers
     await initializeScheduler()
     const { crawlWorker, reminderWorker, digestWorker } = await createWorkers()
