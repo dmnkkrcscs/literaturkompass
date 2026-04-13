@@ -70,17 +70,26 @@ Beschreibung: ${comp.description || 'Keine Details verfügbar'}
     ).replace('{competitions}', competitionsText)
 
     // Call Claude Haiku for cost-efficient recommendations
-    const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      system: RECOMMENDATION_SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: userPrompt,
-        },
-      ],
-    })
+    // Abort after 20s to prevent UI hangs
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 20_000)
+
+    let response
+    try {
+      response = await anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2048,
+        system: RECOMMENDATION_SYSTEM_PROMPT,
+        messages: [
+          {
+            role: 'user',
+            content: userPrompt,
+          },
+        ],
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     // Extract the text content from the response
     const textContent = response.content.find((block) => block.type === 'text')

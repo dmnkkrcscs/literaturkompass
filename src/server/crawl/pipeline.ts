@@ -319,24 +319,39 @@ export async function crawlSource(source: Source): Promise<CrawlStats> {
 
     stats.totalUrls = links.length
 
-    // Process each link
-    for (const link of links) {
-      const result = await processPage(link.url, source)
+    // Process links in parallel batches of 5 for much faster crawling
+    const BATCH_SIZE = 5
+    for (let i = 0; i < links.length; i += BATCH_SIZE) {
+      const batch = links.slice(i, i + BATCH_SIZE)
+      const results = await Promise.allSettled(
+        batch.map((link) => processPage(link.url, source))
+      )
 
-      if (result.status === 'SUCCESS') {
-        stats.successCount++
-      } else if (result.status === 'DUPLICATE') {
-        stats.duplicateCount++
-      } else if (result.status === 'IRRELEVANT') {
-        stats.irrelevantCount++
-      } else {
-        stats.failureCount++
+      for (const result of results) {
+        if (result.status === 'rejected') {
+          stats.failureCount++
+          console.error('[Pipeline] Batch item failed:', result.reason)
+          continue
+        }
+
+        const { value } = result
+        if (value.status === 'SUCCESS') {
+          stats.successCount++
+        } else if (value.status === 'DUPLICATE') {
+          stats.duplicateCount++
+        } else if (value.status === 'IRRELEVANT') {
+          stats.irrelevantCount++
+        } else {
+          stats.failureCount++
+        }
+
+        stats.costCents += value.costCents
       }
 
-      stats.costCents += result.costCents
-
-      // Add small delay to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Small delay between batches to avoid rate limiting
+      if (i + BATCH_SIZE < links.length) {
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      }
     }
 
     // Update source metadata
@@ -388,10 +403,21 @@ export async function crawlAllSources(): Promise<CrawlStats[]> {
       `[Pipeline] Found ${sources.length} active sources to crawl`
     )
 
-    // Crawl each source
-    for (const source of sources) {
-      const stats = await crawlSource(source)
-      allStats.push(stats)
+    // Crawl sources in parallel batches of 3
+    // (each source already does internal batching, so keep this conservative)
+    const SOURCE_BATCH_SIZE = 3
+    for (let i = 0; i < sources.length; i += SOURCE_BATCH_SIZE) {
+      const batch = sources.slice(i, i + SOURCE_BATCH_SIZE)
+      const results = await Promise.allSettled(
+        batch.map((source) => crawlSource(source))
+      )
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          allStats.push(result.value)
+        } else {
+          console.error('[Pipeline] Source crawl failed:', result.reason)
+        }
+      }
     }
   } catch (error) {
     console.error('[Pipeline] Error in crawlAllSources:', error)

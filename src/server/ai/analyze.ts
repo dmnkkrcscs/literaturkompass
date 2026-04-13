@@ -43,17 +43,26 @@ export async function analyzeSubmission(
       .replace('{userText}', text)
 
     // Call Claude Sonnet for better quality analysis
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      system: ANALYSIS_SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: userPrompt,
-        },
-      ],
-    })
+    // Abort after 25s to prevent UI hangs (Sonnet is slower than Haiku)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 25_000)
+
+    let response
+    try {
+      response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: ANALYSIS_SYSTEM_PROMPT,
+        messages: [
+          {
+            role: 'user',
+            content: userPrompt,
+          },
+        ],
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     // Extract the text content from the response
     const textContent = response.content.find((block) => block.type === 'text')

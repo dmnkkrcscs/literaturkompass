@@ -51,17 +51,26 @@ export async function extractCompetitionFromUrl(
     const userPrompt = EXTRACTION_USER_PROMPT.replace('{pageText}', rawText)
 
     // Call Claude Haiku for cost-efficient extraction
-    const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      system: EXTRACTION_SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: userPrompt,
-        },
-      ],
-    })
+    // Use AbortController as a safety net — abort after 20s to prevent crawl hangs
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 20_000)
+
+    let response
+    try {
+      response = await anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2048,
+        system: EXTRACTION_SYSTEM_PROMPT,
+        messages: [
+          {
+            role: 'user',
+            content: userPrompt,
+          },
+        ],
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     // Extract the text content from the response
     const textContent = response.content.find((block) => block.type === 'text')

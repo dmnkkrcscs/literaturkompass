@@ -212,6 +212,7 @@ model CrawlLog {
   // Indexes for common queries
   @@index([sourceId, createdAt])
   @@index([url])
+  @@index([status, createdAt])
 }
 
 model UserFeedback {

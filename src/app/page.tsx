@@ -1,4 +1,6 @@
-export const dynamic = 'force-dynamic'
+// Revalidate dashboard every 5 minutes instead of force-dynamic
+// This caches DB queries and avoids unnecessary load on every page visit
+export const revalidate = 300
 
 import Link from 'next/link'
 import { db } from '@/lib/db'

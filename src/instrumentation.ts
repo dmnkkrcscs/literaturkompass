@@ -31,7 +31,8 @@ export async function register() {
 
   console.log('[Scheduler] Auto-crawl scheduler starting...')
 
-  // Initial seed + crawl after 30s delay, then repeat every 24h
+  // Initial seed after 30s delay (non-blocking), then schedule crawl
+  // IMPORTANT: Do NOT await the crawl — it blocks the server from handling requests
   setTimeout(async () => {
     try {
       const { autoSeedSources } = await import('@/server/crawl/auto-seed')
@@ -40,7 +41,12 @@ export async function register() {
       console.error('[Scheduler] Auto-seed failed:', e)
     }
 
-    await runCrawl()
-    setInterval(runCrawl, 24 * 60 * 60 * 1000)
+    // Fire-and-forget: crawl runs in background, server stays responsive
+    runCrawl().catch((e) => console.error('[Scheduler] Initial crawl failed:', e))
+
+    // Schedule daily crawl (also fire-and-forget)
+    setInterval(() => {
+      runCrawl().catch((e) => console.error('[Scheduler] Scheduled crawl failed:', e))
+    }, 24 * 60 * 60 * 1000)
   }, 30_000)
 }
