@@ -3,14 +3,15 @@ import { db } from '@/lib/db'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { isActive } = body
 
     const source = await db.source.update({
-      where: { id: params.id },
+      where: { id },
       data: { isActive },
     })
 
@@ -23,11 +24,12 @@ export async function PATCH(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     await db.source.update({
-      where: { id: params.id },
+      where: { id },
       data: { isActive: false },
     })
     return NextResponse.json({ success: true })
