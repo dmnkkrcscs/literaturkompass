@@ -36,11 +36,13 @@ export const competitionRouter = router({
       const { filters = {}, pagination = {}, sort = 'deadline' } = input
       const { take = 20, skip = 0 } = pagination
 
-      const now = new Date()
-            const where: any = {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const where: any = {
         // Hide expired deadlines unless the competition is starred
+        // A deadline of April 15 means it expires after April 15, not on it
         OR: [
-          { deadline: { gt: now } },
+          { deadline: { gte: today } },
           { deadline: null },
           { starred: true },
         ],

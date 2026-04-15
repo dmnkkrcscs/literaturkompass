@@ -42,10 +42,11 @@ async function getStats(): Promise<DashboardStats> {
 }
 
 async function getUpcomingDeadlines(): Promise<CompetitionDisplay[]> {
-  const now = new Date()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
   return db.competition.findMany({
     where: {
-      deadline: { gt: now },
+      deadline: { gte: today },
       status: 'ACTIVE',
       dismissed: false,
     },
@@ -62,14 +63,15 @@ async function getUpcomingDeadlines(): Promise<CompetitionDisplay[]> {
 }
 
 async function getLatestCompetitions(): Promise<CompetitionDisplay[]> {
-  const now = new Date()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
   return db.competition.findMany({
     where: {
       status: 'ACTIVE',
       dismissed: false,
       // Hide expired deadlines unless the competition is starred
       OR: [
-        { deadline: { gt: now } },
+        { deadline: { gte: today } },
         { deadline: null },
         { starred: true },
       ],

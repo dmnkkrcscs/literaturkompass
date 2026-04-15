@@ -31,10 +31,11 @@ const typeConfig = {
 }
 
 function getDaysRemaining(deadline: Date): { days: number; isExpired: boolean } {
-  const now = new Date()
-  const diffTime = deadline.getTime() - now.getTime()
+  const deadlineEnd = new Date(deadline)
+  deadlineEnd.setHours(23, 59, 59, 999)
+  const diffTime = deadlineEnd.getTime() - Date.now()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return { days: diffDays, isExpired: diffDays < 0 }
+  return { days: diffDays, isExpired: diffDays <= 0 }
 }
 
 export function CompetitionCard({

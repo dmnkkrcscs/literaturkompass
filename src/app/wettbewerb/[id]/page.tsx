@@ -86,7 +86,11 @@ export default function WettbewerbPage() {
 
   const isInternalUrl = competition.url.includes('literaturkompass.internal') || competition.url.includes('neonwilderness')
   const daysLeft = competition.deadline
-    ? Math.ceil((new Date(competition.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    ? (() => {
+        const deadlineEnd = new Date(competition.deadline)
+        deadlineEnd.setHours(23, 59, 59, 999)
+        return Math.ceil((deadlineEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      })()
     : null
 
   const handleSave = () => {
@@ -343,15 +347,26 @@ export default function WettbewerbPage() {
         {/* External Link */}
         <div className="mb-6 flex flex-wrap gap-3">
           {!isInternalUrl ? (
-            <a
-              href={competition.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-accent-light px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-light/90 dark:bg-accent-dark dark:hover:bg-accent-dark/90"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Zur Ausschreibung
-            </a>
+            <>
+              <a
+                href={competition.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-accent-light px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-light/90 dark:bg-accent-dark dark:hover:bg-accent-dark/90"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Zur Ausschreibung
+              </a>
+              {editing && (
+                <input
+                  type="url"
+                  value={field('url', competition.url)}
+                  onChange={(e) => setField('url', e.target.value)}
+                  placeholder="https://..."
+                  className="rounded border px-2 py-1 text-sm flex-1 min-w-[200px]"
+                />
+              )}
+            </>
           ) : (
             <div className="inline-flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-sm text-gray-500 dark:bg-gray-700 dark:text-gray-400">
               <Globe className="h-4 w-4" />

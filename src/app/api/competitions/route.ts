@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
     const skip = parseInt(searchParams.get('skip') || '0', 10)
     const take = parseInt(searchParams.get('take') || '10', 10)
 
-    const now = new Date()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     const where: any = {
       dismissed: false,
       status: 'ACTIVE',
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
         // Hide expired deadlines unless the competition is starred
         {
           OR: [
-            { deadline: { gt: now } },
+            { deadline: { gte: today } },
             { deadline: null },
             { starred: true },
           ],
