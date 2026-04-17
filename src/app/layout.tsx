@@ -34,7 +34,10 @@ export default function RootLayout({
                         <meta name="theme-color" content="#0a0a0f" media="(prefers-color-scheme: dark)" />
                         <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
                         <link rel="icon" href="/favicon.ico" />
-                        <link rel="apple-touch-icon" href="/icon-192.png" />
+                        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+                        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+                        <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+                        <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
                         <link rel="preconnect" href="https://fonts.googleapis.com" />
                         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                         <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@100..900&display=swap" rel="stylesheet" />
