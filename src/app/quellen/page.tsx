@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Plus, RotateCw, Activity } from 'lucide-react'
 import Link from 'next/link'
-import { trpc } from '@/lib/trpc'
 import { useToast } from '@/components/ui/Toast'
 
 interface Source {

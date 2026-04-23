@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'standalone',
   reactStrictMode: true,
-  instrumentationHook: true,
-  serverExternalPackages: ["playwright", "bullmq", "prisma", "@prisma/client"],
+  // instrumentationHook is enabled by default in Next.js 15 — no config needed
+serverExternalPackages: ["playwright", "bullmq", "prisma", "@prisma/client"],
   headers: async () => [
     {
       // Cache static assets aggressively

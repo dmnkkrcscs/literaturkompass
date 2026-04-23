@@ -16,6 +16,8 @@ COPY . .
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
+# Cap Node heap to avoid OOM on low-memory build servers (next build peaks at ~1.5 GB)
+ENV NODE_OPTIONS="--max-old-space-size=1536"
 RUN npm run build
 
 # Stage 3: Production runner
