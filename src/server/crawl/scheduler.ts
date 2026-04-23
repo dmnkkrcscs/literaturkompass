@@ -1,6 +1,6 @@
 import { Queue, Worker } from 'bullmq'
 import Redis from 'ioredis'
-import { crawlAllSources } from './pipeline'
+import { crawlAllSources, crawlSource } from './pipeline'
 import { db } from '@/lib/db'
 import { sendMessage, sendDeadlineReminder } from '@/lib/telegram'
 import { generateTelegramDigest } from '@/server/ai/telegram-digest'
@@ -91,12 +91,20 @@ export async function scheduleDailyDigest(): Promise<void> {
 }
 
 /**
- * Handler for crawl job
+ * Handler for crawl job. If data.sourceId is set, only that source is crawled;
+ * otherwise all sources are crawled.
  */
-export async function processCrawlJob(): Promise<void> {
-  console.log('[Scheduler] Processing crawl job')
+export async function processCrawlJob(data?: { sourceId?: string }): Promise<void> {
+  console.log(`[Scheduler] Processing crawl job${data?.sourceId ? ` for source ${data.sourceId}` : ' (all sources)'}`)
   try {
-    const stats = await crawlAllSources()
+    let stats
+    if (data?.sourceId) {
+      const source = await db.source.findUnique({ where: { id: data.sourceId } })
+      if (!source) throw new Error(`Source not found: ${data.sourceId}`)
+      stats = [await crawlSource(source)]
+    } else {
+      stats = await crawlAllSources()
+    }
     const totalCost = stats.reduce((sum, s) => sum + s.costCents, 0)
     console.log(`[Scheduler] Crawl completed. Cost: ${(totalCost / 100).toFixed(2)} USD`)
   } catch (error) {
@@ -218,7 +226,7 @@ export async function createWorkers(): Promise<{
     'crawl',
     async (job) => {
       console.log(`[Worker] Processing crawl job: ${job.id}`)
-      await processCrawlJob()
+      await processCrawlJob(job.data as { sourceId?: string } | undefined)
     },
     { connection: redis, concurrency: 1 }
   )

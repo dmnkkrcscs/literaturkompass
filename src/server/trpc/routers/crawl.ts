@@ -11,20 +11,24 @@ export const crawlRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const { crawlAllSources, crawlSource } = await import('@/server/crawl/pipeline')
+      // Enqueue a BullMQ job so the dedicated worker container processes it.
+      // Running crawlAllSources() in the web process blocks the event loop
+      // (→ 504 timeouts on static assets) and is killed by the reverse proxy
+      // on long runs. The worker already listens on the `crawl` queue.
+      const { getCrawlQueue } = await import('@/server/crawl/scheduler')
+      const queue = getCrawlQueue()
 
-      const promise = input.sourceId
-        ? (async () => {
-            const source = await db.source.findUnique({ where: { id: input.sourceId } })
-            if (!source) throw new Error('Source not found')
-            return [await crawlSource(source)]
-          })()
-        : crawlAllSources()
+      const job = await queue.add(
+        'crawl-all-sources',
+        input.sourceId ? { sourceId: input.sourceId } : {},
+        { attempts: 2, backoff: { type: 'exponential', delay: 2000 } }
+      )
 
-      // Fire and forget
-      promise.catch(err => console.error('[Crawl] Manual trigger failed:', err))
-
-      return { message: 'Crawl started', timestamp: new Date() }
+      return {
+        message: input.sourceId ? 'Crawl queued for source' : 'Crawl queued for all sources',
+        jobId: job.id,
+        timestamp: new Date(),
+      }
     }),
 
   logs: publicProcedure
