@@ -15,6 +15,7 @@ import {
   federweltAdapter,
   schreiblustVerlagAdapter,
   papierfreschenAdapter,
+  createGenericAdapter,
 } from './generic'
 
 /**
@@ -22,6 +23,7 @@ import {
  * Maps source URLs to their corresponding adapters
  */
 export const ADAPTERS: Record<string, CrawlAdapter> = {
+  // exact-match registry; falls back to createGenericAdapter in getAdapterForSource
   'https://zugetextet.com/ausschreibungen/': zugetextetAdapter,
   'https://kreativ-schreiben-lernen.de/wettbewerbe-preise-etc/':
     kreativSchreibenAdapter,
@@ -40,13 +42,31 @@ export const ADAPTERS: Record<string, CrawlAdapter> = {
 }
 
 /**
- * Get adapter for a source URL
+ * Get adapter for a source URL.
+ *
+ * Falls back to a generic adapter built from the source URL when no
+ * source-specific adapter is registered. The generic adapter scans for
+ * links containing competition-related keywords (wettbewerb, ausschreibung,
+ * call, anthologie, …) which works well enough for most aggregator sites.
  *
  * @param url - Source URL
- * @returns Adapter instance or undefined if not found
+ * @param name - Source display name (used only for logging inside adapter)
+ * @returns Adapter instance — always defined
  */
-export function getAdapterForSource(url: string): CrawlAdapter | undefined {
-  return ADAPTERS[url]
+export function getAdapterForSource(url: string, name?: string): CrawlAdapter {
+  const specific = ADAPTERS[url]
+  if (specific) return specific
+
+  // Derive a readable fallback name from the hostname if none provided
+  let fallbackName = name
+  if (!fallbackName) {
+    try {
+      fallbackName = new URL(url).hostname.replace(/^www\./, '')
+    } catch {
+      fallbackName = url
+    }
+  }
+  return createGenericAdapter(fallbackName, url)
 }
 
 /**

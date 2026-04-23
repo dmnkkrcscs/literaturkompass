@@ -5,7 +5,7 @@ import type { CrawlAdapter, ExtractedLink } from './base'
  * Generic adapter for multiple sources with similar structure
  * Used for: epubli, treffpunktschreiben, wir-erschaffen-welten, literaturport, federwelt, schreiblust-verlag, papierfresserchen
  */
-function createGenericAdapter(
+export function createGenericAdapter(
   name: string,
   url: string,
   type: 'cheerio' | 'playwright' = 'cheerio'

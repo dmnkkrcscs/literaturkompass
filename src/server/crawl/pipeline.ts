@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { extractCompetitionFromUrl } from '@/server/ai/extract'
 type CrawlStatus = 'SUCCESS' | 'FAILED' | 'DUPLICATE' | 'IRRELEVANT'
 import { fetchWithCheerio } from './fetcher'
-import { getAdapterForSource, getAllAdapters } from './adapters'
+import { getAdapterForSource, getAllAdapters, ADAPTERS } from './adapters'
 // Source type defined locally to avoid Prisma client import at build time
 interface Source { id: string; name: string; url: string }
 
@@ -300,19 +300,13 @@ export async function crawlSource(source: Source): Promise<CrawlStats> {
   console.log(`[Pipeline] Starting crawl for source: ${source.name}`)
   const startTime = Date.now()
 
-  const adapter = getAdapterForSource(source.url)
-  if (!adapter) {
-    console.error(`[Pipeline] No adapter found for source: ${source.url}`)
-    return {
-      sourceName: source.name,
-      totalUrls: 0,
-      successCount: 0,
-      duplicateCount: 0,
-      irrelevantCount: 0,
-      failureCount: 1,
-      processingTimeMs: Date.now() - startTime,
-      costCents: 0,
-    }
+  // Always returns an adapter — generic fallback is used when no
+  // source-specific adapter is registered.
+  const adapter = getAdapterForSource(source.url, source.name)
+  if (!ADAPTERS[source.url]) {
+    console.log(
+      `[Pipeline] Using generic adapter for source: ${source.name} (${source.url})`
+    )
   }
 
   const stats: CrawlStats = {
