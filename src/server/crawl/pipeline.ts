@@ -73,20 +73,42 @@ export function cleanHtml(html: string): string {
 }
 
 /**
- * Check if a URL has been excluded from crawling
+ * Check if a URL should be skipped (already successfully processed recently,
+ * or already linked to an existing competition).
+ *
+ * Rules:
+ *  - SUCCESS log newer than SUCCESS_TTL_DAYS → skip (we already extracted it)
+ *  - A Competition with this sourceUrl exists → skip
+ *  - Otherwise (including prior FAILED / IRRELEVANT / old SUCCESS) → re-crawl
  *
  * @param url - URL to check
- * @returns True if URL should be excluded
+ * @returns True if URL should be skipped
  */
+const SUCCESS_TTL_DAYS = 7
+
 async function isUrlExcluded(url: string): Promise<boolean> {
   try {
-    // Check if URL already exists in database
-    const existing = await db.crawlLog.findFirst({
+    // If we've already saved a competition for this URL, skip it.
+    const competition = await db.competition.findFirst({
       where: { url },
       select: { id: true },
     })
+    if (competition) return true
 
-    return !!existing
+    // Otherwise: only skip if we have a RECENT successful crawl log.
+    // Old successes, and any FAILED/IRRELEVANT/DUPLICATE logs, should be retried
+    // — the extraction might have failed silently or the page may have changed.
+    const cutoff = new Date(Date.now() - SUCCESS_TTL_DAYS * 24 * 60 * 60 * 1000)
+    const recentSuccess = await db.crawlLog.findFirst({
+      where: {
+        url,
+        status: 'SUCCESS',
+        createdAt: { gte: cutoff },
+      },
+      select: { id: true },
+    })
+
+    return !!recentSuccess
   } catch (error) {
     console.error(`Error checking if URL is excluded: ${url}`, error)
     return false
