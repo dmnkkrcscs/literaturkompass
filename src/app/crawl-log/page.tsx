@@ -100,11 +100,9 @@ export default function CrawlLogPage() {
                   <tr className="border-b border-gray-200 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:border-gray-700 dark:text-gray-400">
                     <th className="px-4 py-3">Zeitpunkt</th>
                     <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Auslöser</th>
                     <th className="px-4 py-3 text-right">Dauer</th>
                     <th className="px-4 py-3 text-right">Gefunden</th>
                     <th className="px-4 py-3 text-right">Neu gespeichert</th>
-                    <th className="px-4 py-3 text-right">Deadline-Updates</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -119,11 +117,6 @@ export default function CrawlLogPage() {
                       <td className="px-4 py-3">
                         <Badge variant="sage">{run.status}</Badge>
                       </td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
-                        {run.triggeredBy
-                          ? `${run.trigger} (${run.triggeredBy})`
-                          : run.trigger}
-                      </td>
                       <td className="px-4 py-3 text-right tabular-nums text-gray-600 dark:text-gray-400">
                         {formatDuration(run.durationMs)}
                       </td>
@@ -132,9 +125,6 @@ export default function CrawlLogPage() {
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums font-semibold text-sage">
                         {run.successCount > 0 ? `+${run.successCount}` : '0'}
-                      </td>
-                      <td className="px-4 py-3 text-right tabular-nums text-gray-600 dark:text-gray-400">
-                        {run.deadlineUpdates}
                       </td>
                     </tr>
                   ))}
