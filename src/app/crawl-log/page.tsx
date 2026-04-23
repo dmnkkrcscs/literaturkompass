@@ -5,66 +5,67 @@ import { trpc } from '@/lib/trpc'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { useToast } from '@/components/ui/Toast'
-import { RefreshCw, ChevronLeft, ChevronRight, CheckCircle, XCircle, Copy, AlertTriangle } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 
+/**
+ * KI-Recherche overview — one row per crawl run (all sources aggregated).
+ * Replaces the older per-source session list; that data still exists in
+ * the `crawl.sessions` tRPC query if we want a drill-down later.
+ */
 export default function CrawlLogPage() {
   const [page, setPage] = useState(0)
   const pageSize = 25
   const { toast } = useToast()
 
-  const sessionsQuery = trpc.crawl.sessions.useQuery({
+  const runsQuery = trpc.crawl.runs.useQuery({
     take: pageSize,
     skip: page * pageSize,
   })
 
   const triggerCrawl = trpc.crawl.trigger.useMutation({
     onSuccess: () => {
-      toast('Crawl-Job wurde gestartet', 'success')
-      sessionsQuery.refetch()
+      toast('Recherche wurde gestartet', 'success')
+      // The job is queued; new logs will appear after the worker processes it.
+      // Refetch shortly — the list won't show the new run until logs exist.
+      setTimeout(() => runsQuery.refetch(), 2000)
     },
     onError: (err) => toast(err.message, 'error'),
   })
 
-  const sessions = sessionsQuery.data?.sessions || []
-  const pagination = sessionsQuery.data?.pagination
+  const runs = runsQuery.data?.runs || []
+  const pagination = runsQuery.data?.pagination
 
-  const formatDate = (date: string | Date) => {
+  const formatDateTime = (date: string | Date) => {
     const d = new Date(date)
-    return d.toLocaleDateString('de-DE', {
-      weekday: 'short',
+    return d.toLocaleString('de-DE', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-    })
-  }
-
-  const formatTime = (date: string | Date) => {
-    const d = new Date(date)
-    return d.toLocaleTimeString('de-DE', {
       hour: '2-digit',
       minute: '2-digit',
     })
   }
 
-  // Group sessions by date for visual grouping
-  const groupedByDate: Record<string, typeof sessions> = {}
-  for (const session of sessions) {
-    const dateKey = formatDate(session.startedAt)
-    if (!groupedByDate[dateKey]) groupedByDate[dateKey] = []
-    groupedByDate[dateKey].push(session)
+  const formatDuration = (ms: number) => {
+    if (ms < 1000) return `${ms}ms`
+    const totalSec = Math.round(ms / 1000)
+    const m = Math.floor(totalSec / 60)
+    const s = totalSec % 60
+    if (m === 0) return `${s}s`
+    return `${m}m ${s.toString().padStart(2, '0')}s`
   }
 
   return (
     <main className="min-h-screen bg-light-bg dark:bg-dark-bg">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-black dark:text-white">
-              Crawl Log
+              KI-Recherche
             </h1>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Übersicht aller Quellenchecks mit Ergebnissen
+              Verlauf der automatischen Award-Recherchen
             </p>
           </div>
           <Button
@@ -72,98 +73,82 @@ export default function CrawlLogPage() {
             loading={triggerCrawl.isPending}
             variant="primary"
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Crawl starten
+            <Search className="mr-2 h-4 w-4" />
+            Recherche starten
           </Button>
         </div>
 
         {/* Content */}
-        {sessionsQuery.isLoading ? (
+        {runsQuery.isLoading ? (
           <div className="flex justify-center py-12">
             <div className="text-gray-600 dark:text-gray-400">Laden...</div>
           </div>
-        ) : sessions.length === 0 ? (
+        ) : runs.length === 0 ? (
           <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center dark:border-gray-600">
             <p className="text-lg text-gray-600 dark:text-gray-400">
-              Noch keine Crawl-Durchläufe vorhanden
+              Noch keine Recherchen vorhanden
             </p>
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-500">
-              Der Crawler läuft täglich um 08:00 Uhr automatisch, oder du kannst oben manuell einen starten.
+              Der Crawler läuft täglich um 08:00 Uhr automatisch, oder du kannst oben manuell einen Durchlauf starten.
             </p>
           </div>
         ) : (
           <>
-            {Object.entries(groupedByDate).map(([dateStr, dateSessions]) => (
-              <div key={dateStr} className="mb-8">
-                <h2 className="mb-3 text-lg font-semibold text-black dark:text-white">
-                  {dateStr}
-                </h2>
-
-                <div className="space-y-3">
-                  {dateSessions.map((session, idx) => (
-                    <div
-                      key={`${session.sourceId}-${idx}`}
-                      className="rounded-lg border border-gray-200 bg-light-surface p-4 dark:border-gray-700 dark:bg-dark-surface"
+            <div className="overflow-hidden rounded-lg border border-gray-200 bg-light-surface dark:border-gray-700 dark:bg-dark-surface">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                    <th className="px-4 py-3">Zeitpunkt</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Auslöser</th>
+                    <th className="px-4 py-3 text-right">Dauer</th>
+                    <th className="px-4 py-3 text-right">Gefunden</th>
+                    <th className="px-4 py-3 text-right">Neu gespeichert</th>
+                    <th className="px-4 py-3 text-right">Deadline-Updates</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {runs.map((run, idx) => (
+                    <tr
+                      key={`${run.startedAt}-${idx}`}
+                      className="text-black dark:text-white"
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3">
-                            <h3 className="font-semibold text-black dark:text-white">
-                              {session.sourceName}
-                            </h3>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {formatTime(session.startedAt)}
-                            </span>
-                          </div>
-
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {session.successCount > 0 && (
-                              <Badge variant="sage">
-                                <CheckCircle className="mr-1 inline h-3 w-3" />
-                                {session.successCount} neu
-                              </Badge>
-                            )}
-                            {session.duplicateCount > 0 && (
-                              <Badge variant="default">
-                                <Copy className="mr-1 inline h-3 w-3" />
-                                {session.duplicateCount} bekannt
-                              </Badge>
-                            )}
-                            {session.irrelevantCount > 0 && (
-                              <Badge variant="default">
-                                <AlertTriangle className="mr-1 inline h-3 w-3" />
-                                {session.irrelevantCount} irrelevant
-                              </Badge>
-                            )}
-                            {session.failureCount > 0 && (
-                              <Badge variant="wine">
-                                <XCircle className="mr-1 inline h-3 w-3" />
-                                {session.failureCount} fehlgeschlagen
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="ml-4 text-right">
-                          <p className="text-2xl font-bold text-black dark:text-white">
-                            {session.totalUrls}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            URLs geprüft
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                      <td className="px-4 py-3 font-medium">
+                        {formatDateTime(run.endedAt)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant="sage">{run.status}</Badge>
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                        {run.triggeredBy
+                          ? `${run.trigger} (${run.triggeredBy})`
+                          : run.trigger}
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums text-gray-600 dark:text-gray-400">
+                        {formatDuration(run.durationMs)}
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums">
+                        {run.totalUrls}
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums font-semibold text-sage">
+                        {run.successCount > 0 ? `+${run.successCount}` : '0'}
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums text-gray-600 dark:text-gray-400">
+                        {run.deadlineUpdates}
+                      </td>
+                    </tr>
                   ))}
-                </div>
-              </div>
-            ))}
+                </tbody>
+              </table>
+            </div>
 
             {/* Pagination */}
             {pagination && pagination.total > pageSize && (
               <div className="mt-6 flex items-center justify-between">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {pagination.skip + 1}–{Math.min(pagination.skip + pageSize, pagination.total)} von {pagination.total} Durchläufen
+                  {pagination.skip + 1}–
+                  {Math.min(pagination.skip + pageSize, pagination.total)} von{' '}
+                  {pagination.total} Durchläufen
                 </p>
                 <div className="flex gap-2">
                   <Button

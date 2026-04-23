@@ -167,6 +167,112 @@ const where: any = {
       }
     }),
 
+  /**
+   * Aggregated crawl *runs* — one row per scheduled/manual execution,
+   * grouping all per-source sessions inside a 2-hour window into a single run.
+   * This is what the KI-Recherche overview renders.
+   */
+  runs: publicProcedure
+    .input(
+      z.object({
+        take: z.number().int().default(50),
+        skip: z.number().int().default(0),
+      })
+    )
+    .query(async ({ input }) => {
+      // Pull the last ~2000 logs (covers many runs) and bucket by time.
+      const logs = await db.crawlLog.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 2000,
+        select: {
+          createdAt: true,
+          status: true,
+          sourceId: true,
+        },
+      })
+
+      interface RunAgg {
+        startedAt: Date
+        endedAt: Date
+        sources: Set<string>
+        successCount: number
+        duplicateCount: number
+        irrelevantCount: number
+        failureCount: number
+        totalUrls: number
+      }
+
+      // Logs come newest→oldest. Cluster them: a new cluster starts when the
+      // gap to the previous log is > 30 minutes — that's a clean heuristic for
+      // "different run" since a single run's parallel batches are continuous.
+      const GAP_MS = 30 * 60 * 1000
+      const runs: RunAgg[] = []
+      let current: RunAgg | null = null
+      let lastTime = 0
+
+      for (const log of logs) {
+        const t = new Date(log.createdAt).getTime()
+        if (!current || lastTime - t > GAP_MS) {
+          if (current) runs.push(current)
+          current = {
+            startedAt: log.createdAt,
+            endedAt: log.createdAt,
+            sources: new Set<string>(),
+            successCount: 0,
+            duplicateCount: 0,
+            irrelevantCount: 0,
+            failureCount: 0,
+            totalUrls: 0,
+          }
+        }
+
+        // Because logs are desc: the FIRST log we see for a cluster is the
+        // newest → endedAt; we keep updating startedAt as we walk older.
+        current.startedAt = log.createdAt
+        current.sources.add(log.sourceId)
+        current.totalUrls++
+        if (log.status === 'SUCCESS') current.successCount++
+        else if (log.status === 'DUPLICATE') current.duplicateCount++
+        else if (log.status === 'IRRELEVANT') current.irrelevantCount++
+        else if (log.status === 'FAILED') current.failureCount++
+
+        lastTime = t
+      }
+      if (current) runs.push(current)
+
+      // Sort newest first by endedAt and serialize.
+      runs.sort((a, b) => b.endedAt.getTime() - a.endedAt.getTime())
+
+      const total = runs.length
+      const paginated = runs.slice(input.skip, input.skip + input.take).map((r) => ({
+        startedAt: r.startedAt,
+        endedAt: r.endedAt,
+        durationMs: r.endedAt.getTime() - r.startedAt.getTime(),
+        sourceCount: r.sources.size,
+        totalUrls: r.totalUrls,
+        successCount: r.successCount,
+        duplicateCount: r.duplicateCount,
+        irrelevantCount: r.irrelevantCount,
+        failureCount: r.failureCount,
+        // TODO: persist trigger/user in a CrawlRun table — not tracked yet.
+        trigger: 'Automatisch' as const,
+        triggeredBy: null as string | null,
+        status: 'Abgeschlossen' as const,
+        // TODO: deadline-updates aren't tracked separately yet.
+        deadlineUpdates: 0,
+      }))
+
+      return {
+        runs: paginated,
+        pagination: {
+          take: input.take,
+          skip: input.skip,
+          total,
+          hasMore: input.skip + input.take < total,
+        },
+      }
+    }),
+
   status: publicProcedure
     .input(
       z.object({
