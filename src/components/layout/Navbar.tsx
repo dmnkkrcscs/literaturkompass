@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Menu, X, Sun, Moon, Home, Search, Star, Clock, Trophy, Globe, BarChart3, BookOpen, Filter } from 'lucide-react'
+import { Menu, X, Sun, Moon, Home, Search, Star, Clock, Trophy, Globe, BarChart3, BookOpen, Filter, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 const navLinks = [
@@ -14,6 +14,7 @@ const navLinks = [
   { href: '/geplant', label: 'Geplant', icon: Star },
   { href: '/offen', label: 'Offen', icon: Clock },
   { href: '/hall-of-fame', label: 'Hall of Fame', icon: Trophy },
+  { href: '/absagen', label: 'Absagen', icon: XCircle },
   { href: '/zeitschriften', label: 'Zeitschriften', icon: BookOpen },
   { href: '/quellen', label: 'Quellen', icon: Globe },
   { href: '/statistiken', label: 'Statistiken', icon: BarChart3 },
