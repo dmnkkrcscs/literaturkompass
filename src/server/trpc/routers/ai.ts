@@ -1,7 +1,9 @@
+import { z } from 'zod'
 import { publicProcedure, router } from '../init'
 import { generateDashboardMessage } from '@/server/ai/dashboard-message'
 import { generateRecommendations, type AiRecommendation } from '@/server/ai/recommendations'
 import { createMemoryCache } from '@/lib/utils'
+import { assessForTriage } from '@/server/ai/triage-assess'
 
 const messageCache = createMemoryCache<string>(6 * 60 * 60 * 1000) // 6h
 const recoCache = createMemoryCache<AiRecommendation[]>(60 * 60 * 1000) // 1h
@@ -68,4 +70,15 @@ export const aiRouter = router({
       return { recommendations: [] }
     }
   }),
+
+  triageAssess: publicProcedure
+    .input(z.object({ competitionId: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        return await withTimeout(assessForTriage(input.competitionId), AI_TIMEOUT_MS)
+      } catch (error) {
+        console.error('Triage assess failed:', error)
+        return { score: null, reason: null }
+      }
+    }),
 })
