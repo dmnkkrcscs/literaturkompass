@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
+    const showSubmitted = searchParams.get('showSubmitted') === 'true'
     const where: any = {
       dismissed: false,
       status: 'ACTIVE',
@@ -25,6 +26,11 @@ export async function GET(request: NextRequest) {
           ],
         },
       ],
+    }
+
+    // By default hide competitions that have already been submitted/accepted
+    if (!showSubmitted) {
+      where.submissions = { none: { status: { in: ['SUBMITTED', 'ACCEPTED'] } } }
     }
 
     // Apply filters

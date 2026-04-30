@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Menu, X, Sun, Moon, Home, Search, Star, Clock, Trophy, Globe, BarChart3, BookOpen } from 'lucide-react'
+import { Menu, X, Sun, Moon, Home, Search, Star, Clock, Trophy, Globe, BarChart3, BookOpen, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 const navLinks = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/entdecken', label: 'Entdecken', icon: Search },
+  { href: '/triage', label: 'Triage', icon: Filter },
   { href: '/geplant', label: 'Geplant', icon: Star },
   { href: '/offen', label: 'Offen', icon: Clock },
   { href: '/hall-of-fame', label: 'Hall of Fame', icon: Trophy },
