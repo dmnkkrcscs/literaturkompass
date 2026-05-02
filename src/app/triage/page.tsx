@@ -180,9 +180,13 @@ export default function TriagePage() {
     setShowDismissModal(true)
   }
 
-  // Focus custom input when modal opens
+  // Focus custom input when modal opens — skip on touch devices to avoid
+  // popping up the on-screen keyboard when the user just wants to tap a preset.
   useEffect(() => {
-    if (showDismissModal) setTimeout(() => customReasonRef.current?.focus(), 50)
+    if (!showDismissModal) return
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+    if (isTouch) return
+    setTimeout(() => customReasonRef.current?.focus(), 50)
   }, [showDismissModal])
 
   // Keyboard shortcuts
