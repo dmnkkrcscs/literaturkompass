@@ -259,6 +259,27 @@ model DismissalPattern {
   updatedAt DateTime @updatedAt
 }
 
+// Verlage/Veranstalter, die der User wiederholt wegen schlechter Qualität /
+// Unseriösität abgelehnt hat. Schlüssel ist die normalisierte URL-Domain
+// (z.B. "verlag-xy.de"). Ab `BLOCK_THRESHOLD` Dismissals (siehe Code) wird
+// `blocked = true` gesetzt — neue Wettbewerbe dieser Domain werden dann
+// beim Crawl direkt mit dismissed=true angelegt, tauchen also nicht in der
+// Triage auf.
+model BlockedPublisher {
+  id              String    @id @default(cuid())
+  domain          String    @unique
+  organizer       String?
+  dismissalCount  Int       @default(1)
+  blocked         Boolean   @default(false)
+  blockedAt       DateTime?
+  lastReason      String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([blocked])
+}
+
 model NotificationLog {
   id            String   @id @default(cuid())
   competitionId String?

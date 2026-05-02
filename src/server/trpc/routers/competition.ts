@@ -3,6 +3,28 @@ import { db } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { publicProcedure, router } from '../init'
 
+// Ab dieser Anzahl "unseriös"-Dismissals derselben Domain wird der Verlag
+// geblockt — danach werden neue Wettbewerbe dieser Domain beim Crawl direkt
+// als dismissed angelegt und tauchen nicht mehr in der Triage auf.
+const PUBLISHER_BLOCK_THRESHOLD = 2
+
+/** Normalisierte Domain aus URL — leerer String, wenn URL ungültig */
+function extractDomain(url: string): string {
+  try {
+    return new URL(url).hostname.toLowerCase().replace(/^www\./, '')
+  } catch {
+    return ''
+  }
+}
+
+/** Triggert Publisher-Block nur bei explizitem "unseriös"-Signal (Preset 7
+ *  oder Custom-Reason mit "unseriös"). Nicht jede Quality-Beschwerde — z.B.
+ *  "Textqualität schlecht" soll nicht den Verlag blockieren. */
+function isUnseriousReason(reason: string): boolean {
+  const r = reason.toLowerCase()
+  return r.includes('unseriös') || r.includes('unserioes')
+}
+
 const competitionFilterSchema = z.object({
   type: z.string().optional(),
   search: z.string().optional(),
@@ -160,9 +182,10 @@ export const competitionRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const updated = await db.competition.update({
+      const competition = await db.competition.update({
         where: { id: input.id },
         data: { dismissed: true, starred: false },
+        select: { id: true, url: true, organizer: true },
       })
 
       // Always create feedback record for tracking
@@ -199,9 +222,56 @@ export const competitionRouter = router({
             break
           }
         }
+
+        // Publisher-Block: NUR bei explizitem "unseriös"-Signal (nicht bei
+        // bloßer Qualitäts- oder Spam-Beschwerde). Trigger ist das Triage-Preset
+        // "Schlechte Qualität / Unseriös" oder ein Custom-Reason mit "unseriös".
+        if (isUnseriousReason(reason)) {
+          const domain = extractDomain(competition.url)
+          if (domain) {
+            const publisher = await db.blockedPublisher.upsert({
+              where: { domain },
+              update: {
+                dismissalCount: { increment: 1 },
+                organizer: competition.organizer ?? undefined,
+                lastReason: input.reason,
+              },
+              create: {
+                domain,
+                organizer: competition.organizer ?? null,
+                dismissalCount: 1,
+                lastReason: input.reason,
+              },
+            })
+
+            // Schwelle erreicht und noch nicht geblockt → Verlag sperren
+            // und alle bestehenden Wettbewerbe dieser Domain zurückziehen.
+            // Domain-Match per Re-Extraktion in Code, damit "verlag-xy.de"
+            // nicht versehentlich auch "anderer-verlag-xy.de.com" trifft.
+            if (!publisher.blocked && publisher.dismissalCount >= PUBLISHER_BLOCK_THRESHOLD) {
+              await db.blockedPublisher.update({
+                where: { id: publisher.id },
+                data: { blocked: true, blockedAt: new Date() },
+              })
+              const undismissed = await db.competition.findMany({
+                where: { dismissed: false },
+                select: { id: true, url: true },
+              })
+              const idsToDismiss = undismissed
+                .filter(c => extractDomain(c.url) === domain)
+                .map(c => c.id)
+              if (idsToDismiss.length > 0) {
+                await db.competition.updateMany({
+                  where: { id: { in: idsToDismiss } },
+                  data: { dismissed: true, starred: false },
+                })
+              }
+            }
+          }
+        }
       }
 
-      return updated
+      return competition
     }),
 
   getDismissalPatterns: publicProcedure.query(async () => {

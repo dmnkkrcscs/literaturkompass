@@ -6,6 +6,26 @@ import { getAdapterForSource, getAllAdapters, ADAPTERS } from './adapters'
 // Source type defined locally to avoid Prisma client import at build time
 interface Source { id: string; name: string; url: string }
 
+/** Normalisierte Domain aus URL — leerer String, wenn URL ungültig */
+function extractDomain(url: string): string {
+  try {
+    return new URL(url).hostname.toLowerCase().replace(/^www\./, '')
+  } catch {
+    return ''
+  }
+}
+
+/** Prüft, ob die Domain einer URL als unseriöser Verlag geblockt ist. */
+async function isPublisherBlocked(url: string): Promise<boolean> {
+  const domain = extractDomain(url)
+  if (!domain) return false
+  const blocked = await db.blockedPublisher.findUnique({
+    where: { domain },
+    select: { blocked: true },
+  })
+  return blocked?.blocked === true
+}
+
 /**
  * Statistics from a crawl session
  */
@@ -191,6 +211,14 @@ async function processPage(
       }
     }
 
+    // Wenn die Domain als unseriöser Verlag geblockt ist, legen wir den
+    // Wettbewerb zwar an (für die Historie / Restore), aber direkt als
+    // dismissed — er taucht dann nicht in der Triage auf.
+    const publisherBlocked = await isPublisherBlocked(url)
+    if (publisherBlocked) {
+      console.log(`[Pipeline] Auto-dismissing — publisher blocked: ${url}`)
+    }
+
     // Create or update competition in database
     const competition = await db.competition.upsert({
       where: { url },
@@ -216,6 +244,7 @@ async function processPage(
         aiExtracted: true,
         aiConfidence: extractionResult.confidence,
         rawText: cleanedText.substring(0, 50000), // Store raw text for re-processing
+        dismissed: publisherBlocked,
       },
       update: {
         name: extractionResult.data.data?.name || undefined,
