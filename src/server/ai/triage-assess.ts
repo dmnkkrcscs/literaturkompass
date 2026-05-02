@@ -14,7 +14,10 @@ async function buildProfile(): Promise<string | null> {
       include: { competition: { select: { name: true, type: true, theme: true, genres: true } } },
       take: 10,
     }),
+    // Ablehnungen werden bewusst ausgeschlossen — sie sind subjektiv (Jury-Geschmack,
+    // Glück, Themenpassung) und sagen nichts über die Eignung des Autors aus.
     db.submission.findMany({
+      where: { status: { not: 'REJECTED' } },
       include: { competition: { select: { type: true, genres: true } } },
       orderBy: { createdAt: 'desc' },
       take: 20,
@@ -31,7 +34,7 @@ async function buildProfile(): Promise<string | null> {
       take: 10,
     }),
     db.submission.findMany({
-      where: { textContent: { not: null } },
+      where: { textContent: { not: null }, status: { not: 'REJECTED' } },
       select: { title: true, textContent: true },
       orderBy: { createdAt: 'desc' },
       take: 3,
@@ -65,9 +68,9 @@ async function buildProfile(): Promise<string | null> {
     lines.push(`Interessante Themen bisher: ${interestingThemes}`)
   }
   if (dismissed.length > 0) {
-    lines.push(`Abgelehnt wegen: ${dismissed.map(d => d.reason).filter(Boolean).join(', ')}`)
+    // Triage-Verwerfungen (z.B. "Falsches Genre") — KEINE Verlags-Ablehnungen.
+    lines.push(`Bei Sichtung verworfen wegen: ${dismissed.map(d => d.reason).filter(Boolean).join(', ')}`)
   }
-  lines.push(`Einreichungen gesamt: ${submissions.length}, Zusagen: ${accepted.length}`)
 
   if (texts.length > 0) {
     lines.push('\nTextproben (Auszüge):')
@@ -137,7 +140,10 @@ ${competitionText}
 Antworte NUR als JSON (kein Markdown, kein Text darum):
 {"score": 72, "reason": "Ein Satz auf Deutsch warum es passt oder nicht."}
 
-Score 1–100: 100 = perfekte Passung, 1 = überhaupt nicht passend.`,
+Score 1–100: 100 = perfekte Passung, 1 = überhaupt nicht passend.
+
+WICHTIG: Bewerte nur die inhaltliche/thematische/stilistische Passung. Spekuliere
+nicht über Erfolgswahrscheinlichkeit, Qualität des Autors oder Ablehnungsquoten.`,
       },
     ],
   })
