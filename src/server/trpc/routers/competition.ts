@@ -280,6 +280,40 @@ export const competitionRouter = router({
     })
   }),
 
+  listBlockedPublishers: publicProcedure.query(async () => {
+    return db.blockedPublisher.findMany({
+      orderBy: [{ blocked: 'desc' }, { dismissalCount: 'desc' }],
+    })
+  }),
+
+  unblockPublisher: publicProcedure
+    .input(z.object({ domain: z.string() }))
+    .mutation(async ({ input }) => {
+      // Verlag entsperren — bestehende, durch den Block dismissten Wettbewerbe
+      // werden bewusst NICHT automatisch wiederhergestellt: der User hat sie
+      // einzeln per Triage zurückgewiesen / sie wurden rückwirkend dismissed,
+      // und die manuelle Restore-Funktion existiert pro Wettbewerb. Hier nur
+      // den Block aufheben, damit künftige Crawls wieder durchgehen.
+      await db.blockedPublisher.update({
+        where: { domain: input.domain },
+        data: {
+          blocked: false,
+          blockedAt: null,
+          dismissalCount: 0,
+        },
+      })
+      return { ok: true }
+    }),
+
+  deleteBlockedPublisher: publicProcedure
+    .input(z.object({ domain: z.string() }))
+    .mutation(async ({ input }) => {
+      await db.blockedPublisher.delete({
+        where: { domain: input.domain },
+      })
+      return { ok: true }
+    }),
+
   restore: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {

@@ -5,7 +5,7 @@ import { trpc } from '@/lib/trpc'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { useToast } from '@/components/ui/Toast'
-import { Download, Upload, Moon, Sun, Send, CheckCircle, XCircle } from 'lucide-react'
+import { Download, Upload, Moon, Sun, Send, CheckCircle, XCircle, ShieldOff, Trash2, Ban } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 export default function EinstellungenPage() {
@@ -15,6 +15,22 @@ export default function EinstellungenPage() {
   const [importLoading, setImportLoading] = useState(false)
 
   const { data: telegramStatus, isLoading: telegramLoading } = trpc.telegram.status.useQuery()
+
+  const blockedPublishersQuery = trpc.competition.listBlockedPublishers.useQuery()
+  const unblockMutation = trpc.competition.unblockPublisher.useMutation({
+    onSuccess: () => {
+      blockedPublishersQuery.refetch()
+      toast('Verlag entsperrt — bei künftigen Crawls wieder berücksichtigt.', 'success')
+    },
+    onError: () => toast('Fehler beim Entsperren.', 'error'),
+  })
+  const deleteBlockedMutation = trpc.competition.deleteBlockedPublisher.useMutation({
+    onSuccess: () => {
+      blockedPublishersQuery.refetch()
+      toast('Eintrag gelöscht.', 'success')
+    },
+    onError: () => toast('Fehler beim Löschen.', 'error'),
+  })
   const testMutation = trpc.telegram.testMessage.useMutation({
     onSuccess: (data) => {
       if (data.success) {
@@ -201,6 +217,92 @@ export default function EinstellungenPage() {
                 </div>
               )}
             </div>
+          </section>
+
+          {/* Blocked Publishers */}
+          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-black dark:text-white">
+                  Geblockte Verlage
+                </h2>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                  Verlage, die du in der Triage 2× als <em>„Schlechte Qualität / Unseriös"</em> markiert hast.
+                  Ihre Wettbewerbe werden bei künftigen Crawls automatisch ausgeblendet.
+                </p>
+              </div>
+              <Ban className="h-5 w-5 shrink-0 text-gray-400" />
+            </div>
+
+            <div className="mt-4">
+              {blockedPublishersQuery.isLoading ? (
+                <p className="text-sm text-gray-500 dark:text-gray-400">Lade…</p>
+              ) : !blockedPublishersQuery.data || blockedPublishersQuery.data.length === 0 ? (
+                <p className="rounded-lg bg-gray-50 p-4 text-sm text-gray-500 dark:bg-gray-800/50 dark:text-gray-400">
+                  Noch keine geblockten Verlage. Wenn du in der Triage zwei oder mehr Wettbewerbe
+                  desselben Verlags als „Unseriös" markierst, erscheint er hier.
+                </p>
+              ) : (
+                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {blockedPublishersQuery.data.map(p => (
+                    <li key={p.id} className="flex items-center justify-between gap-4 py-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="truncate font-mono text-sm text-black dark:text-white">
+                            {p.domain}
+                          </p>
+                          {p.blocked ? (
+                            <Badge variant="default">Geblockt</Badge>
+                          ) : (
+                            <Badge variant="sage">{p.dismissalCount}/2</Badge>
+                          )}
+                        </div>
+                        {p.organizer && (
+                          <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                            {p.organizer}
+                          </p>
+                        )}
+                        {p.lastReason && (
+                          <p className="mt-0.5 truncate text-xs italic text-gray-400 dark:text-gray-500">
+                            „{p.lastReason}"
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex shrink-0 gap-2">
+                        {p.blocked && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => unblockMutation.mutate({ domain: p.domain })}
+                            loading={unblockMutation.isPending && unblockMutation.variables?.domain === p.domain}
+                          >
+                            <ShieldOff className="mr-1 h-4 w-4" />
+                            Entsperren
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (confirm(`Eintrag für ${p.domain} wirklich löschen? Counter wird zurückgesetzt.`)) {
+                              deleteBlockedMutation.mutate({ domain: p.domain })
+                            }
+                          }}
+                          loading={deleteBlockedMutation.isPending && deleteBlockedMutation.variables?.domain === p.domain}
+                        >
+                          <Trash2 className="h-4 w-4 text-gray-400" />
+                        </Button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
+              Hinweis: Entsperren hebt nur den Block für künftige Crawls auf. Bereits abgelehnte
+              Wettbewerbe musst du bei Bedarf einzeln über die Detailseite wiederherstellen.
+            </p>
           </section>
 
           {/* Data Management */}
