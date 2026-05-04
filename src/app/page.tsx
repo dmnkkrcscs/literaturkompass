@@ -6,6 +6,7 @@ import { formatDateShort, TYPE_LABELS } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { AiMessage, AiRecommendations } from '@/components/dashboard/AiMessage'
+import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
 interface DashboardStats {
   totalCompetitions: number
@@ -25,11 +26,11 @@ interface CompetitionDisplay {
 
 async function getStats(): Promise<DashboardStats> {
   const [competitions, submissions, accepted, open, starred] = await Promise.all([
-    db.competition.count({ where: { status: 'ACTIVE', dismissed: false } }),
+    db.competition.count({ where: { status: 'ACTIVE', dismissed: false, ...excludeMagazineRoots } }),
     db.submission.count(),
     db.submission.count({ where: { status: 'ACCEPTED' } }),
     db.submission.count({ where: { status: 'SUBMITTED' } }),
-    db.competition.count({ where: { starred: true, dismissed: false } }),
+    db.competition.count({ where: { starred: true, dismissed: false, ...excludeMagazineRoots } }),
   ])
 
   return {
@@ -49,6 +50,7 @@ async function getUpcomingDeadlines(): Promise<CompetitionDisplay[]> {
       deadline: { gte: today },
       status: 'ACTIVE',
       dismissed: false,
+      ...excludeMagazineRoots,
     },
     select: {
       id: true,
@@ -69,6 +71,7 @@ async function getLatestCompetitions(): Promise<CompetitionDisplay[]> {
     where: {
       status: 'ACTIVE',
       dismissed: false,
+      ...excludeMagazineRoots,
       // Hide expired deadlines unless the competition is starred
       OR: [
         { deadline: { gte: today } },

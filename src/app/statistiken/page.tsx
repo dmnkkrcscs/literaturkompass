@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { db } from '@/lib/db'
+import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
 interface StatsSummary {
   totalCompetitions: number
@@ -36,11 +37,12 @@ async function getPageData() {
     competitionsByType,
     submissionsByMonthRaw,
   ] = await Promise.all([
-    db.competition.count(),
+    db.competition.count({ where: excludeMagazineRoots }),
     db.submission.count(),
     db.submission.count({ where: { status: 'ACCEPTED' } }),
     db.competition.groupBy({
       by: ['type'],
+      where: excludeMagazineRoots,
       _count: true,
     }),
     // Use raw SQL for proper monthly grouping

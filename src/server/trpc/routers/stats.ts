@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { publicProcedure, router } from '../init'
+import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
 export const statsRouter = router({
   dashboard: publicProcedure.query(async () => {
@@ -8,11 +9,11 @@ export const statsRouter = router({
     const [totalCompetitions, competitionsByType, openDeadlines, starredCount, submittedCount, acceptedCount] =
       await Promise.all([
         db.competition.count({
-          where: { dismissed: false },
+          where: { dismissed: false, ...excludeMagazineRoots },
         }),
         db.competition.groupBy({
           by: ['type'],
-          where: { dismissed: false },
+          where: { dismissed: false, ...excludeMagazineRoots },
           _count: true,
         }),
         db.competition.count({
@@ -21,12 +22,14 @@ export const statsRouter = router({
             deadline: {
               gte: now,
             },
+            ...excludeMagazineRoots,
           },
         }),
         db.competition.count({
           where: {
             starred: true,
             dismissed: false,
+            ...excludeMagazineRoots,
           },
         }),
         db.submission.count({

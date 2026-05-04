@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { publicProcedure, router } from '../init'
+import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
 // Ab dieser Anzahl "unseriös"-Dismissals derselben Domain wird der Verlag
 // geblockt — danach werden neue Wettbewerbe dieser Domain beim Crawl direkt
@@ -68,6 +69,8 @@ export const competitionRouter = router({
           { deadline: null },
           { starred: true },
         ],
+        // v1-Magazin-Wurzel-Einträge nicht in Ausschreibungslisten zeigen
+        ...excludeMagazineRoots,
       }
 
       if (filters.type) {

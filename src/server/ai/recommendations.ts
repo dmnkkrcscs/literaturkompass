@@ -1,5 +1,6 @@
 import { anthropic } from './client'
 import { db } from '@/lib/db'
+import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
 export interface AiRecommendation {
   competitionId: string
@@ -60,6 +61,7 @@ export async function generateRecommendations(): Promise<AiRecommendation[]> {
           status: 'ACTIVE',
           deadline: { gt: new Date() },
           submissions: { none: { status: { in: ['SUBMITTED', 'ACCEPTED'] } } },
+          ...excludeMagazineRoots,
         },
         select: {
           id: true, name: true, type: true, theme: true, genres: true,

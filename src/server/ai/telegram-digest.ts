@@ -1,6 +1,7 @@
 import { anthropic } from './client'
 import { db } from '@/lib/db'
 import { formatDateDE, daysUntil } from '@/lib/utils'
+import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
 const TELEGRAM_DIGEST_SYSTEM_PROMPT = `Du bist der Literaturkompass – ein literaturbegeisterter Assistent, der täglich per Telegram eine kurze Nachricht sendet.
 
@@ -53,6 +54,7 @@ export async function generateTelegramDigest(): Promise<string> {
           createdAt: { gte: yesterday },
           dismissed: false,
           status: 'ACTIVE',
+          ...excludeMagazineRoots,
         },
         select: { name: true, type: true, deadline: true },
         take: 5,

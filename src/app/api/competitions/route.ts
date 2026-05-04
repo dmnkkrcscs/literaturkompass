@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
+import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,6 +17,7 @@ export async function GET(request: NextRequest) {
     const where: any = {
       dismissed: false,
       status: 'ACTIVE',
+      ...excludeMagazineRoots,
       AND: [
         // Hide expired deadlines unless the competition is starred
         {

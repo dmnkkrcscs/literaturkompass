@@ -1,6 +1,7 @@
 import { anthropic } from './client'
 import { db } from '@/lib/db'
 import { formatDateDE, daysUntil } from '@/lib/utils'
+import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
 const DASHBOARD_SYSTEM_PROMPT = `Du bist der Literaturkompass – ein smarter, sachlicher Literatur-Assistent. Du gibst dem Autor einen kurzen, informativen Lagebericht.
 
@@ -51,6 +52,7 @@ export async function generateDashboardMessage(): Promise<string> {
           createdAt: { gte: yesterday },
           dismissed: false,
           status: 'ACTIVE',
+          ...excludeMagazineRoots,
         },
         select: { name: true, type: true, theme: true, deadline: true },
         orderBy: { createdAt: 'desc' },
@@ -58,7 +60,7 @@ export async function generateDashboardMessage(): Promise<string> {
       }),
       db.submission.count({ where: { status: 'SUBMITTED' } }),
       db.submission.count({ where: { textContent: { not: null } } }),
-      db.competition.count({ where: { status: 'ACTIVE', dismissed: false, deadline: { gt: now } } }),
+      db.competition.count({ where: { status: 'ACTIVE', dismissed: false, deadline: { gt: now }, ...excludeMagazineRoots } }),
     ])
 
     let context = `Heute ist ${formatDateDE(now)}.\n\n`
