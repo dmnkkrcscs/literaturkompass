@@ -14,6 +14,8 @@ export default function EinstellungenPage() {
   const [exportLoading, setExportLoading] = useState(false)
   const [importLoading, setImportLoading] = useState(false)
 
+  const [pendingDomain, setPendingDomain] = useState<string | null>(null)
+
   const { data: telegramStatus, isLoading: telegramLoading } = trpc.telegram.status.useQuery()
 
   const blockedPublishersQuery = trpc.competition.listBlockedPublishers.useQuery()
@@ -23,6 +25,7 @@ export default function EinstellungenPage() {
       toast('Verlag entsperrt — bei künftigen Crawls wieder berücksichtigt.', 'success')
     },
     onError: () => toast('Fehler beim Entsperren.', 'error'),
+    onSettled: () => setPendingDomain(null),
   })
   const deleteBlockedMutation = trpc.competition.deleteBlockedPublisher.useMutation({
     onSuccess: () => {
@@ -30,6 +33,7 @@ export default function EinstellungenPage() {
       toast('Eintrag gelöscht.', 'success')
     },
     onError: () => toast('Fehler beim Löschen.', 'error'),
+    onSettled: () => setPendingDomain(null),
   })
   const testMutation = trpc.telegram.testMessage.useMutation({
     onSuccess: (data) => {
@@ -273,8 +277,11 @@ export default function EinstellungenPage() {
                           <Button
                             variant="secondary"
                             size="sm"
-                            onClick={() => unblockMutation.mutate({ domain: p.domain })}
-                            loading={unblockMutation.isPending && unblockMutation.variables?.domain === p.domain}
+                            onClick={() => {
+                              setPendingDomain(p.domain)
+                              unblockMutation.mutate({ domain: p.domain })
+                            }}
+                            loading={unblockMutation.isPending && pendingDomain === p.domain}
                           >
                             <ShieldOff className="mr-1 h-4 w-4" />
                             Entsperren
@@ -285,10 +292,11 @@ export default function EinstellungenPage() {
                           size="sm"
                           onClick={() => {
                             if (confirm(`Eintrag für ${p.domain} wirklich löschen? Counter wird zurückgesetzt.`)) {
+                              setPendingDomain(p.domain)
                               deleteBlockedMutation.mutate({ domain: p.domain })
                             }
                           }}
-                          loading={deleteBlockedMutation.isPending && deleteBlockedMutation.variables?.domain === p.domain}
+                          loading={deleteBlockedMutation.isPending && pendingDomain === p.domain}
                         >
                           <Trash2 className="h-4 w-4 text-gray-400" />
                         </Button>
