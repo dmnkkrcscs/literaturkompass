@@ -8,6 +8,7 @@ import { statsRouter } from './routers/stats'
 import { importRouter } from './routers/import'
 import { magazineRouter } from './routers/magazine'
 import { telegramRouter } from './routers/telegram'
+import { userProfileRouter } from './routers/user-profile'
 
 export const appRouter = router({
   competition: competitionRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
   import: importRouter,
   magazine: magazineRouter,
   telegram: telegramRouter,
+  userProfile: userProfileRouter,
 })
 
 export type AppRouter = typeof appRouter

@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { useToast } from '@/components/ui/Toast'
-import { Download, Upload, Moon, Sun, Send, CheckCircle, XCircle, ShieldOff, Trash2, Ban } from 'lucide-react'
+import { Download, Upload, Moon, Sun, Send, CheckCircle, XCircle, ShieldOff, Trash2, Ban, User, X } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 export default function EinstellungenPage() {
@@ -15,6 +15,55 @@ export default function EinstellungenPage() {
   const [importLoading, setImportLoading] = useState(false)
 
   const [pendingDomain, setPendingDomain] = useState<string | null>(null)
+
+  // ── User-Profil ────────────────────────────────────────────────────────
+  const profileQuery = trpc.userProfile.get.useQuery()
+  const [age, setAge] = useState<string>('')
+  const [regions, setRegions] = useState<string[]>([])
+  const [regionInput, setRegionInput] = useState('')
+
+  useEffect(() => {
+    if (profileQuery.data) {
+      setAge(profileQuery.data.age?.toString() ?? '')
+      setRegions(profileQuery.data.allowedRegions)
+    }
+  }, [profileQuery.data])
+
+  const profileUpsert = trpc.userProfile.upsert.useMutation({
+    onSuccess: (res) => {
+      profileQuery.refetch()
+      const dismissed = res.retroactivelyDismissed
+      toast(
+        dismissed > 0
+          ? `Profil gespeichert. ${dismissed} bestehende Wettbewerbe wegen Region-Mismatch ausgeblendet.`
+          : 'Profil gespeichert.',
+        'success'
+      )
+    },
+    onError: () => toast('Fehler beim Speichern des Profils.', 'error'),
+  })
+
+  const addRegion = () => {
+    const r = regionInput.trim()
+    if (!r) return
+    if (regions.some(x => x.toLowerCase() === r.toLowerCase())) {
+      setRegionInput('')
+      return
+    }
+    setRegions([...regions, r])
+    setRegionInput('')
+  }
+
+  const removeRegion = (r: string) => setRegions(regions.filter(x => x !== r))
+
+  const saveProfile = () => {
+    const parsedAge = age.trim() === '' ? null : parseInt(age, 10)
+    if (parsedAge !== null && (isNaN(parsedAge) || parsedAge < 0 || parsedAge > 150)) {
+      toast('Bitte gib ein gültiges Alter ein.', 'error')
+      return
+    }
+    profileUpsert.mutate({ age: parsedAge, allowedRegions: regions })
+  }
 
   const { data: telegramStatus, isLoading: telegramLoading } = trpc.telegram.status.useQuery()
 
@@ -111,6 +160,111 @@ export default function EinstellungenPage() {
 
         {/* Settings Sections */}
         <div className="space-y-6">
+          {/* User Profile */}
+          <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-black dark:text-white">
+                  Autorenprofil
+                </h2>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                  Steuert die KI-Einschätzung in der Triage und filtert Wettbewerbe mit
+                  unpassendem Regionalbezug automatisch aus.
+                </p>
+              </div>
+              <User className="h-5 w-5 shrink-0 text-gray-400" />
+            </div>
+
+            <div className="mt-5 space-y-4">
+              {/* Alter */}
+              <div>
+                <label className="block text-sm font-medium text-black dark:text-white">
+                  Alter
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={150}
+                  value={age}
+                  onChange={e => setAge(e.target.value)}
+                  placeholder="z.B. 37"
+                  className="mt-1 w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder-gray-400 focus:border-accent-light focus:outline-none focus:ring-1 focus:ring-accent-light dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Wird der KI bei der Bewertung mitgegeben (Altersbeschränkungen).
+                </p>
+              </div>
+
+              {/* Regionen */}
+              <div>
+                <label className="block text-sm font-medium text-black dark:text-white">
+                  Erlaubte Regionen
+                </label>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Wettbewerbe ohne Regionalbezug werden immer akzeptiert. Wenn ein Wettbewerb
+                  einen Regionalbezug hat, muss mindestens einer dieser Begriffe darin vorkommen
+                  (case-insensitive Substring), sonst wird er automatisch dismissed.
+                </p>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {regions.map(r => (
+                    <span
+                      key={r}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-accent-light/10 px-3 py-1 text-sm text-accent-light dark:bg-accent-dark/20 dark:text-accent-dark"
+                    >
+                      {r}
+                      <button
+                        onClick={() => removeRegion(r)}
+                        className="rounded-full hover:bg-accent-light/20 dark:hover:bg-accent-dark/30"
+                        aria-label={`${r} entfernen`}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                  {regions.length === 0 && (
+                    <span className="text-xs italic text-gray-400">
+                      Keine Region — alle Wettbewerbe sind erlaubt.
+                    </span>
+                  )}
+                </div>
+
+                <div className="mt-3 flex gap-2">
+                  <input
+                    type="text"
+                    value={regionInput}
+                    onChange={e => setRegionInput(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        addRegion()
+                      }
+                    }}
+                    placeholder="z.B. Österreich"
+                    className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder-gray-400 focus:border-accent-light focus:outline-none focus:ring-1 focus:ring-accent-light dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                  />
+                  <Button variant="secondary" size="sm" onClick={addRegion} disabled={!regionInput.trim()}>
+                    Hinzufügen
+                  </Button>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Button
+                  variant="primary"
+                  onClick={saveProfile}
+                  loading={profileUpsert.isPending}
+                >
+                  Profil speichern
+                </Button>
+                <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+                  Beim Speichern werden bestehende, nicht geplante Wettbewerbe mit unpassendem
+                  Regionalbezug rückwirkend ausgeblendet.
+                </p>
+              </div>
+            </div>
+          </section>
+
           {/* Theme Settings */}
           <section className="rounded-lg bg-light-surface p-6 dark:bg-dark-surface">
             <h2 className="text-xl font-semibold text-black dark:text-white">

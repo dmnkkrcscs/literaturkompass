@@ -8,6 +8,10 @@ export interface TriageAssessment {
 
 /** Baut ein kurzes Autorenprofil aus der DB-Historie */
 async function buildProfile(): Promise<string | null> {
+  const userProfile = await db.userProfile.findFirst({
+    select: { age: true, allowedRegions: true },
+  })
+
   const [accepted, submissions, starred, dismissed, texts] = await Promise.all([
     db.submission.findMany({
       where: { status: 'ACCEPTED' },
@@ -41,8 +45,10 @@ async function buildProfile(): Promise<string | null> {
     }),
   ])
 
-  // Brauche irgendwas, um ein Profil zu bauen
-  if (accepted.length === 0 && submissions.length === 0 && starred.length === 0) {
+  // Brauche irgendwas, um ein Profil zu bauen — entweder Historie oder
+  // ein explizit gepflegtes UserProfile.
+  const hasUserProfile = !!(userProfile && (userProfile.age || userProfile.allowedRegions.length > 0))
+  if (accepted.length === 0 && submissions.length === 0 && starred.length === 0 && !hasUserProfile) {
     return null
   }
 
@@ -57,6 +63,12 @@ async function buildProfile(): Promise<string | null> {
     .map(([g]) => g)
 
   const lines: string[] = []
+  if (userProfile?.age) {
+    lines.push(`Alter: ${userProfile.age}`)
+  }
+  if (userProfile && userProfile.allowedRegions.length > 0) {
+    lines.push(`Regional zugelassen: ${userProfile.allowedRegions.join(', ')} — Wettbewerbe mit Bezug zu anderen Regionen sind nicht relevant`)
+  }
   if (accepted.length > 0) {
     lines.push(`Angenommen bei: ${accepted.map(a => `"${a.competition.name}" (${a.competition.theme || a.competition.type})`).join(', ')}`)
   }

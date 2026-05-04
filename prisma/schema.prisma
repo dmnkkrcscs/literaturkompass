@@ -280,6 +280,20 @@ model BlockedPublisher {
   @@index([blocked])
 }
 
+// Singleton-Profil des Users. Steuert Auto-Dismiss-Logik im Crawler:
+// * `allowedRegions` — Liste von Region-Keywords, mit denen die `regionRestriction`
+//   eines Wettbewerbs verglichen wird. Wenn die Restriction nicht-leer ist und KEINEN
+//   dieser Keywords (case-insensitive Substring) enthält → automatisch dismissed.
+// * `age` — wird zusätzlich in die KI-Triage-Bewertung gegeben (Alter passt / passt nicht).
+model UserProfile {
+  id              String    @id @default(cuid())
+  age             Int?
+  allowedRegions  String[]  @default([])
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
 model NotificationLog {
   id            String   @id @default(cuid())
   competitionId String?

@@ -3,6 +3,7 @@ import { extractCompetitionFromUrl } from '@/server/ai/extract'
 type CrawlStatus = 'SUCCESS' | 'FAILED' | 'DUPLICATE' | 'IRRELEVANT'
 import { fetchWithCheerio } from './fetcher'
 import { getAdapterForSource, getAllAdapters, ADAPTERS } from './adapters'
+import { regionMatches } from '@/server/lib/region-match'
 // Source type defined locally to avoid Prisma client import at build time
 interface Source { id: string; name: string; url: string }
 
@@ -219,6 +220,21 @@ async function processPage(
       console.log(`[Pipeline] Auto-dismissing — publisher blocked: ${url}`)
     }
 
+    // User-Profil-Filter: Wenn die regionRestriction nicht zur erlaubten
+    // Region passt, ebenfalls direkt dismissed anlegen. Profil ist Singleton.
+    let regionMismatch = false
+    const profile = await db.userProfile.findFirst({
+      select: { allowedRegions: true },
+    })
+    if (profile && profile.allowedRegions.length > 0) {
+      const restriction = extractionResult.data.data?.regionRestriction
+      if (!regionMatches(restriction, profile.allowedRegions)) {
+        regionMismatch = true
+        console.log(`[Pipeline] Auto-dismissing — region mismatch (${restriction}): ${url}`)
+      }
+    }
+    const autoDismiss = publisherBlocked || regionMismatch
+
     // Create or update competition in database
     const competition = await db.competition.upsert({
       where: { url },
@@ -244,7 +260,7 @@ async function processPage(
         aiExtracted: true,
         aiConfidence: extractionResult.confidence,
         rawText: cleanedText.substring(0, 50000), // Store raw text for re-processing
-        dismissed: publisherBlocked,
+        dismissed: autoDismiss,
       },
       update: {
         name: extractionResult.data.data?.name || undefined,
