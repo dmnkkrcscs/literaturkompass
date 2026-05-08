@@ -17,6 +17,8 @@ export default function OffenPage() {
   const [textInputs, setTextInputs] = useState<Record<string, string>>({})
   const [editingTitle, setEditingTitle] = useState<string | null>(null)
   const [titleValue, setTitleValue] = useState('')
+  const [editingDate, setEditingDate] = useState<string | null>(null)
+  const [dateValue, setDateValue] = useState('')
 
   const { data, isLoading, refetch } = trpc.submission.listOpen.useQuery()
 
@@ -156,10 +158,53 @@ export default function OffenPage() {
                           </p>
                         </Link>
                         <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                          {sub.submittedAt && (
-                            <span>
-                              Eingereicht: {formatDateShort(new Date(sub.submittedAt))}
-                            </span>
+                          {editingDate === sub.id ? (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="date"
+                                value={dateValue}
+                                onChange={(e) => setDateValue(e.target.value)}
+                                className="rounded border border-gray-300 bg-white px-2 py-0.5 text-xs text-black dark:border-gray-600 dark:bg-dark-bg dark:text-white"
+                                autoFocus
+                              />
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                onClick={() => updateMutation.mutate(
+                                  { id: sub.id, submittedAt: dateValue ? new Date(dateValue) : null },
+                                  { onSuccess: () => setEditingDate(null) }
+                                )}
+                                loading={updateMutation.isPending}
+                              >
+                                OK
+                              </Button>
+                              <button
+                                onClick={() => setEditingDate(null)}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                aria-label="Abbrechen"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setEditingDate(sub.id)
+                                setDateValue(
+                                  sub.submittedAt
+                                    ? new Date(sub.submittedAt).toISOString().split('T')[0]
+                                    : ''
+                                )
+                              }}
+                              className="group flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300"
+                            >
+                              <span>
+                                {sub.submittedAt
+                                  ? `Eingereicht: ${formatDateShort(new Date(sub.submittedAt))}`
+                                  : 'Einsendedatum hinzufügen'}
+                              </span>
+                              <Pencil className="h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
+                            </button>
                           )}
                           <Badge variant="default">
                             {daysWaiting} {daysWaiting === 1 ? 'Tag' : 'Tage'}
