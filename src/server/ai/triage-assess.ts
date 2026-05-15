@@ -163,12 +163,24 @@ nicht über Erfolgswahrscheinlichkeit, Qualität des Autors oder Ablehnungsquote
   const text = response.content.find(b => b.type === 'text')
   if (!text || text.type !== 'text') return { score: null, reason: null }
 
-  const jsonMatch = text.text.match(/\{[\s\S]*\}/)
+  return parseTriageResponse(text.text)
+}
+
+/** Parses the raw AI text response into a TriageAssessment. Exported for testing. */
+export function parseTriageResponse(raw: string): TriageAssessment {
+  const jsonMatch = raw.match(/\{[\s\S]*\}/)
   if (!jsonMatch) return { score: null, reason: null }
 
-  const parsed = JSON.parse(jsonMatch[0]) as { score: number; reason: string }
-  return {
-    score: Math.min(100, Math.max(1, Math.round(parsed.score))),
-    reason: parsed.reason,
+  try {
+    const parsed = JSON.parse(jsonMatch[0]) as { score: number; reason: string }
+    if (typeof parsed.score !== 'number' || typeof parsed.reason !== 'string') {
+      return { score: null, reason: null }
+    }
+    return {
+      score: Math.min(100, Math.max(1, Math.round(parsed.score))),
+      reason: parsed.reason,
+    }
+  } catch {
+    return { score: null, reason: null }
   }
 }
