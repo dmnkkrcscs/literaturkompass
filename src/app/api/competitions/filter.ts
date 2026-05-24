@@ -27,7 +27,7 @@ export function buildCompetitionWhere(params: CompetitionFilterParams) {
     ],
   }
 
-  if (!params.showSubmitted) {
+  if (params.showSubmitted !== true) {
     where.submissions = { none: { status: { in: ['SUBMITTED', 'ACCEPTED'] } } }
   }
 
@@ -36,7 +36,8 @@ export function buildCompetitionWhere(params: CompetitionFilterParams) {
   }
 
   if (params.hasDeadline) {
-    where.deadline = { not: null }
+    // Push into AND so starred competitions (deadline=null) still pass
+    where.AND.push({ OR: [{ deadline: { not: null } }, { starred: true }] })
   }
 
   if (params.search) {

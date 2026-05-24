@@ -62,14 +62,21 @@ describe('buildCompetitionWhere — Typ-Filter', () => {
 })
 
 describe('buildCompetitionWhere — hasDeadline-Filter', () => {
-  it('schränkt auf Wettbewerbe mit Deadline ein wenn hasDeadline=true', () => {
+  it('fügt hasDeadline-Block in AND ein wenn hasDeadline=true', () => {
     const where = buildCompetitionWhere({ today: TODAY, hasDeadline: true })
-    expect(where.deadline).toEqual({ not: null })
+    // Top-level deadline must NOT be set (würde deadline:null-Branch im Basis-OR brechen)
+    expect(where.deadline).toBeUndefined()
+    const andBlocks = where.AND as any[]
+    const deadlineBlock = andBlocks[1]
+    expect(deadlineBlock).toEqual({
+      OR: [{ deadline: { not: null } }, { starred: true }],
+    })
   })
 
-  it('setzt kein deadline-Filter wenn hasDeadline=false', () => {
+  it('setzt kein hasDeadline-Filter wenn hasDeadline=false', () => {
     const where = buildCompetitionWhere({ today: TODAY, hasDeadline: false })
     expect(where.deadline).toBeUndefined()
+    expect((where.AND as any[]).length).toBe(1) // nur der Basis-Deadline-Block
   })
 })
 
@@ -102,8 +109,8 @@ describe('buildCompetitionWhere — Kombination', () => {
       showSubmitted: true,
     })
     expect(where.type).toBe('WETTBEWERB')
-    expect(where.deadline).toEqual({ not: null })
+    expect(where.deadline).toBeUndefined()
     expect(where.submissions).toBeUndefined()
-    expect((where.AND as any[]).length).toBe(2) // Deadline-Block + Suchblock
+    expect((where.AND as any[]).length).toBe(3) // Basis-Deadline-Block + hasDeadline-Block + Suchblock
   })
 })
