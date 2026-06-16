@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
-import { crawlAllSources } from '@/server/crawl/pipeline'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 300 // 5 minutes
 
 export async function GET(request: Request) {
   // Simple auth via secret
@@ -14,22 +12,29 @@ export async function GET(request: Request) {
   }
 
   try {
-    const stats = await crawlAllSources()
+    // Enqueue a BullMQ job so the dedicated worker container runs the crawl.
+    // Running crawlAllSources() inline here blocks the web server's event loop
+    // for minutes (→ 504 timeouts on static assets like CSS and slow page
+    // loads). The worker already listens on the `crawl` queue.
+    const { getCrawlQueue } = await import('@/server/crawl/scheduler')
+    const queue = getCrawlQueue()
+
+    const job = await queue.add(
+      'crawl-all-sources',
+      {},
+      { attempts: 3, backoff: { type: 'exponential', delay: 2000 } }
+    )
+
     return NextResponse.json({
       success: true,
-      stats: stats.map(s => ({
-        source: s.sourceName,
-        total: s.totalUrls,
-        success: s.successCount,
-        duplicate: s.duplicateCount,
-        irrelevant: s.irrelevantCount,
-        failed: s.failureCount,
-      })),
+      message: 'Crawl queued for all sources',
+      jobId: job.id,
+      timestamp: new Date(),
     })
   } catch (error) {
-    console.error('[Cron] Crawl failed:', error)
+    console.error('[Cron] Failed to enqueue crawl:', error)
     return NextResponse.json(
-      { error: 'Crawl failed', message: error instanceof Error ? error.message : String(error) },
+      { error: 'Failed to enqueue crawl', message: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }
