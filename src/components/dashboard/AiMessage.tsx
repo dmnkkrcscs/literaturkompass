@@ -17,7 +17,7 @@ export function AiMessage() {
 
   return (
     <div className="mb-8 relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600/90 via-indigo-600/90 to-blue-600/90 p-[1px]">
-      <div className="relative rounded-2xl bg-gradient-to-br from-purple-950/80 via-indigo-950/80 to-blue-950/80 backdrop-blur-xl p-6">
+      <div className="relative rounded-2xl bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 p-6">
         {/* Decorative glow */}
         <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-purple-500/20 blur-3xl" />
         <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-blue-500/20 blur-3xl" />
