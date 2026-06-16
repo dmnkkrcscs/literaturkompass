@@ -1,4 +1,4 @@
-const CACHE_NAME = 'literaturkompass-v3'
+const CACHE_NAME = 'literaturkompass-v4'
 const STATIC_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
@@ -20,27 +20,6 @@ self.addEventListener('activate', (event) => {
   )
   self.clients.claim()
 })
-
-/**
- * Stale-while-revalidate: return cached response immediately,
- * fetch fresh version in the background and update cache.
- */
-function staleWhileRevalidate(request) {
-  return caches.open(CACHE_NAME).then((cache) =>
-    cache.match(request).then((cached) => {
-      const fetched = fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            cache.put(request, response.clone())
-          }
-          return response
-        })
-        .catch(() => cached) // offline fallback to cache
-
-      return cached || fetched
-    })
-  )
-}
 
 /**
  * Network-first with timeout: try network, fall back to cache if slow/offline.
@@ -96,9 +75,26 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Page navigations: stale-while-revalidate — instant load from cache
+  // Page navigations: network-first so the served HTML always references the
+  // currently-deployed _next/static chunks. Stale HTML would point at hashed
+  // chunk URLs that 404 after a deploy, breaking the rendered page. The cache
+  // is only used as an offline fallback.
   if (event.request.mode === 'navigate') {
-    event.respondWith(staleWhileRevalidate(event.request))
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone()
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy))
+          }
+          return response
+        })
+        .catch(() =>
+          caches.match(event.request).then(
+            (cached) => cached || new Response('Offline', { status: 503 })
+          )
+        )
+    )
     return
   }
 

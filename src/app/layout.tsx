@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
+import { Albert_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/layout/Navbar";
+
+// Self-hosted via next/font: no render-blocking external request, no FOUT.
+// Only the latin subset is shipped and the font swaps in immediately.
+const albertSans = Albert_Sans({
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
     title: "Literaturkompass",
@@ -27,7 +36,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-          <html lang="de" suppressHydrationWarning>
+          <html lang="de" className={albertSans.variable} suppressHydrationWarning>
                 <head>
                         <meta charSet="utf-8" />
                         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
@@ -38,9 +47,6 @@ export default function RootLayout({
                         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
                         <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
                         <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
-                        <link rel="preconnect" href="https://fonts.googleapis.com" />
-                        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                        <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@100..900&display=swap" rel="stylesheet" />
                 </head>
                 <body className={`font-sans bg-light-bg dark:bg-dark-bg`}>
                         <Providers>
