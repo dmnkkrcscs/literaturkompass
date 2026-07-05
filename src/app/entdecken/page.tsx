@@ -1,41 +1,23 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { format } from 'date-fns'
-import { de } from 'date-fns/locale'
-import Link from 'next/link'
+import { useRef, useState } from 'react'
 import { Search, Filter } from 'lucide-react'
+import { trpc } from '@/lib/trpc'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
-
-interface Competition {
-  id: string
-  name: string
-  organizer?: string | null
-  deadline: Date | null
-  type: string
-  theme?: string | null
-  prize?: string | null
-  genres: string[]
-  submissions?: { id: string }[]
-  magazine?: { id: string; name: string } | null
-}
+import { CompetitionListCard } from '@/components/competition/CompetitionListCard'
 
 interface FilterState {
   search: string
   type: 'ALL' | 'WETTBEWERB' | 'ANTHOLOGIE' | 'ZEITSCHRIFT'
-  hasDeadline: boolean
 }
 
+const PAGE_SIZE = 10
+
 export default function EntdeckenPage() {
-  const [competitions, setCompetitions] = useState<Competition[]>([])
-  const [loading, setLoading] = useState(true)
-  const [hasMore, setHasMore] = useState(true)
-  const [skip, setSkip] = useState(0)
+  const [take, setTake] = useState(PAGE_SIZE)
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     type: 'ALL',
-    hasDeadline: false,
   })
 
   const typeLabels: Record<string, string> = {
@@ -45,53 +27,19 @@ export default function EntdeckenPage() {
     ZEITSCHRIFT: 'Zeitschrift',
   }
 
-  const loadCompetitions = useCallback(
-    async (skipCount: number = 0) => {
-      setLoading(true)
-      try {
-        const params = new URLSearchParams()
-        params.append('skip', skipCount.toString())
-        params.append('take', '10')
-
-        if (filters.search) {
-          params.append('search', filters.search)
-        }
-        if (filters.type !== 'ALL') {
-          params.append('type', filters.type)
-        }
-        if (filters.hasDeadline) {
-          params.append('hasDeadline', 'true')
-        }
-
-        const response = await fetch(`/api/competitions?${params.toString()}`)
-        const data = await response.json()
-
-        if (skipCount === 0) {
-          setCompetitions(data.competitions || [])
-        } else {
-          setCompetitions((prev) => [...prev, ...(data.competitions || [])])
-        }
-
-        setHasMore(data.hasMore || false)
-      } catch (error) {
-        console.error('Failed to load competitions:', error)
-      } finally {
-        setLoading(false)
-      }
+  const { data, isLoading } = trpc.competition.list.useQuery({
+    filters: {
+      search: filters.search || undefined,
+      type: filters.type !== 'ALL' ? filters.type : undefined,
     },
-    [filters]
-  )
+    pagination: { take },
+    sort: 'deadline',
+  })
 
-  useEffect(() => {
-    setSkip(0)
-    loadCompetitions(0)
-  }, [filters])
+  const competitions = data?.competitions || []
+  const hasMore = data?.pagination.hasMore ?? false
 
-  const handleLoadMore = () => {
-    const newSkip = skip + 10
-    setSkip(newSkip)
-    loadCompetitions(newSkip)
-  }
+  const handleLoadMore = () => setTake((prev) => prev + PAGE_SIZE)
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
   const [searchInput, setSearchInput] = useState('')
@@ -100,11 +48,13 @@ export default function EntdeckenPage() {
     setSearchInput(value)
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
+      setTake(PAGE_SIZE)
       setFilters((prev) => ({ ...prev, search: value }))
     }, 300)
   }
 
   const handleTypeChange = (type: FilterState['type']) => {
+    setTake(PAGE_SIZE)
     setFilters((prev) => ({ ...prev, type }))
   }
 
@@ -157,7 +107,7 @@ export default function EntdeckenPage() {
         </div>
 
         {/* Results */}
-        {loading && competitions.length === 0 ? (
+        {isLoading && competitions.length === 0 ? (
           <div className="flex justify-center py-12">
             <div className="text-gray-600 dark:text-gray-400">
               Laden...
@@ -173,68 +123,19 @@ export default function EntdeckenPage() {
           <>
             <div className="space-y-4">
               {competitions.map((comp) => (
-                <Link
+                <CompetitionListCard
                   key={comp.id}
-                  href={`/wettbewerb/${comp.id}`}
-                  className="block rounded-lg border border-gray-200 bg-light-surface p-4 transition-all hover:shadow-md dark:border-gray-700 dark:bg-dark-surface"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-black dark:text-white">
-                        {comp.name}
-                      </h3>
-                      {comp.organizer && (
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                          {comp.organizer}
-                        </p>
-                      )}
-                      {comp.theme && (
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                          Thema: {comp.theme}
-                        </p>
-                      )}
-                      {comp.prize && (
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                          Preis: {comp.prize}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="ml-4 text-right">
-                      {comp.deadline && (
-                        <p className="text-sm font-medium text-accent-light dark:text-accent-dark">
-                          {format(new Date(comp.deadline), 'dd. MMM yyyy', {
-                            locale: de,
-                          })}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Badges */}
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Badge variant="default">
-                      {comp.type === 'WETTBEWERB'
-                        ? 'Wettbewerb'
-                        : comp.type === 'ANTHOLOGIE'
-                          ? 'Anthologie'
-                          : 'Zeitschrift'}
-                    </Badge>
-                    {comp.submissions && comp.submissions.length > 0 && (
-                      <Badge variant="submitted">Bereits eingereicht</Badge>
-                    )}
-                    {comp.magazine && (
-                      <Badge variant="gold">{comp.magazine.name}</Badge>
-                    )}
-                    {comp.genres && comp.genres.length > 0 && (
-                      <Badge variant="sage">
-                        {comp.genres.slice(0, 2).join(', ')}
-                        {comp.genres.length > 2 &&
-                          ` +${comp.genres.length - 2}`}
-                      </Badge>
-                    )}
-                  </div>
-                </Link>
+                  id={comp.id}
+                  name={comp.name}
+                  organizer={comp.organizer}
+                  theme={comp.theme}
+                  prize={comp.prize}
+                  type={comp.type as 'WETTBEWERB' | 'ANTHOLOGIE' | 'ZEITSCHRIFT'}
+                  deadline={comp.deadline}
+                  genres={comp.genres}
+                  alreadySubmitted={!!comp.submissions && comp.submissions.length > 0}
+                  magazineName={comp.magazine?.name}
+                />
               ))}
             </div>
 
@@ -243,7 +144,7 @@ export default function EntdeckenPage() {
               <div className="mt-8 flex justify-center">
                 <Button
                   onClick={handleLoadMore}
-                  loading={loading}
+                  loading={isLoading}
                   variant="secondary"
                 >
                   Mehr laden

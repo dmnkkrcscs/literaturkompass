@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { trpc } from '@/lib/trpc'
 import { BookOpen, Plus, ChevronDown, ChevronRight, Pencil, Trash2, Calendar, Star, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -16,18 +16,25 @@ export default function ZeitschriftenPage() {
   const [showAddIssue, setShowAddIssue] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
 
-  const { data: magazines, isLoading, refetch } = trpc.magazine.list.useQuery()
+  const utils = trpc.useUtils()
+  const { data: magazines, isLoading } = trpc.magazine.list.useQuery()
   const createMutation = trpc.magazine.create.useMutation({
-    onSuccess: () => { toast('Zeitschrift angelegt!', 'success'); setShowAddMagazine(false); refetch() },
+    onSuccess: () => { toast('Zeitschrift angelegt!', 'success'); setShowAddMagazine(false); utils.magazine.invalidate() },
   })
   const updateMutation = trpc.magazine.update.useMutation({
-    onSuccess: () => { toast('Gespeichert!', 'success'); setEditingId(null); refetch() },
+    onSuccess: () => { toast('Gespeichert!', 'success'); setEditingId(null); utils.magazine.invalidate() },
   })
   const deleteMutation = trpc.magazine.delete.useMutation({
-    onSuccess: () => { toast('Zeitschrift gelöscht.', 'info'); refetch() },
+    onSuccess: () => { toast('Zeitschrift gelöscht.', 'info'); utils.magazine.invalidate() },
   })
   const addIssueMutation = trpc.magazine.addIssue.useMutation({
-    onSuccess: () => { toast('Ausgabe angelegt!', 'success'); setShowAddIssue(null); refetch() },
+    onSuccess: () => {
+      toast('Ausgabe angelegt!', 'success')
+      setShowAddIssue(null)
+      utils.magazine.invalidate()
+      // A new issue is a Competition row — refresh entdecken/geplant too
+      utils.competition.invalidate()
+    },
   })
 
   return (
@@ -214,10 +221,18 @@ function AddMagazineDialog({
 }) {
   const [form, setForm] = useState({ name: '', url: '', location: '', description: '', requirements: '' })
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 dark:bg-dark-surface">
-        <h2 className="text-lg font-bold text-black dark:text-white">Neue Zeitschrift</h2>
+      <div role="dialog" aria-modal="true" aria-labelledby="add-magazine-title" className="w-full max-w-md rounded-xl bg-white p-6 dark:bg-dark-surface">
+        <h2 id="add-magazine-title" className="text-lg font-bold text-black dark:text-white">Neue Zeitschrift</h2>
         <div className="mt-4 space-y-3">
           <input
             placeholder="Name *"
@@ -289,10 +304,18 @@ function AddIssueDialog({
 }) {
   const [form, setForm] = useState({ theme: '', deadline: '', requirements: '' })
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 dark:bg-dark-surface">
-        <h2 className="text-lg font-bold text-black dark:text-white">Neue Ausgabe — {magazineName}</h2>
+      <div role="dialog" aria-modal="true" aria-labelledby="add-issue-title" className="w-full max-w-md rounded-xl bg-white p-6 dark:bg-dark-surface">
+        <h2 id="add-issue-title" className="text-lg font-bold text-black dark:text-white">Neue Ausgabe — {magazineName}</h2>
         <div className="mt-4 space-y-3">
           <input
             placeholder="Thema / Hefttitel *"

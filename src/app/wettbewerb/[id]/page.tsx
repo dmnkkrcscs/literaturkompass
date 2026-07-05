@@ -9,7 +9,6 @@ import {
   Star,
   ExternalLink,
   Pencil,
-  X,
   Save,
   ArrowLeft,
   Send,
@@ -37,17 +36,18 @@ export default function WettbewerbPage() {
   const [showDismissDialog, setShowDismissDialog] = useState(false)
   const [editData, setEditData] = useState<Record<string, any>>({})
 
-  const { data: competition, isLoading, refetch } = trpc.competition.byId.useQuery({ id })
+  const utils = trpc.useUtils()
+  const { data: competition, isLoading } = trpc.competition.byId.useQuery({ id })
 
   const starMutation = trpc.competition.star.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => utils.competition.invalidate(),
   })
 
   const updateMutation = trpc.competition.update.useMutation({
     onSuccess: () => {
       toast('Gespeichert!', 'success')
       setEditing(false)
-      refetch()
+      utils.competition.invalidate()
     },
   })
 
@@ -403,7 +403,8 @@ export default function WettbewerbPage() {
             onSuccess={() => {
               setShowSubmitDialog(false)
               toast('Einreichung erfasst!', 'success')
-              refetch()
+              utils.competition.invalidate()
+              utils.submission.invalidate()
             }}
           />
         )}
@@ -416,6 +417,7 @@ export default function WettbewerbPage() {
             onSuccess={() => {
               setShowDismissDialog(false)
               toast('Ausschreibung ausgeblendet.', 'info')
+              utils.competition.invalidate()
               router.push('/entdecken')
             }}
           />

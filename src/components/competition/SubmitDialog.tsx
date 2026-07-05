@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@/components/ui/Button'
 import { X } from 'lucide-react'
@@ -33,14 +33,27 @@ export function SubmitDialog({ competitionId, competitionName, onClose, onSucces
     })
   }
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-lg bg-light-surface p-6 shadow-xl dark:bg-dark-surface">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="submit-dialog-title"
+        className="w-full max-w-md rounded-lg bg-light-surface p-6 shadow-xl dark:bg-dark-surface"
+      >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-black dark:text-white">
+          <h2 id="submit-dialog-title" className="text-lg font-semibold text-black dark:text-white">
             Einreichung erfassen
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+          <button onClick={onClose} aria-label="Dialog schließen" className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
             <X className="h-5 w-5" />
           </button>
         </div>

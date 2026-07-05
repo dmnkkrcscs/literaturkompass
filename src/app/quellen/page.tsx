@@ -1,104 +1,65 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { trpc } from '@/lib/trpc'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Plus, RotateCw, Activity } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/Toast'
 
-interface Source {
-  id: string
-  name: string
-  url: string
-  type: string
-  lastCrawl: Date | null
-  successRate: number
-  totalCrawls: number
-  isActive: boolean
-}
-
 export default function QuellenPage() {
-  const [sources, setSources] = useState<Source[]>([])
-  const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
   const [showAddForm, setShowAddForm] = useState(false)
   const [newSource, setNewSource] = useState({ name: '', url: '' })
   const [crawlingId, setCrawlingId] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadSources()
-  }, [])
+  const { data, isLoading, refetch } = trpc.source.list.useQuery()
+  const sources = data || []
 
-  const loadSources = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch('/api/sources')
-      const data = await response.json()
-      setSources(data.sources || [])
-    } catch (error) {
-      console.error('Failed to load sources:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const addMutation = trpc.source.add.useMutation({
+    onSuccess: () => {
+      toast('Quelle hinzugefügt!', 'success')
+      setNewSource({ name: '', url: '' })
+      setShowAddForm(false)
+      refetch()
+    },
+    onError: (error) => {
+      toast(error.message || 'Quelle konnte nicht hinzugefügt werden', 'error')
+    },
+  })
 
-  const handleAddSource = async (e: React.FormEvent) => {
+  const updateMutation = trpc.source.update.useMutation({
+    onSuccess: () => refetch(),
+    onError: (error) => {
+      toast(error.message || 'Quelle konnte nicht aktualisiert werden', 'error')
+    },
+  })
+
+  const crawlMutation = trpc.crawl.trigger.useMutation({
+    onSuccess: () => {
+      toast('Crawl gestartet', 'success')
+    },
+    onError: (error) => {
+      toast(error.message || 'Crawl konnte nicht gestartet werden', 'error')
+    },
+    onSettled: () => setCrawlingId(null),
+  })
+
+  const handleAddSource = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newSource.name || !newSource.url) return
-
-    try {
-      const response = await fetch('/api/sources', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newSource),
-      })
-
-      if (response.ok) {
-        setNewSource({ name: '', url: '' })
-        setShowAddForm(false)
-        await loadSources()
-      }
-    } catch (error) {
-      console.error('Failed to add source:', error)
-    }
+    addMutation.mutate(newSource)
   }
 
-  const handleStartCrawl = async (sourceId: string) => {
+  const handleStartCrawl = (sourceId: string) => {
     setCrawlingId(sourceId)
-    try {
-      const response = await fetch(`/api/crawl/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sourceId }),
-      })
-
-      if (response.ok) {
-        await loadSources()
-      }
-    } catch (error) {
-      console.error('Failed to start crawl:', error)
-    } finally {
-      setCrawlingId(null)
-    }
+    crawlMutation.mutate({ sourceId })
   }
 
-  const handleToggleActive = async (sourceId: string, isActive: boolean) => {
-    try {
-      const response = await fetch(`/api/sources/${sourceId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !isActive }),
-      })
-
-      if (response.ok) {
-        await loadSources()
-      }
-    } catch (error) {
-      console.error('Failed to update source:', error)
-    }
+  const handleToggleActive = (sourceId: string, isActive: boolean) => {
+    updateMutation.mutate({ id: sourceId, isActive: !isActive })
   }
-
-  const { toast } = useToast()
 
   const typeLabels: Record<string, string> = {
     AGGREGATOR: 'Aggregator',
@@ -169,7 +130,7 @@ export default function QuellenPage() {
                 />
               </div>
               <div className="flex gap-3">
-                <Button type="submit" variant="primary">
+                <Button type="submit" variant="primary" loading={addMutation.isPending}>
                   Speichern
                 </Button>
                 <Button
@@ -185,7 +146,7 @@ export default function QuellenPage() {
         )}
 
         {/* Sources List */}
-        {loading ? (
+        {isLoading ? (
           <div className="flex justify-center py-12">
             <div className="text-gray-600 dark:text-gray-400">
               Laden...

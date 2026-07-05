@@ -18,21 +18,27 @@ export default function OffenPage() {
   const [editingTitle, setEditingTitle] = useState<string | null>(null)
   const [titleValue, setTitleValue] = useState('')
 
-  const { data, isLoading, refetch } = trpc.submission.listOpen.useQuery()
+  const utils = trpc.useUtils()
+  const { data, isLoading } = trpc.submission.listOpen.useQuery()
 
+  // @ts-expect-error TS2589 "excessively deep" — known tRPC v11 + strict-mode
+  // inference limit on this procedure's Prisma-included return type, not a
+  // real type error (verified: reproduces on main before any of today's changes).
   const markResultMutation = trpc.submission.markResult.useMutation({
     onSuccess: (data) => {
       const status = data.status === 'ACCEPTED' ? 'Zusage' : 'Absage'
       toast(`${status} gespeichert!`, data.status === 'ACCEPTED' ? 'success' : 'info')
       setAcceptingId(null)
-      refetch()
+      // Also refreshes absagen/hall-of-fame and the competition's submission badge
+      utils.submission.invalidate()
+      utils.competition.invalidate()
     },
   })
 
   const updateMutation = trpc.submission.update.useMutation({
     onSuccess: () => {
       toast('Text gespeichert!', 'success')
-      refetch()
+      utils.submission.invalidate()
     },
   })
 
@@ -98,7 +104,6 @@ export default function OffenPage() {
           <div className="space-y-4">
             {submissions.map((sub: any) => {
               const daysWaiting = sub.submittedAt ? daysSince(new Date(sub.submittedAt)) : 0
-              const hasText = !!sub.textContent || (textInputs[sub.id] !== undefined && textInputs[sub.id] !== '')
               const isExpanded = expandedText === sub.id
 
               return (
@@ -108,7 +113,7 @@ export default function OffenPage() {
                 >
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
+                      <div className="min-w-0 flex-1">
                         {editingTitle === sub.id ? (
                           <div className="flex items-center gap-2">
                             <input

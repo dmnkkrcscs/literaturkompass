@@ -4,10 +4,9 @@ import { useState } from 'react'
 import { trpc } from '@/lib/trpc'
 import Link from 'next/link'
 import { Star, Send } from 'lucide-react'
-import { Badge } from '@/components/ui/Badge'
-import { daysUntil, formatDateShort, TYPE_LABELS } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
 import { SubmitDialog } from '@/components/competition/SubmitDialog'
+import { CompetitionListCard } from '@/components/competition/CompetitionListCard'
 import { useToast } from '@/components/ui/Toast'
 
 export default function GeplantPage() {
@@ -17,7 +16,8 @@ export default function GeplantPage() {
     name: string
   } | null>(null)
 
-  const { data, isLoading, refetch } = trpc.competition.list.useQuery({
+  const utils = trpc.useUtils()
+  const { data, isLoading } = trpc.competition.list.useQuery({
     filters: { starred: true, dismissed: false, noSubmissions: true },
     pagination: { take: 100 },
     sort: 'deadline',
@@ -59,61 +59,28 @@ export default function GeplantPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {competitions.map((comp) => {
-              const daysLeft = comp.deadline ? daysUntil(new Date(comp.deadline)) : null
-
-              return (
-                <div
-                  key={comp.id}
-                  className="rounded-lg border border-gray-200 bg-light-surface p-5 transition-all hover:shadow-md dark:border-gray-700 dark:bg-dark-surface"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <Link href={`/wettbewerb/${comp.id}`} className="flex-1">
-                      <h3 className="text-lg font-semibold text-black dark:text-white">
-                        {comp.name}
-                      </h3>
-                      {comp.organizer && (
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                          {comp.organizer}
-                        </p>
-                      )}
-                      {comp.theme && (
-                        <p className="mt-1 text-sm italic text-gray-500 dark:text-gray-400">
-                          {comp.theme}
-                        </p>
-                      )}
-                      <div className="mt-3 flex flex-wrap items-center gap-2">
-                        <Badge variant="default">
-                          {TYPE_LABELS[comp.type] || comp.type}
-                        </Badge>
-                        {comp.deadline && (
-                          <span className={`text-sm font-medium ${
-                            daysLeft !== null && daysLeft <= 7
-                              ? 'text-red-600 dark:text-red-400'
-                              : 'text-gray-600 dark:text-gray-400'
-                          }`}>
-                            {formatDateShort(new Date(comp.deadline))}
-                            {daysLeft !== null && daysLeft > 0 && (
-                              <span className="ml-1">({daysLeft} Tage)</span>
-                            )}
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => setSubmitTarget({ id: comp.id, name: comp.name })}
-                      className="shrink-0"
-                    >
-                      <Send className="mr-1 h-4 w-4" />
-                      Einreichen
-                    </Button>
-                  </div>
-                </div>
-              )
-            })}
+            {competitions.map((comp) => (
+              <CompetitionListCard
+                key={comp.id}
+                id={comp.id}
+                name={comp.name}
+                organizer={comp.organizer}
+                theme={comp.theme}
+                type={comp.type}
+                deadline={comp.deadline}
+                inlineDeadline
+                action={
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setSubmitTarget({ id: comp.id, name: comp.name })}
+                  >
+                    <Send className="mr-1 h-4 w-4" />
+                    Einreichen
+                  </Button>
+                }
+              />
+            ))}
           </div>
         )}
 
@@ -125,7 +92,9 @@ export default function GeplantPage() {
             onSuccess={() => {
               setSubmitTarget(null)
               toast('Einreichung erfasst!', 'success')
-              refetch()
+              // Also refreshes offen/absagen/hall-of-fame (new submission)
+              utils.competition.invalidate()
+              utils.submission.invalidate()
             }}
           />
         )}

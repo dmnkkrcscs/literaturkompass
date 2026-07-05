@@ -250,6 +250,10 @@ export default function TriagePage() {
     )
   }
 
+  // Unreachable in practice (queue is non-empty here since `done` is false
+  // above), but narrows `current` for TS so the JSX below doesn't need `!`.
+  if (!current) return null
+
   // ── Card ─────────────────────────────────────────────────────────────────────
   const daysLeft = current.deadline ? daysUntil(new Date(current.deadline)) : null
   const processed = total - queue.length
@@ -365,8 +369,13 @@ export default function TriagePage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           onClick={e => e.target === e.currentTarget && setShowDismissModal(false)}
         >
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-dark-surface">
-            <h3 className="mb-4 text-lg font-bold text-black dark:text-white">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="triage-dismiss-title"
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-dark-surface"
+          >
+            <h3 id="triage-dismiss-title" className="mb-4 text-lg font-bold text-black dark:text-white">
               Grund für Ablehnung
             </h3>
 
