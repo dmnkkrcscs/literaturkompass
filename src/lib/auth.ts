@@ -2,29 +2,16 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { db } from './db'
+import { authConfig } from './auth.config'
 
-const AUTH_PASSWORD = process.env.AUTH_PASSWORD || 'admin'
+const AUTH_PASSWORD = process.env.AUTH_PASSWORD
+if (!AUTH_PASSWORD) {
+  throw new Error('AUTH_PASSWORD environment variable is not set')
+}
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(db),
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  callbacks: {
-    jwt: async ({ token, user }) => {
-      if (user) {
-        token.id = user.id
-      }
-      return token
-    },
-    session: async ({ session, token }) => {
-      if (session.user) {
-        session.user.id = token.id as string
-      }
-      return session
-    },
-  },
   providers: [
     Credentials({
       name: 'Credentials',
@@ -54,7 +41,4 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  pages: {
-    signIn: '/login',
-  },
 })
