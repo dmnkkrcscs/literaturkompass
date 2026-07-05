@@ -1,4 +1,4 @@
-import { anthropic } from './client'
+import { anthropic, MODELS } from './client'
 import { db } from '@/lib/db'
 import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
@@ -109,7 +109,7 @@ export async function generateRecommendations(): Promise<AiRecommendation[]> {
     const prompt = RECOMMENDATION_PROMPT.replace('{profile}', profile)
 
     const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.haiku,
       max_tokens: 2000,
       messages: [{
         role: 'user',

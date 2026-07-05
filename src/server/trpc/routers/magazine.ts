@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { TRPCError } from '@trpc/server'
 import { db } from '@/lib/db'
 import { publicProcedure, router } from '../init'
 
@@ -131,7 +132,10 @@ export const magazineRouter = router({
       // Check for duplicate URL (same magazine + same deadline date)
       const existing = await db.competition.findUnique({ where: { url: issueUrl } })
       if (existing) {
-        throw new Error(`Ausgabe für dieses Datum existiert bereits: ${issueName}`)
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: `Ausgabe für dieses Datum existiert bereits: ${issueName}`,
+        })
       }
 
       return db.competition.create({

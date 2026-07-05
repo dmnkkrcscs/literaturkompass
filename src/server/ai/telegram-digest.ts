@@ -1,4 +1,4 @@
-import { anthropic } from './client'
+import { anthropic, MODELS } from './client'
 import { db } from '@/lib/db'
 import { formatDateDE, daysUntil } from '@/lib/utils'
 import { excludeMagazineRoots } from '@/server/lib/competition-filters'
@@ -98,7 +98,7 @@ export async function generateTelegramDigest(): Promise<string> {
     }
 
     const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: MODELS.haiku,
       max_tokens: 300,
       system: TELEGRAM_DIGEST_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: context }],

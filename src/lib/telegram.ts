@@ -1,5 +1,3 @@
-import fetch from 'node-fetch'
-
 interface TelegramMessageOptions {
   parseMode?: 'HTML' | 'Markdown' | 'MarkdownV2'
   disableWebPagePreview?: boolean

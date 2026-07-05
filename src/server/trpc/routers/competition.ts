@@ -1,6 +1,6 @@
 import { z } from 'zod'
+import { TRPCError } from '@trpc/server'
 import { db } from '@/lib/db'
-import { Prisma } from '@prisma/client'
 import { publicProcedure, router } from '../init'
 import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
@@ -28,7 +28,7 @@ function isUnseriousReason(reason: string): boolean {
 
 const competitionFilterSchema = z.object({
   type: z.string().optional(),
-  search: z.string().optional(),
+  search: z.string().max(200).optional(),
   genre: z.string().optional(),
   deadlineBefore: z.date().optional(),
   deadlineAfter: z.date().optional(),
@@ -39,8 +39,9 @@ const competitionFilterSchema = z.object({
 })
 
 const paginationSchema = z.object({
-  take: z.number().int().default(20),
-  skip: z.number().int().default(0),
+  // 200 matches triage/page.tsx's intentional one-shot full-queue load
+  take: z.number().int().min(1).max(200).default(20),
+  skip: z.number().int().min(0).default(0),
   cursor: z.string().optional(),
 })
 
@@ -56,7 +57,7 @@ export const competitionRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const { filters = {}, pagination = {}, sort = 'deadline' } = input
+      const { filters = {}, pagination = { take: 20, skip: 0 }, sort = 'deadline' } = input
       const { take = 20, skip = 0 } = pagination
 
       const today = new Date()
@@ -168,7 +169,7 @@ export const competitionRouter = router({
       })
 
       if (!competition) {
-        throw new Error('Competition not found')
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Competition not found' })
       }
 
       return db.competition.update({
@@ -217,10 +218,17 @@ export const competitionRouter = router({
 
         for (const [pattern, keywords] of Object.entries(patternMap)) {
           if (keywords.some(kw => reason.includes(kw))) {
+            const existingPattern = await db.dismissalPattern.findUnique({
+              where: { pattern },
+              select: { keywords: true },
+            })
+            const nextKeywords = existingPattern
+              ? Array.from(new Set([...existingPattern.keywords, reason]))
+              : [reason]
             await db.dismissalPattern.upsert({
               where: { pattern },
-              update: { count: { increment: 1 }, keywords: { push: reason } },
-              create: { pattern, keywords: [reason], count: 1 },
+              update: { count: { increment: 1 }, keywords: { set: nextKeywords } },
+              create: { pattern, keywords: nextKeywords, count: 1 },
             })
             break
           }
@@ -256,11 +264,15 @@ export const competitionRouter = router({
                 where: { id: publisher.id },
                 data: { blocked: true, blockedAt: new Date() },
               })
-              const undismissed = await db.competition.findMany({
-                where: { dismissed: false },
+              // Narrow via a substring match in SQL first (cheap, avoids loading
+              // every undismissed competition), then verify the exact domain in
+              // code — `contains` alone could false-positive on e.g. "xy.de"
+              // matching "differentxy.de".
+              const candidates = await db.competition.findMany({
+                where: { dismissed: false, url: { contains: domain } },
                 select: { id: true, url: true },
               })
-              const idsToDismiss = undismissed
+              const idsToDismiss = candidates
                 .filter(c => extractDomain(c.url) === domain)
                 .map(c => c.id)
               if (idsToDismiss.length > 0) {

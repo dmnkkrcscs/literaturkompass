@@ -10,7 +10,7 @@ export const telegramRouter = router({
     const chatId = process.env.TELEGRAM_CHAT_ID
 
     if (!botToken || !chatId || botToken === 'placeholder' || chatId === 'placeholder') {
-      return { connected: false, reason: 'Credentials not configured' }
+      return { connected: false as const, reason: 'Credentials not configured', botUsername: undefined, chatId: undefined }
     }
 
     try {
@@ -19,16 +19,17 @@ export const telegramRouter = router({
       const data = await res.json() as { ok: boolean; result?: { username: string } }
 
       if (!data.ok) {
-        return { connected: false, reason: 'Invalid bot token' }
+        return { connected: false as const, reason: 'Invalid bot token', botUsername: undefined, chatId: undefined }
       }
 
       return {
-        connected: true,
+        connected: true as const,
+        reason: undefined,
         botUsername: data.result?.username,
         chatId,
       }
     } catch {
-      return { connected: false, reason: 'Failed to reach Telegram API' }
+      return { connected: false as const, reason: 'Failed to reach Telegram API', botUsername: undefined, chatId: undefined }
     }
   }),
 

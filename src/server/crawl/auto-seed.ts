@@ -1,5 +1,4 @@
 import { db } from '@/lib/db'
-import { ADAPTERS } from './adapters'
 
 /**
  * Source definitions with correct full URLs matching the adapter registry.

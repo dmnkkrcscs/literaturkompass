@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio'
+import { isAllowedByRobots } from './robots'
 
 /**
  * User-Agent string for HTTP requests
@@ -38,6 +39,11 @@ export async function fetchWithCheerio(
   const finalConfig = { ...DEFAULT_CONFIG, ...config }
   let lastError: Error | null = null
 
+  if (!(await isAllowedByRobots(url))) {
+    console.warn(`[Fetcher] Skipping ${url} — disallowed by robots.txt`)
+    return null
+  }
+
   for (let attempt = 1; attempt <= finalConfig.maxRetries!; attempt++) {
     try {
       console.log(
@@ -63,6 +69,24 @@ export async function fetchWithCheerio(
 
       clearTimeout(timeoutId)
 
+      if (response.status === 429) {
+        const retryAfterHeader = response.headers.get('retry-after')
+        const retryAfterMs = retryAfterHeader
+          ? parseInt(retryAfterHeader, 10) * 1000
+          : null
+        lastError = new Error('HTTP 429')
+        console.warn(
+          `[Fetcher] Rate limited on ${url} (attempt ${attempt}/${finalConfig.maxRetries})`
+        )
+        if (attempt < finalConfig.maxRetries!) {
+          // Respect Retry-After when present, capped at 10s so one slow
+          // source can't stall the whole crawl batch.
+          const delay = Math.min(retryAfterMs ?? finalConfig.retryDelay! * attempt * 2, 10_000)
+          await new Promise((resolve) => setTimeout(resolve, delay))
+        }
+        continue
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`)
       }
@@ -78,11 +102,12 @@ export async function fetchWithCheerio(
         `[Fetcher] Attempt ${attempt} failed for ${url}: ${lastError.message}`
       )
 
-      // Wait before retrying (except on last attempt)
+      // Wait before retrying (except on last attempt), with jitter so many
+      // failing sources in the same batch don't all retry in lockstep.
       if (attempt < finalConfig.maxRetries!) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, finalConfig.retryDelay! * attempt)
-        )
+        const jitter = Math.random() * 250
+        const delay = Math.min(finalConfig.retryDelay! * attempt + jitter, 5_000)
+        await new Promise((resolve) => setTimeout(resolve, delay))
       }
     }
   }

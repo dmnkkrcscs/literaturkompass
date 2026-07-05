@@ -1,4 +1,4 @@
-import { anthropic } from './client'
+import { anthropic, MODELS } from './client'
 import { AnalysisResponseSchema, AnalysisResult } from './schemas'
 import { ANALYSIS_SYSTEM_PROMPT, ANALYSIS_USER_PROMPT } from './prompts'
 
@@ -50,7 +50,7 @@ export async function analyzeSubmission(
     let response
     try {
       response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: MODELS.sonnet,
         max_tokens: 1024,
         system: ANALYSIS_SYSTEM_PROMPT,
         messages: [

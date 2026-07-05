@@ -1,4 +1,4 @@
-import { anthropic } from './client'
+import { anthropic, MODELS } from './client'
 import { ExtractionResponseSchema, ExtractionResult } from './schemas'
 import { EXTRACTION_SYSTEM_PROMPT, EXTRACTION_USER_PROMPT } from './prompts'
 
@@ -7,7 +7,7 @@ import { EXTRACTION_SYSTEM_PROMPT, EXTRACTION_USER_PROMPT } from './prompts'
  * Prices in USD per 1M tokens
  */
 const MODEL_PRICING = {
-  'claude-haiku-4-5-20251001': {
+  [MODELS.haiku]: {
     input: 0.8,
     output: 4.0,
   },
@@ -58,7 +58,7 @@ export async function extractCompetitionFromUrl(
     let response
     try {
       response = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.haiku,
         max_tokens: 2048,
         system: EXTRACTION_SYSTEM_PROMPT,
         messages: [
@@ -82,7 +82,7 @@ export async function extractCompetitionFromUrl(
         costCents: calculateCostCents(
           response.usage.input_tokens + response.usage.output_tokens,
           response.usage.output_tokens,
-          'claude-haiku-4-5-20251001'
+          MODELS.haiku
         ),
       }
     }
@@ -104,7 +104,7 @@ export async function extractCompetitionFromUrl(
         costCents: calculateCostCents(
           response.usage.input_tokens + response.usage.output_tokens,
           response.usage.output_tokens,
-          'claude-haiku-4-5-20251001'
+          MODELS.haiku
         ),
       }
     }
@@ -119,7 +119,7 @@ export async function extractCompetitionFromUrl(
       costCents: calculateCostCents(
         response.usage.input_tokens + response.usage.output_tokens,
         response.usage.output_tokens,
-        'claude-haiku-4-5-20251001'
+        MODELS.haiku
       ),
       confidence: validatedResponse.confidence,
     }

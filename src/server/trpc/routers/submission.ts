@@ -1,6 +1,5 @@
   import { z } from 'zod'
 import { db } from '@/lib/db'
-import { Prisma } from '@prisma/client'
 import { publicProcedure, router } from '../init'
 
 export const submissionRouter = router({

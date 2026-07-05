@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { extractCompetitionFromUrl } from '@/server/ai/extract'
 type CrawlStatus = 'SUCCESS' | 'FAILED' | 'DUPLICATE' | 'IRRELEVANT'
 import { fetchWithCheerio } from './fetcher'
-import { getAdapterForSource, getAllAdapters, ADAPTERS } from './adapters'
+import { getAdapterForSource, ADAPTERS } from './adapters'
 import { regionMatches } from '@/server/lib/region-match'
 // Source type defined locally to avoid Prisma client import at build time
 interface Source { id: string; name: string; url: string }
@@ -76,8 +76,8 @@ export function cleanHtml(html: string): string {
     .replace(/&quot;/gi, '"')
     .replace(/&apos;/gi, "'")
     .replace(/&amp;/gi, '&')
-    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(parseInt(dec, 10)))
-    .replace(/&#x([0-9a-f]+);/gi, (match, hex) =>
+    .replace(/&#(\d+);/g, (_match, dec) => String.fromCharCode(parseInt(dec, 10)))
+    .replace(/&#x([0-9a-f]+);/gi, (_match, hex) =>
       String.fromCharCode(parseInt(hex, 16))
     )
 
@@ -106,6 +106,9 @@ export function cleanHtml(html: string): string {
  * @returns True if URL should be skipped
  */
 const SUCCESS_TTL_DAYS = 7
+// Cap page text before the AI call (not just before storage) — long pages
+// otherwise inflate extraction cost/latency for no benefit past this length.
+const MAX_TEXT_LENGTH = 50_000
 
 async function isUrlExcluded(url: string): Promise<boolean> {
   try {
@@ -145,9 +148,19 @@ async function isUrlExcluded(url: string): Promise<boolean> {
  */
 async function processPage(
   url: string,
-  source: Source
+  source: Source,
+  claimedUrls: Set<string>
 ): Promise<ProcessingResult> {
   const startTime = Date.now()
+
+  // Claim the URL synchronously (no `await` before this point) so that two
+  // sources listing the same URL in the same crawl run don't both pass the
+  // DB-based isUrlExcluded() check before either has committed a row.
+  if (claimedUrls.has(url)) {
+    console.log(`[Pipeline] URL already claimed in this crawl run: ${url}`)
+    return { status: 'DUPLICATE', costCents: 0, processingMs: Date.now() - startTime }
+  }
+  claimedUrls.add(url)
 
   try {
     // Check if URL already exists in database
@@ -167,7 +180,7 @@ async function processPage(
     }
 
     // Clean HTML
-    const cleanedText = cleanHtml($.html()!)
+    const cleanedText = cleanHtml($.html()!).substring(0, MAX_TEXT_LENGTH)
 
     // Extract competition data using Claude
     const extractionResult = await extractCompetitionFromUrl(url, cleanedText)
@@ -235,66 +248,71 @@ async function processPage(
     }
     const autoDismiss = publisherBlocked || regionMismatch
 
-    // Create or update competition in database
-    const competition = await db.competition.upsert({
-      where: { url },
-      create: {
-        name: extractionResult.data.data?.name || 'Unknown',
-        type: 'WETTBEWERB',
-        sourceId: source.id,
-        url,
-        organizer: extractionResult.data.data?.organizer,
-        deadline: extractionResult.data.data?.deadline
-          ? new Date(extractionResult.data.data.deadline)
-          : null,
-        theme: extractionResult.data.data?.theme,
-        genres: extractionResult.data.data?.genres || [],
-        prize: extractionResult.data.data?.prize,
-        maxLength: extractionResult.data.data?.maxLength?.toString(),
-        requirements: extractionResult.data.data?.requirements?.join('; '),
-        ageRestriction: extractionResult.data.data?.ageRestriction,
-        regionRestriction: extractionResult.data.data?.regionRestriction,
-        fee: extractionResult.data.data?.fee,
-        description: extractionResult.data.data?.description,
-        relevanceScore: extractionResult.data.data?.relevanceScore,
-        aiExtracted: true,
-        aiConfidence: extractionResult.confidence,
-        rawText: cleanedText.substring(0, 50000), // Store raw text for re-processing
-        dismissed: autoDismiss,
-      },
-      update: {
-        name: extractionResult.data.data?.name || undefined,
-        organizer: extractionResult.data.data?.organizer,
-        deadline: extractionResult.data.data?.deadline
-          ? new Date(extractionResult.data.data.deadline)
-          : undefined,
-        theme: extractionResult.data.data?.theme,
-        genres: extractionResult.data.data?.genres || [],
-        prize: extractionResult.data.data?.prize,
-        maxLength: extractionResult.data.data?.maxLength?.toString(),
-        requirements: extractionResult.data.data?.requirements?.join('; '),
-        ageRestriction: extractionResult.data.data?.ageRestriction,
-        regionRestriction: extractionResult.data.data?.regionRestriction,
-        fee: extractionResult.data.data?.fee,
-        description: extractionResult.data.data?.description,
-        relevanceScore: extractionResult.data.data?.relevanceScore,
-        aiExtracted: true,
-        aiConfidence: extractionResult.confidence,
-        rawText: cleanedText.substring(0, 50000),
-        updatedAt: new Date(),
-      },
-    })
+    // Create/update the competition and log the crawl atomically — a crash
+    // between the two calls would otherwise leave a Competition with no
+    // audit trail, or vice versa.
+    const competition = await db.$transaction(async (tx) => {
+      const competition = await tx.competition.upsert({
+        where: { url },
+        create: {
+          name: extractionResult.data!.data?.name || 'Unknown',
+          type: 'WETTBEWERB',
+          sourceId: source.id,
+          url,
+          organizer: extractionResult.data!.data?.organizer,
+          deadline: extractionResult.data!.data?.deadline
+            ? new Date(extractionResult.data!.data.deadline)
+            : null,
+          theme: extractionResult.data!.data?.theme,
+          genres: extractionResult.data!.data?.genres || [],
+          prize: extractionResult.data!.data?.prize,
+          maxLength: extractionResult.data!.data?.maxLength?.toString(),
+          requirements: extractionResult.data!.data?.requirements?.join('; '),
+          ageRestriction: extractionResult.data!.data?.ageRestriction,
+          regionRestriction: extractionResult.data!.data?.regionRestriction,
+          fee: extractionResult.data!.data?.fee,
+          description: extractionResult.data!.data?.description,
+          relevanceScore: extractionResult.data!.data?.relevanceScore,
+          aiExtracted: true,
+          aiConfidence: extractionResult.confidence,
+          rawText: cleanedText, // already capped at MAX_TEXT_LENGTH above
+          dismissed: autoDismiss,
+        },
+        update: {
+          name: extractionResult.data!.data?.name || undefined,
+          organizer: extractionResult.data!.data?.organizer,
+          deadline: extractionResult.data!.data?.deadline
+            ? new Date(extractionResult.data!.data.deadline)
+            : undefined,
+          theme: extractionResult.data!.data?.theme,
+          genres: extractionResult.data!.data?.genres || [],
+          prize: extractionResult.data!.data?.prize,
+          maxLength: extractionResult.data!.data?.maxLength?.toString(),
+          requirements: extractionResult.data!.data?.requirements?.join('; '),
+          ageRestriction: extractionResult.data!.data?.ageRestriction,
+          regionRestriction: extractionResult.data!.data?.regionRestriction,
+          fee: extractionResult.data!.data?.fee,
+          description: extractionResult.data!.data?.description,
+          relevanceScore: extractionResult.data!.data?.relevanceScore,
+          aiExtracted: true,
+          aiConfidence: extractionResult.confidence,
+          rawText: cleanedText,
+          updatedAt: new Date(),
+        },
+      })
 
-    // Log successful crawl
-    await db.crawlLog.create({
-      data: {
-        sourceId: source.id,
-        competitionId: competition.id,
-        url,
-        status: 'SUCCESS',
-        extractedData: extractionResult.data.data as any,
-        processingMs: Date.now() - startTime,
-      },
+      await tx.crawlLog.create({
+        data: {
+          sourceId: source.id,
+          competitionId: competition.id,
+          url,
+          status: 'SUCCESS',
+          extractedData: extractionResult.data!.data as any,
+          processingMs: Date.now() - startTime,
+        },
+      })
+
+      return competition
     })
 
     console.log(
@@ -341,7 +359,10 @@ async function processPage(
  * @param source - Source to crawl
  * @returns Statistics from the crawl session
  */
-export async function crawlSource(source: Source): Promise<CrawlStats> {
+export async function crawlSource(
+  source: Source,
+  claimedUrls: Set<string> = new Set()
+): Promise<CrawlStats> {
   console.log(`[Pipeline] Starting crawl for source: ${source.name}`)
   const startTime = Date.now()
 
@@ -385,7 +406,7 @@ export async function crawlSource(source: Source): Promise<CrawlStats> {
     for (let i = 0; i < links.length; i += BATCH_SIZE) {
       const batch = links.slice(i, i + BATCH_SIZE)
       const results = await Promise.allSettled(
-        batch.map((link) => processPage(link.url, source))
+        batch.map((link) => processPage(link.url, source, claimedUrls))
       )
 
       for (const result of results) {
@@ -464,13 +485,17 @@ export async function crawlAllSources(): Promise<CrawlStats[]> {
       `[Pipeline] Found ${sources.length} active sources to crawl`
     )
 
+    // Shared across all sources in this run so that two sources listing the
+    // same URL (common with overlapping aggregators) only crawl it once.
+    const claimedUrls = new Set<string>()
+
     // Crawl sources in parallel batches of 3
     // (each source already does internal batching, so keep this conservative)
     const SOURCE_BATCH_SIZE = 3
     for (let i = 0; i < sources.length; i += SOURCE_BATCH_SIZE) {
       const batch = sources.slice(i, i + SOURCE_BATCH_SIZE)
       const results = await Promise.allSettled(
-        batch.map((source) => crawlSource(source))
+        batch.map((source) => crawlSource(source, claimedUrls))
       )
       for (const result of results) {
         if (result.status === 'fulfilled') {

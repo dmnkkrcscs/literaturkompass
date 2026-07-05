@@ -117,6 +117,7 @@ model Competition {
   @@index([type])
   @@index([starred])
   @@index([magazineId])
+  @@index([sourceId])
 }
 
 model Source {

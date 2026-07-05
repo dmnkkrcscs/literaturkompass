@@ -1,4 +1,4 @@
-import { anthropic } from './client'
+import { anthropic, MODELS } from './client'
 import { RecommendationResponseSchema, Recommendation } from './schemas'
 import { RECOMMENDATION_SYSTEM_PROMPT, RECOMMENDATION_USER_PROMPT } from './prompts'
 
@@ -77,7 +77,7 @@ Beschreibung: ${comp.description || 'Keine Details verfügbar'}
     let response
     try {
       response = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: MODELS.haiku,
         max_tokens: 2048,
         system: RECOMMENDATION_SYSTEM_PROMPT,
         messages: [

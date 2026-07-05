@@ -1,20 +1,21 @@
 import { Queue, Worker } from 'bullmq'
-import Redis from 'ioredis'
 import { crawlAllSources, crawlSource } from './pipeline'
 import { db } from '@/lib/db'
 import { sendMessage, sendDeadlineReminder } from '@/lib/telegram'
 import { generateTelegramDigest } from '@/server/ai/telegram-digest'
+import { redis } from '@/lib/redis'
 
 /**
- * Initialize Redis client for BullMQ
+ * Shared Redis connection for BullMQ (already configured with the
+ * REDIS_URL-based settings and an error handler BullMQ needs — a
+ * separate ad-hoc client here previously ignored REDIS_URL entirely
+ * and had no error handler, so a connection failure crashed the process).
+ *
+ * Typed `any`: bullmq bundles its own ioredis copy, whose `Redis` type is
+ * nominally distinct from (but runtime-compatible with) the top-level one.
  */
 function getRedisClient(): any {
-  return new Redis({
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379', 10),
-    password: process.env.REDIS_PASSWORD,
-    maxRetriesPerRequest: null, // Required for BullMQ
-  })
+  return redis
 }
 
 let crawlQueue: Queue | null = null
