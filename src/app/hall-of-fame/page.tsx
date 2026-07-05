@@ -149,8 +149,8 @@ export default function HallOfFamePage() {
                 ) : (
                   /* ── View mode ── */
                   <div className="p-8 pl-7">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
                         {/* Title */}
                         <h2 className="text-2xl font-bold text-black dark:text-white">
                           {sub.title

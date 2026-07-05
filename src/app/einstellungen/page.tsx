@@ -385,7 +385,7 @@ export default function EinstellungenPage() {
                   Geblockte Verlage
                 </h2>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                  Verlage, die du in der Triage 2× als <em>„Schlechte Qualität / Unseriös"</em> markiert hast.
+                  Verlage, die du in der Triage 2× als <em>„Schlechte Qualität / Unseriös&ldquo;</em> markiert hast.
                   Ihre Wettbewerbe werden bei künftigen Crawls automatisch ausgeblendet.
                 </p>
               </div>
@@ -398,7 +398,7 @@ export default function EinstellungenPage() {
               ) : !blockedPublishersQuery.data || blockedPublishersQuery.data.length === 0 ? (
                 <p className="rounded-lg bg-gray-50 p-4 text-sm text-gray-500 dark:bg-gray-800/50 dark:text-gray-400">
                   Noch keine geblockten Verlage. Wenn du in der Triage zwei oder mehr Wettbewerbe
-                  desselben Verlags als „Unseriös" markierst, erscheint er hier.
+                  desselben Verlags als „Unseriös&ldquo; markierst, erscheint er hier.
                 </p>
               ) : (
                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -422,7 +422,7 @@ export default function EinstellungenPage() {
                         )}
                         {p.lastReason && (
                           <p className="mt-0.5 truncate text-xs italic text-gray-400 dark:text-gray-500">
-                            „{p.lastReason}"
+                            „{p.lastReason}&ldquo;
                           </p>
                         )}
                       </div>

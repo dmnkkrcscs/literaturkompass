@@ -1,4 +1,4 @@
-import { anthropic } from './client'
+import { anthropic, MODELS } from './client'
 import { db } from '@/lib/db'
 
 export interface TriageAssessment {
@@ -136,7 +136,7 @@ export async function assessForTriage(competitionId: string): Promise<TriageAsse
   ].filter(Boolean).join('\n')
 
   const response = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
+    model: MODELS.haiku,
     max_tokens: 150,
     messages: [
       {

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
@@ -29,8 +29,6 @@ const secondaryLinks = [
   { href: '/quellen',       label: 'Quellen',        icon: Globe     },
   { href: '/statistiken',   label: 'Statistiken',    icon: BarChart3 },
 ]
-
-const allLinks = [...primaryLinks, ...secondaryLinks]
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -95,6 +93,8 @@ export function Navbar() {
             <div className="relative" ref={moreRef}>
               <button
                 onClick={() => setMoreOpen(o => !o)}
+                aria-haspopup="true"
+                aria-expanded={moreOpen}
                 className={linkCls(anySecondaryActive && !moreOpen)}
               >
                 {anySecondaryActive
