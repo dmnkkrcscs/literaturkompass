@@ -1,5 +1,6 @@
 import { initializeScheduler, createWorkers } from '@/server/crawl/scheduler'
 import { autoSeedSources } from '@/server/crawl/auto-seed'
+import { startTelegramPolling, stopTelegramPolling } from '@/server/telegram/poller'
 import { db } from '@/lib/db'
 
 /**
@@ -21,6 +22,9 @@ async function main() {
     await initializeScheduler()
     const { crawlWorker, reminderWorker, digestWorker } = await createWorkers()
 
+    // Start Telegram long-poll receiver (handles "Stopp"/"Start"/"Status")
+    await startTelegramPolling()
+
     console.log('[Worker] All workers started successfully')
 
     // Handle graceful shutdown
@@ -28,6 +32,9 @@ async function main() {
       console.log(`[Worker] Received ${signal}, shutting down gracefully...`)
 
       try {
+        // Stop Telegram polling
+        stopTelegramPolling()
+
         // Close workers
         await crawlWorker.close()
         await reminderWorker.close()

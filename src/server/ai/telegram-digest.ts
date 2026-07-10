@@ -1,5 +1,6 @@
 import { anthropic, MODELS } from './client'
 import { db } from '@/lib/db'
+import { escapeHtml } from '@/lib/telegram'
 import { formatDateDE, daysUntil } from '@/lib/utils'
 import { excludeMagazineRoots } from '@/server/lib/competition-filters'
 
@@ -110,4 +111,67 @@ export async function generateTelegramDigest(): Promise<string> {
     console.error('Failed to generate Telegram digest:', error)
     return 'Schreib heute eine Zeile. Nur eine.'
   }
+}
+
+/**
+ * Nachhol-Zusammenfassung nach einer Pause: was ist seit `since` aufgelaufen?
+ *
+ * Bewusst deterministisch (kein KI-Text) — bei "was habe ich versäumt" zählt die
+ * exakte, vollständige Liste mehr als ein schöner Einstieg. Reine HTML-Ausgabe
+ * für den Telegram-Bot.
+ */
+export async function generateCatchupDigest(since: Date): Promise<string> {
+  const now = new Date()
+  const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+
+  const [newCompetitions, urgentDeadlines] = await Promise.all([
+    // Alles, was seit dem Pausenbeginn neu reingekommen ist
+    db.competition.findMany({
+      where: {
+        createdAt: { gte: since },
+        dismissed: false,
+        status: 'ACTIVE',
+        ...excludeMagazineRoots,
+      },
+      select: { name: true, deadline: true },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    }),
+    // Aktuell dringende Deadlines (nächste 7 Tage)
+    db.competition.findMany({
+      where: {
+        starred: true,
+        dismissed: false,
+        deadline: { gt: now, lte: in7Days },
+      },
+      select: { name: true, deadline: true },
+      orderBy: { deadline: 'asc' },
+      take: 10,
+    }),
+  ])
+
+  const pauseDays = Math.max(1, Math.round((now.getTime() - since.getTime()) / (24 * 60 * 60 * 1000)))
+
+  let msg = `▶️ <b>Willkommen zurück!</b>\nPause: ${pauseDays} Tag(e).\n`
+
+  if (newCompetitions.length > 0) {
+    msg += `\n<b>${newCompetitions.length} neue Ausschreibung(en) in der Zwischenzeit:</b>\n`
+    for (const c of newCompetitions) {
+      msg += `• ${escapeHtml(c.name)}${c.deadline ? ` (bis ${formatDateDE(c.deadline)})` : ''}\n`
+    }
+  } else {
+    msg += `\nKeine neuen Ausschreibungen in der Zwischenzeit.\n`
+  }
+
+  if (urgentDeadlines.length > 0) {
+    msg += `\n⚠️ <b>Dringende Deadlines (nächste 7 Tage):</b>\n`
+    for (const c of urgentDeadlines) {
+      msg += `• ${escapeHtml(c.name)} – in ${daysUntil(c.deadline!)} Tag(en)\n`
+    }
+  }
+
+  msg += `\nBenachrichtigungen sind wieder aktiv.`
+
+  // Telegram-Nachrichten sind auf 4096 Zeichen begrenzt — im Zweifel abschneiden.
+  return msg.length > 4000 ? msg.slice(0, 3990) + '\n…' : msg.trim()
 }

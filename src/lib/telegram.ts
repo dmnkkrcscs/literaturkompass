@@ -116,7 +116,7 @@ ${urgencyEmoji} <b>Deadline Reminder</b>
 /**
  * Helper function to escape HTML special characters
  */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     '&': '&amp;',
     '<': '&lt;',

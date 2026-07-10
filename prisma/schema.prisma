@@ -306,6 +306,21 @@ model NotificationLog {
   @@index([type, sentAt])
 }
 
+// Singleton-Einstellungen für den Telegram-Bot.
+// * `paused` — solange true, überspringen Digest-/Reminder-Jobs das Senden.
+// * `pausedAt` — Zeitpunkt der Pause; beim "Start" wird alles seither Aufgelaufene
+//   als Nachhol-Zusammenfassung geschickt.
+// * `telegramOffset` — Long-Poll-Cursor (letzte verarbeitete update_id + 1), damit
+//   der Worker nach einem Neustart keine alten Nachrichten erneut abarbeitet.
+model BotSettings {
+  id             String    @id @default("singleton")
+  paused         Boolean   @default(false)
+  pausedAt       DateTime?
+  telegramOffset Int?
+
+  updatedAt      DateTime  @updatedAt
+}
+
 // ============================================================================
 // NextAuth.js / Auth.js v5 MODELS
 // ============================================================================

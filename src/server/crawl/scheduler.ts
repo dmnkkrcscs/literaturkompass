@@ -3,6 +3,7 @@ import { crawlAllSources, crawlSource } from './pipeline'
 import { db } from '@/lib/db'
 import { sendMessage, sendDeadlineReminder } from '@/lib/telegram'
 import { generateTelegramDigest } from '@/server/ai/telegram-digest'
+import { isBotPaused } from '@/server/telegram/settings'
 import { redis } from '@/lib/redis'
 
 /**
@@ -121,6 +122,11 @@ export async function processReminderJob(): Promise<void> {
   console.log('[Scheduler] Processing deadline reminder job')
 
   try {
+    if (await isBotPaused()) {
+      console.log('[Scheduler] Bot pausiert — Deadline-Reminder übersprungen')
+      return
+    }
+
     const now = new Date()
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
 
@@ -193,6 +199,11 @@ export async function processDailyDigestJob(): Promise<void> {
   console.log('[Scheduler] Processing daily digest job')
 
   try {
+    if (await isBotPaused()) {
+      console.log('[Scheduler] Bot pausiert — Daily Digest übersprungen')
+      return
+    }
+
     const message = await generateTelegramDigest()
     const sent = await sendMessage(message)
 
