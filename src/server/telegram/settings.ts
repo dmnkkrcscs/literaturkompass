@@ -26,8 +26,8 @@ export async function pauseBot(): Promise<void> {
   const now = new Date()
   await db.botSettings.upsert({
     where: { id: SINGLETON_ID },
-    create: { id: SINGLETON_ID, paused: true, pausedAt: now },
-    update: { paused: true, pausedAt: now },
+    create: { id: SINGLETON_ID, paused: true, pausedAt: now, resumeNudgeAt: null },
+    update: { paused: true, pausedAt: now, resumeNudgeAt: null },
   })
 }
 
@@ -41,9 +41,17 @@ export async function resumeBot(): Promise<Date | null> {
   await db.botSettings.upsert({
     where: { id: SINGLETON_ID },
     create: { id: SINGLETON_ID, paused: false },
-    update: { paused: false, pausedAt: null },
+    update: { paused: false, pausedAt: null, resumeNudgeAt: null },
   })
   return pausedAt
+}
+
+/** Merkt sich, dass gerade nach dem Fortsetzen gefragt wurde. */
+export async function markResumeNudgeSent(): Promise<void> {
+  await db.botSettings.update({
+    where: { id: SINGLETON_ID },
+    data: { resumeNudgeAt: new Date() },
+  })
 }
 
 /** Letzter verarbeiteter Long-Poll-Cursor (update_id + 1), oder undefined beim ersten Lauf. */

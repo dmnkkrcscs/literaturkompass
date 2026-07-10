@@ -316,6 +316,9 @@ model BotSettings {
   id             String    @id @default("singleton")
   paused         Boolean   @default(false)
   pausedAt       DateTime?
+  // Zeitpunkt der letzten "Möchtest du wieder starten?"-Nachfrage. Verhindert,
+  // dass die Nachfrage nach 10 Tagen Pause dann täglich wiederholt wird.
+  resumeNudgeAt  DateTime?
   telegramOffset Int?
 
   updatedAt      DateTime  @updatedAt

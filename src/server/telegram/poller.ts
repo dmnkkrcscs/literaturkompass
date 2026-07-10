@@ -4,6 +4,8 @@ import {
   isBotPaused,
   pauseBot,
   resumeBot,
+  getBotSettings,
+  markResumeNudgeSent,
   getTelegramOffset,
   setTelegramOffset,
 } from './settings'
@@ -20,6 +22,8 @@ import {
 
 const LONG_POLL_TIMEOUT_SECONDS = 30
 const ERROR_BACKOFF_MS = 5000
+const RESUME_PROMPT_AFTER_DAYS = 10
+const DAY_MS = 24 * 60 * 60 * 1000
 
 interface TelegramUpdate {
   update_id: number
@@ -155,6 +159,34 @@ async function handleCommand(text: string): Promise<void> {
       '• <b>Start</b> — fortsetzen + Zusammenfassung des Versäumten\n' +
       '• <b>Status</b> — aktuellen Zustand anzeigen'
   )
+}
+
+/**
+ * Fragt nach, ob wieder gestartet werden soll, wenn der Bot bereits
+ * RESUME_PROMPT_AFTER_DAYS (10) Tage pausiert ist. Wird täglich vom Digest-Job
+ * aufgerufen; fragt nach dem ersten Mal erst wieder nach weiteren 10 Tagen nach,
+ * um nicht täglich zu nerven.
+ */
+export async function maybeSendResumePrompt(): Promise<void> {
+  const settings = await getBotSettings()
+  if (!settings.paused || !settings.pausedAt) return
+
+  const now = Date.now()
+  const thresholdMs = RESUME_PROMPT_AFTER_DAYS * DAY_MS
+
+  // Noch keine 10 Tage pausiert → nichts tun.
+  if (now - settings.pausedAt.getTime() < thresholdMs) return
+
+  // Kürzlich schon nachgefragt → erst nach weiteren 10 Tagen erneut fragen.
+  if (settings.resumeNudgeAt && now - settings.resumeNudgeAt.getTime() < thresholdMs) return
+
+  const pauseDays = Math.round((now - settings.pausedAt.getTime()) / DAY_MS)
+  await sendMessage(
+    '⏰ <b>Immer noch pausiert.</b>\n' +
+      `Du hast die Benachrichtigungen vor ${pauseDays} Tagen gestoppt. Möchtest du wieder starten?\n\n` +
+      'Schreib <b>Start</b> für die Zusammenfassung des Versäumten — oder ignorier diese Nachricht, um pausiert zu bleiben.'
+  )
+  await markResumeNudgeSent()
 }
 
 function sleep(ms: number): Promise<void> {

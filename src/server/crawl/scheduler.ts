@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { sendMessage, sendDeadlineReminder } from '@/lib/telegram'
 import { generateTelegramDigest } from '@/server/ai/telegram-digest'
 import { isBotPaused } from '@/server/telegram/settings'
+import { maybeSendResumePrompt } from '@/server/telegram/poller'
 import { redis } from '@/lib/redis'
 
 /**
@@ -200,6 +201,9 @@ export async function processDailyDigestJob(): Promise<void> {
 
   try {
     if (await isBotPaused()) {
+      // Pausiert: keinen Digest senden, aber nach 10 Tagen einmal nachfragen,
+      // ob wieder gestartet werden soll.
+      await maybeSendResumePrompt()
       console.log('[Scheduler] Bot pausiert — Daily Digest übersprungen')
       return
     }
