@@ -49,6 +49,24 @@ export default function RootLayout({
                         <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
                 </head>
                 <body className={`font-sans bg-light-bg dark:bg-dark-bg`}>
+                        <div className="rotate-overlay" aria-hidden="true">
+                                  <svg
+                                              className="rotate-overlay__icon"
+                                              viewBox="0 0 24 24"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              strokeWidth="1.5"
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                  >
+                                              <rect x="7" y="2" width="10" height="20" rx="2" />
+                                              <path d="M12 18h.01" />
+                                  </svg>
+                                  <p className="rotate-overlay__title">Bitte drehe dein Gerät</p>
+                                  <p className="rotate-overlay__text">
+                                              Literaturkompass ist am Smartphone nur im Hochformat verfügbar.
+                                  </p>
+                        </div>
                         <Providers>
                                   <Navbar />
                                   <main>{children}</main>

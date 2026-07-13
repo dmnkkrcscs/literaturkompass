@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#0a0a0f",
   "theme_color": "#ffab40",
-  "orientation": "any",
+  "orientation": "portrait",
   "id": "/",
   "categories": ["productivity", "lifestyle"],
   "icons": [
